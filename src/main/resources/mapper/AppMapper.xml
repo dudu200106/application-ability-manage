@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsj.csp.manage.mapper.AppMapper">
+
+    <resultMap id="BaseResultMap" type="com.dsj.csp.manage.entity.AppEntity">
+            <id property="appId" column="APP_ID" jdbcType="BIGINT"/>
+            <result property="appCode" column="APP_CODE" jdbcType="VARCHAR"/>
+            <result property="createUserId" column="CREATE_USER_ID" jdbcType="BIGINT"/>
+            <result property="appKey" column="APP_KEY" jdbcType="VARCHAR"/>
+            <result property="secretKey" column="SECRET_KEY" jdbcType="VARCHAR"/>
+            <result property="appName" column="APP_NAME" jdbcType="VARCHAR"/>
+            <result property="appLogo" column="APP_LOGO" jdbcType="VARCHAR"/>
+            <result property="appUsername" column="APP_USERNAME" jdbcType="VARCHAR"/>
+            <result property="appPhone" column="APP_PHONE" jdbcType="VARCHAR"/>
+            <result property="appEvidence" column="APP_EVIDENCE" jdbcType="VARCHAR"/>
+            <result property="appStatus" column="APP_STATUS" jdbcType="TINYINT"/>
+            <result property="isDelete" column="IS_DELETE" jdbcType="TINYINT"/>
+            <result property="createTime" column="CREATE_TIME" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="UPDATE_TIME" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        APP_ID,APP_CODE,CREATE_USER_ID,
+        APP_KEY,SECRET_KEY,APP_NAME,
+        APP_LOGO,APP_USERNAME,APP_PHONE,
+        APP_EVIDENCE,APP_STATUS,IS_DELETE,
+        CREATE_TIME,UPDATE_TIME
+    </sql>
+</mapper>

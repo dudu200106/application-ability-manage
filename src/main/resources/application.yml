@@ -1,0 +1,27 @@
+# 开发环境配置
+server:
+  # 服务器的HTTP端口，默认为8080
+  port: 18080
+  servlet:
+    # 应用的访问路径
+    context-path: /common-support
+
+spring:
+  application:
+    name: applicationAbilityManagement
+  datasource:
+    driver-class-name: dm.jdbc.driver.DmDriver
+    url: jdbc:dm://106.227.91.135:5237?schema=RY_DSJ
+    username: CSP_MANAGER
+    password: CSP_MANAGER_BD
+    #指明使用druid 连接池
+    type: com.alibaba.druid.pool.DruidDataSource
+  main:
+    allow-bean-definition-overriding: true
+
+# mybatis-plus相关配置
+mybatis-plus:
+  # 对应为mybatis配置
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  # configLocation: classpath:mybatis/mybatis-config.xml

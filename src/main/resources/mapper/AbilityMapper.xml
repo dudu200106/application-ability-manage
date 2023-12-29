@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsj.csp.manage.mapper.AbilityMapper">
+
+    <resultMap id="BaseResultMap" type="com.dsj.csp.manage.entity.AbilityEntity">
+            <id property="abilityId" column="ABILITY_ID" jdbcType="BIGINT"/>
+            <result property="abilityType" column="ABILITY_TYPE" jdbcType="TINYINT"/>
+            <result property="abilityName" column="ABILITY_NAME" jdbcType="VARCHAR"/>
+            <result property="abilityDesc" column="ABILITY_DESC" jdbcType="VARCHAR"/>
+            <result property="status" column="STATUS" jdbcType="TINYINT"/>
+            <result property="isDelete" column="IS_DELETE" jdbcType="TINYINT"/>
+            <result property="createTime" column="CREATE_TIME" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="UPDATE_TIME" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ABILITY_ID,ABILITY_TYPE,ABILITY_NAME,
+        ABILITY_DESC,STATUS,IS_DELETE,
+        CREATE_TIME,UPDATE_TIME
+    </sql>
+</mapper>

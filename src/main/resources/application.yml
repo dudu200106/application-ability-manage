@@ -11,7 +11,7 @@ spring:
     name: applicationAbilityManagement
   datasource:
     driver-class-name: dm.jdbc.driver.DmDriver
-    url: jdbc:dm://106.227.91.135:5237?schema=RY_DSJ
+    url: jdbc:dm://106.227.91.135:5237?schema=ABILITY_MANAGE
     username: CSP_MANAGER
     password: CSP_MANAGER_BD
     #指明使用druid 连接池

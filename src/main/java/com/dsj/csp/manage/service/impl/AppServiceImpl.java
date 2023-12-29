@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 /**
 * @author lakkamaa
-* @description 针对表【DSJ_APP(应用表)】的数据库操作Service实现
+* @description 针对表【MANAGE_APP(应用表)】的数据库操作Service实现
 * @createDate 2023-12-28 20:04:34
 */
 @Service

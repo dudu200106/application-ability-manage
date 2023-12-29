@@ -10,9 +10,9 @@ import lombok.Data;
 
 /**
  * 应用表
- * @TableName DSJ_APP
+ * @TableName MANAGE_APP
  */
-@TableName(value ="DSJ_APP")
+@TableName(value ="MANAGE_APP")
 @Data
 public class AppEntity implements Serializable {
     /**

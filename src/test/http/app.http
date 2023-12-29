@@ -1,0 +1,11 @@
+### 应用分页查询
+POST http://localhost:18080/common-support/app/page
+Content-Type: application/json
+
+{
+  "entity": {
+    "appId": 1
+  },
+  "size": 20,
+  "current": 1
+}

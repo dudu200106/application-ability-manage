@@ -12,12 +12,12 @@ import lombok.Data;
  * @date 2023/12/29
  */
 @Data
-public class PageQueryForm<T> {
+    public class PageQueryForm<T> {
 
-    // 查询实体
-    private T entity;
-    // 分页信息
-    protected long size;
+        // 查询实体
+        private T entity;
+        // 分页信息
+        protected long size;
     protected long current;
 
     /**

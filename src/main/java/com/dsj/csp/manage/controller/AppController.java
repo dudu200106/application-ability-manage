@@ -1,5 +1,6 @@
 package com.dsj.csp.manage.controller;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.common.enums.StatusEnum;
@@ -15,10 +16,11 @@ import java.util.List;
  * 功能说明：应用表Controller
  *
  * @author 蔡云
- * @date 2023/12/28
+ * 2023/12/28
  */
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/app")
 public class AppController {
 
     public final AppService appService;
@@ -26,23 +28,23 @@ public class AppController {
     /**
      * 查询应用表列表
      */
-    @GetMapping("/app/list")
+    @GetMapping("/list")
     public Result<List<AppEntity>> list() {
         return Result.success(appService.list());
     }
 
-    /**
-     * 分页查询应用表列表
-     */
-    @PostMapping("/app/page")
-    public Result<Page<AppEntity>> page(@RequestBody PageQueryForm<AppEntity> queryForm) {
-        return Result.success(appService.page(queryForm.toPage(), queryForm.toQueryWrappers()));
-    }
 
+    /**
+     * 分页查询
+     */
+    @GetMapping("/page")
+    public Result<?> pageTest(Page page, AppEntity app) {
+        return Result.success(appService.page(page, Wrappers.query(app)));
+    }
     /**
      * 新增应用
      */
-    @PostMapping("/app/add")
+    @PostMapping("/add")
     public Result<?> add(@RequestBody AppEntity app) {
         app.setAppStatus(StatusEnum.PENDING.getStatus());
         return Result.success(appService.save(app));

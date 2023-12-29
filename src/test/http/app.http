@@ -9,3 +9,21 @@ Content-Type: application/json
   "size": 20,
   "current": 1
 }
+
+
+### 新增应用
+POST http://localhost:18080/common-support/app/add
+Content-Type: application/json
+
+{
+  "appCode": "test",
+  "createUserId": 0,
+  "appKey": "test",
+  "secretKey": "test",
+  "appName": "test",
+  "appLogo": "test",
+  "appUsername": "test",
+  "appPhone": "test",
+  "appEvidence": "test",
+  "isDelete": 0
+}

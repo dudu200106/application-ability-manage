@@ -1,4 +1,4 @@
-package com.dsj.csp.config.mybatisPlus;
+package com.dsj.csp.common.config.mybatisPlus;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;

@@ -1,20 +1,22 @@
 package com.dsj.csp.manage.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.io.Serializable;
 import java.util.Date;
+
+import com.dsj.csp.common.entity.BaseEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 应用表
  * @TableName MANAGE_APP
  */
+@EqualsAndHashCode(callSuper = true)
 @TableName(value ="MANAGE_APP")
 @Data
-public class AppEntity implements Serializable {
+public class AppEntity extends BaseEntity implements Serializable {
     /**
      * 应用id
      */
@@ -80,24 +82,6 @@ public class AppEntity implements Serializable {
      */
     @TableField(value = "APP_STATUS")
     private Integer appStatus;
-
-    /**
-     * 逻辑删除（0未删除 1已删除 ）
-     */
-    @TableField(value = "IS_DELETE")
-    private Integer isDelete;
-
-    /**
-     * 创建时间
-     */
-    @TableField(value = "CREATE_TIME")
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    @TableField(value = "UPDATE_TIME")
-    private Date updateTime;
 
     @TableField(exist = false)
     private static final long serialVersionUID = -1850215692500928269L;

@@ -3,6 +3,7 @@ package com.dsj.csp.common.entity;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,6 +14,7 @@ import java.util.Date;
  * @author 蔡云
  * 2023/12/29
  */
+@Data
 public class BaseEntity implements Serializable {
 
     /**
@@ -33,5 +35,4 @@ public class BaseEntity implements Serializable {
      */
     @TableField(value = "UPDATE_TIME", fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
-
 }

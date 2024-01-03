@@ -1,5 +1,6 @@
 package com.dsj.csp.manage.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,7 +12,9 @@ import java.io.Serializable;
  */
 @Data
 public class SupportAcceptRequest implements Serializable {
-    private Long supportId;
+    @Schema(description = "受理用户ID", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private Long acceptUserId;
+
+    @Schema(description = "受理用户名", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String acceptUserName;
 }

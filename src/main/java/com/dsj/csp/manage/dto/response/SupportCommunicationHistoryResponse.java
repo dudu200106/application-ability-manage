@@ -1,6 +1,7 @@
 package com.dsj.csp.manage.dto.response;
 
 import com.dsj.csp.manage.dto.SupportCommunicationDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -15,9 +16,12 @@ import java.util.List;
 @Data
 @Accessors(chain = true)
 public class SupportCommunicationHistoryResponse implements Serializable {
+    @Schema(description = "应用ID")
     private Long appId;
 
+    @Schema(description = "是否刷新")
     private Boolean refresh;
 
+    @Schema(description = "工单沟通记录")
     private List<SupportCommunicationDto> communicationList;
 }

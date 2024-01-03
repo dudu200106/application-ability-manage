@@ -12,6 +12,7 @@ import com.dsj.csp.manage.dto.response.SupportCommunicationHistoryResponse;
 import com.dsj.csp.manage.dto.response.SupportQueryResponse;
 import com.dsj.csp.manage.entity.SupportEntity;
 import com.dsj.csp.manage.service.SupportService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,7 @@ public class SupportController {
     @Autowired
     private SupportService supportService;
 
+    @Operation(summary = "获取工单列表")
     @GetMapping("/list")
     public Result<SupportQueryResponse> list(SupportQueryRequest request) {
         Page<SupportEntity> list = supportService.selectSupportList(request);
@@ -41,38 +43,38 @@ public class SupportController {
         );
     }
 
+    @Operation(summary = "获取工单详情")
     @GetMapping(value = "/{supportId}")
     public Result<SupportDto> getInfo(@PathVariable("supportId") Long supportId) {
         return Result.success(SupportConverter.toSupportDto(supportService.selectSupportById(supportId)));
     }
 
+    @Operation(summary = "受理工单")
     @PostMapping(value = "/{supportId}/accept")
     public Result<SupportDto> accept(@PathVariable Long supportId, @RequestBody SupportAcceptRequest request) {
         return Result.success(SupportConverter.toSupportDto(supportService.acceptSupport(supportId, request)));
     }
 
-    @PostMapping(value = "/reply")
-    public Result<SupportCommunicationHistoryResponse> reply(@RequestBody SupportReplyRequest request) {
-        return Result.success(supportService.replySupport(request));
+    @Operation(summary = "创建工单")
+    @PostMapping
+    public Result<SupportDto> create(@RequestBody SupportCreateRequest request) {
+        return Result.success("创建成功", SupportConverter.toSupportDto(supportService.createSupport(request)));
     }
 
-    @GetMapping(value = "/{supportId}/communication")
-    public Result<SupportCommunicationHistoryResponse> getCommunicationInfo(@PathVariable("supportId") Long supportId,
-                                                                            @RequestParam(value = "lastCommunicationId", required = false) Long lastCommunicationId) {
-        return Result.success(supportService.getCommunicationBySupportId(supportId, lastCommunicationId));
-    }
-
+    @Operation(summary = "更新工单")
     @PutMapping(value = "/{supportId}")
     public Result<SupportDto> update(@PathVariable Long supportId, @RequestBody SupportUpdateRequest request) {
         return Result.success("更新成功", SupportConverter.toSupportDto(supportService.updateSupport(supportId, request)));
     }
 
+    @Operation(summary = "删除工单")
     @DeleteMapping("/{supportId}")
     public Result<Void> remove(@PathVariable Long supportId) {
         supportService.deleteSupportById(supportId);
         return Result.success("删除成功", null);
     }
 
+    @Operation(summary = "完成工单")
     @PostMapping("/{supportId}/finish")
     public Result<SupportDto> supportFinish(@PathVariable Long supportId) {
         return Result.success(SupportConverter.toSupportDto(supportService.supportFinish(supportId)));

@@ -26,7 +26,7 @@ public interface SupportService {
 
     void deleteSupportById(Long supportId);
 
-    SupportCommunicationHistoryResponse replySupport(SupportReplyRequest request);
+    SupportCommunicationHistoryResponse replySupport(Long supportId, SupportReplyRequest request);
 
     SupportCommunicationHistoryResponse getCommunicationBySupportId(Long supportId, Long lastCommunicationId);
 }

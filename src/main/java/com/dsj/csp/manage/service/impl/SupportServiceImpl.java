@@ -110,17 +110,17 @@ public class SupportServiceImpl implements SupportService {
     }
 
     @Override
-    public SupportCommunicationHistoryResponse replySupport(SupportReplyRequest request) {
+    public SupportCommunicationHistoryResponse replySupport(Long supportId, SupportReplyRequest request) {
         if (null == request.getReplyUserId()) {
             throw new RuntimeException("必须指定回复人");
         }
-        SupportEntity support = selectSupportById(request.getSupportId());
+        SupportEntity support = selectSupportById(supportId);
         SupportStatus status = SupportStatus.of(support.getStatus());
         if (Objects.requireNonNull(status) != SupportStatus.PROCESSING) {
             throw new RuntimeException("工单不允许回复");
         }
         SupportCommunicationEntity communication = new SupportCommunicationEntity();
-        communication.setSupportId(request.getSupportId());
+        communication.setSupportId(supportId);
         communication.setAppId(support.getAppId());
         communication.setSenderId(request.getReplyUserId());
         communication.setSenderName(request.getReplyUserName());

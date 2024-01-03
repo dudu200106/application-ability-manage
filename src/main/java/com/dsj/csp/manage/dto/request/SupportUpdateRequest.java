@@ -1,5 +1,6 @@
 package com.dsj.csp.manage.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,7 +12,9 @@ import java.io.Serializable;
  */
 @Data
 public class SupportUpdateRequest implements Serializable {
+    @Schema(description = "工单标题", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String title;
 
+    @Schema(description = "工单状态", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private Integer status;
 }

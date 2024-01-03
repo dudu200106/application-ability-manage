@@ -1,6 +1,7 @@
 package com.dsj.csp.manage.dto.response;
 
 import com.dsj.csp.manage.dto.SupportDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -15,11 +16,15 @@ import java.util.List;
 @Data
 @Accessors(chain = true)
 public class SupportQueryResponse implements Serializable {
+    @Schema(description = "页码")
     private Integer pageNum;
 
+    @Schema(description = "每页数量")
     private Integer pageSize;
 
+    @Schema(description = "总数")
     private Long total;
 
+    @Schema(description = "列表")
     private List<SupportDto> list;
 }

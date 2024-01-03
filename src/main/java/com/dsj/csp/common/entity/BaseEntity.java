@@ -20,7 +20,7 @@ public class BaseEntity implements Serializable {
     /**
      * 逻辑删除（0未删除 1已删除 ）
      */
-    @TableLogic
+    @TableLogic(value = "0", delval = "1")
     @TableField(value = "IS_DELETE")
     private Integer isDelete;
 

@@ -37,6 +37,7 @@ public class SupportServiceImpl implements SupportService {
     public Page<SupportEntity> selectSupportList(SupportQueryRequest request) {
         return supportMapper.selectPage(new Page<>(request.getPageNum(), request.getPageSize()),
                 new LambdaQueryWrapper<SupportEntity>()
+                        .eq(SupportEntity::getIsDelete, 0)
                         .like(null != request.getAbilityName(), SupportEntity::getAbilityName, MybatisUtil.likeBoth(request.getAbilityName()))
                         .like(null != request.getApiName(), SupportEntity::getApiName, MybatisUtil.likeBoth(request.getApiName()))
                         .eq(null != request.getStatus(), SupportEntity::getStatus, request.getStatus())
@@ -84,6 +85,12 @@ public class SupportServiceImpl implements SupportService {
 
     @Override
     public SupportEntity updateSupport(Long supportId, SupportUpdateRequest request) {
+        if (Objects.nonNull(request.getStatus())) {
+            SupportStatus status = SupportStatus.of(request.getStatus());
+            if (Objects.isNull(status)) {
+                throw new RuntimeException("工单状态错误");
+            }
+        }
         SupportEntity supportEntity = selectSupportById(supportId);
         BeanUtils.copyProperties(request, supportEntity);
         supportMapper.updateById(supportEntity);
@@ -115,8 +122,7 @@ public class SupportServiceImpl implements SupportService {
         if (supportEntity.isDeleted()) {
             return;
         }
-        supportEntity.setIsDelete(1);
-        updateInternal(supportEntity);
+        supportMapper.deleteById(supportId);
     }
 
     @Override

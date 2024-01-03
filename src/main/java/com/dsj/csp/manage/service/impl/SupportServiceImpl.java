@@ -2,6 +2,7 @@ package com.dsj.csp.manage.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.common.util.MybatisUtil;
 import com.dsj.csp.manage.dto.SupportCommunicationDto;
 import com.dsj.csp.manage.dto.request.*;
@@ -52,7 +53,7 @@ public class SupportServiceImpl implements SupportService {
     public SupportEntity selectSupportById(Long supportId) {
         SupportEntity supportEntity = supportMapper.selectById(supportId);
         if (null == supportEntity || supportEntity.isDeleted()) {
-            throw new RuntimeException("工单不存在");
+            throw new BusinessException("工单不存在");
         }
         return supportEntity;
     }
@@ -62,7 +63,7 @@ public class SupportServiceImpl implements SupportService {
         SupportEntity supportEntity = selectSupportById(supportId);
         SupportStatus status = SupportStatus.of(supportEntity.getStatus());
         if (Objects.requireNonNull(status) != SupportStatus.SUBMITTED) {
-            throw new RuntimeException("工单不允许受理");
+            throw new BusinessException("工单不允许受理");
         }
         supportEntity.setAcceptUserId(request.getAcceptUserId());
         supportEntity.setAcceptUserName(request.getAcceptUserName());
@@ -78,7 +79,7 @@ public class SupportServiceImpl implements SupportService {
         supportEntity.setStatus(SupportStatus.SUBMITTED.getCode());
         int successRow = supportMapper.insert(supportEntity);
         if (successRow != 1) {
-            throw new RuntimeException("创建工单失败");
+            throw new BusinessException("创建工单失败");
         }
         return supportEntity;
     }
@@ -88,7 +89,7 @@ public class SupportServiceImpl implements SupportService {
         if (Objects.nonNull(request.getStatus())) {
             SupportStatus status = SupportStatus.of(request.getStatus());
             if (Objects.isNull(status)) {
-                throw new RuntimeException("工单状态错误");
+                throw new BusinessException("工单状态错误");
             }
         }
         SupportEntity supportEntity = selectSupportById(supportId);
@@ -105,7 +106,7 @@ public class SupportServiceImpl implements SupportService {
             return supportEntity;
         }
         if (Objects.requireNonNull(status) != SupportStatus.PROCESSING) {
-            throw new RuntimeException("工单状态异常");
+            throw new BusinessException("工单状态异常");
         }
         supportEntity.setStatus(SupportStatus.FINISHED.getCode());
         supportEntity.setFinishTime(new Date());
@@ -117,7 +118,7 @@ public class SupportServiceImpl implements SupportService {
     public void deleteSupportById(Long supportId) {
         SupportEntity supportEntity = supportMapper.selectById(supportId);
         if (null == supportEntity) {
-            throw new RuntimeException("工单不存在");
+            throw new BusinessException("工单不存在");
         }
         if (supportEntity.isDeleted()) {
             return;
@@ -128,12 +129,12 @@ public class SupportServiceImpl implements SupportService {
     @Override
     public SupportCommunicationHistoryResponse replySupport(Long supportId, SupportReplyRequest request) {
         if (null == request.getReplyUserId()) {
-            throw new RuntimeException("必须指定回复人");
+            throw new BusinessException("必须指定回复人");
         }
         SupportEntity support = selectSupportById(supportId);
         SupportStatus status = SupportStatus.of(support.getStatus());
         if (Objects.requireNonNull(status) != SupportStatus.PROCESSING) {
-            throw new RuntimeException("工单不允许回复");
+            throw new BusinessException("工单不允许回复");
         }
         SupportCommunicationEntity communication = new SupportCommunicationEntity();
         communication.setSupportId(supportId);
@@ -146,7 +147,7 @@ public class SupportServiceImpl implements SupportService {
 
         int successRow = supportCommunicationMapper.insert(communication);
         if (successRow <= 0) {
-            throw new RuntimeException("回复失败");
+            throw new BusinessException("回复失败");
         }
         List<SupportCommunicationEntity> communicationList = selectCommunicationByIdOrderByCreateTimeDesc(support.getSupportId());
         return new SupportCommunicationHistoryResponse()
@@ -185,7 +186,7 @@ public class SupportServiceImpl implements SupportService {
     private void updateInternal(SupportEntity supportEntity) {
         int successRow = supportMapper.updateById(supportEntity);
         if (successRow != 1) {
-            throw new RuntimeException("更新工单失败");
+            throw new BusinessException("更新工单失败");
         }
     }
 

@@ -50,11 +50,9 @@ public class AbilityController {
      * @param ability
      * @return 执行结果
      */
-    @DeleteMapping("delete")
-    public Result<?> delete(AbilityEntity ability){
-        QueryWrapper<AbilityEntity> queryWrapper = new QueryWrapper();
-        queryWrapper.eq("IS_DELETE",ability.getIsDelete()==0);
-        abilityService.update(ability,queryWrapper);
+    @PutMapping("delete")
+    public Result<?> delete(@RequestBody AbilityEntity ability){
+        abilityService.update(ability);
         return Result.success("删除成功");
     }
 

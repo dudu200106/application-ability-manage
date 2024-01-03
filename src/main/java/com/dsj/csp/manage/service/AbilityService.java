@@ -10,4 +10,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface AbilityService extends IService<AbilityEntity> {
 
+    public void update(AbilityEntity ability);
 }

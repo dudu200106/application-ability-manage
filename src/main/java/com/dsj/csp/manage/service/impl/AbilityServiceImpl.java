@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dsj.csp.manage.entity.AbilityEntity;
 import com.dsj.csp.manage.service.AbilityService;
 import com.dsj.csp.manage.mapper.AbilityMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -13,7 +14,12 @@ import org.springframework.stereotype.Service;
 */
 @Service
 public class AbilityServiceImpl extends ServiceImpl<AbilityMapper, AbilityEntity> implements AbilityService{
-
+    @Autowired
+    private AbilityMapper abilityMapper;
+    @Override
+    public void update(AbilityEntity ability) {
+        abilityMapper.updateById(ability);
+    }
 }
 
 

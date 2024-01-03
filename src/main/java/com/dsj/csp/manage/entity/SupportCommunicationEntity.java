@@ -1,5 +1,6 @@
 package com.dsj.csp.manage.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -16,7 +17,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @TableName("MANAGE_SUPPORT_COMMUNICATION")
 public class SupportCommunicationEntity extends BaseEntity {
-    @TableId("COMMUNICATION_ID")
+    @TableId(value = "COMMUNICATION_ID", type = IdType.AUTO)
     private Long communicationId;
 
     @TableField("SUPPORT_ID")

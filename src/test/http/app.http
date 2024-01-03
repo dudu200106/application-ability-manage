@@ -15,6 +15,27 @@ Content-Type: application/json
   "appLogo": "test",
   "appUsername": "test",
   "appPhone": "test",
-  "appEvidence": "test",
-  "isDelete": 0
+  "appEvidence": "test"
 }
+
+### 修改应用
+POST http://localhost:8080/common-support/app/update
+Content-Type: application/json
+
+{
+  "appId": 9,
+  "appCode": "test02",
+  "createUserId": 0,
+  "appKey": "test",
+  "secretKey": "test",
+  "appName": "test",
+  "appLogo": "test",
+  "appUsername": "test",
+  "appPhone": "test",
+  "appEvidence": "test"
+}
+
+### 删除应用
+POST http://localhost:8080/common-support/app/delete?appId=9
+Content-Type: application/json
+

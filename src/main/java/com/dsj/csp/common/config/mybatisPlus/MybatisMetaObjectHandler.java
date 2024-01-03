@@ -18,19 +18,14 @@ public class MybatisMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void insertFill(MetaObject metaObject) {
-//        //创建时间
-//        this.setFieldValByName("CREATE_TIME", LocalDateTime.now(), metaObject);
-//        //更新时间
-//        this.setFieldValByName("UPDATE_TIME", LocalDateTime.now(), metaObject);
-
-        this.strictInsertFill(metaObject, "CREATE_TIME", Date.class, new Date());
-        this.strictInsertFill(metaObject, "UPDATE_TIME", Date.class, new Date());
+        //创建时间
+        this.setFieldValByName("createTime", new Date(), metaObject);
+        this.setFieldValByName("updateTime", new Date(), metaObject);
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        //更新时间
-//        this.setFieldValByName("UPDATE_TIME", LocalDateTime.now(), metaObject);
-        this.strictUpdateFill(metaObject, "UPDATE_TIME", Date.class, new Date());
+        this.setFieldValByName("updateTime", new Date(), metaObject);
+
     }
 }

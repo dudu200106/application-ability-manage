@@ -1,5 +1,17 @@
 ### 应用分页查询
-GET http://localhost:18080/common-support/app/page?appId=1&size=20&current=1
+GET http://localhost:18080/common-support/app/page?appCode=test&size=20&current=1
+
+### 应用分页查询，这里的展示是另外一种方式，验证全局异常处理
+POST http://localhost:18080/common-support/app/page-another
+Content-Type: application/json
+
+{
+  "entity": {
+    "appCode": "test"
+  },
+  "size": -1,
+  "current": 1
+}
 
 
 ### 新增应用

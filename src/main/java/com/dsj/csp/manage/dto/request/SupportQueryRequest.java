@@ -14,10 +14,10 @@ import java.util.Date;
 @Data
 public class SupportQueryRequest implements Serializable {
     @Schema(description = "页码", requiredMode = Schema.RequiredMode.NOT_REQUIRED, defaultValue = "1")
-    private Integer pageNum = 1;
+    private Long current = 1L;
 
     @Schema(description = "每页数量", requiredMode = Schema.RequiredMode.NOT_REQUIRED, defaultValue = "10")
-    private Integer pageSize = 10;
+    private Long size = 10L;
 
     @Schema(description = "能力名称", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String abilityName;

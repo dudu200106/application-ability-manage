@@ -17,10 +17,10 @@ import java.util.List;
 @Accessors(chain = true)
 public class SupportQueryResponse implements Serializable {
     @Schema(description = "页码")
-    private Integer pageNum;
+    private Long current;
 
     @Schema(description = "每页数量")
-    private Integer pageSize;
+    private Long size;
 
     @Schema(description = "总数")
     private Long total;

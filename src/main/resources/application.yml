@@ -9,6 +9,9 @@ server:
 spring:
   application:
     name: applicationAbilityManagement
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
   datasource:
     driver-class-name: dm.jdbc.driver.DmDriver
     url: jdbc:dm://106.227.91.135:5237?schema=ABILITY_MANAGE
@@ -16,7 +19,6 @@ spring:
     password: CSP_MANAGER_BD
     #指明使用druid 连接池
     type: com.alibaba.druid.pool.DruidDataSource
-
     #以下为新增
     druid:
       # 指明是否在从池中取出连接前进行检验,如果检验失败, 则从池中去除连接并尝试取出另一个，
@@ -33,6 +35,12 @@ spring:
       validation-query: select 1
   main:
     allow-bean-definition-overriding: true
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui
 
 # mybatis-plus相关配置
 mybatis-plus:

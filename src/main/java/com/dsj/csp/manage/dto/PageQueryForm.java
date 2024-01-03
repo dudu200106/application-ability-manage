@@ -13,7 +13,7 @@ import lombok.Data;
  * 2023/12/29
  */
 @Data
-public class PageQueryForm<T> {
+    public class PageQueryForm<T> {
 
     // 查询实体
     private T entity;

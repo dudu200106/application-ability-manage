@@ -36,8 +36,8 @@ public class SupportController {
         List<SupportDto> dtoList = SupportConverter.toSupportDtoList(list.getRecords());
         return Result.success(
                 new SupportQueryResponse()
-                        .setPageNum(request.getPageNum())
-                        .setPageSize(request.getPageSize())
+                        .setCurrent(request.getCurrent())
+                        .setSize(request.getSize())
                         .setTotal(list.getTotal())
                         .setList(dtoList)
         );

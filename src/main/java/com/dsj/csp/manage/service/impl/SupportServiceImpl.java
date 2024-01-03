@@ -36,7 +36,7 @@ public class SupportServiceImpl implements SupportService {
 
     @Override
     public Page<SupportEntity> selectSupportList(SupportQueryRequest request) {
-        return supportMapper.selectPage(new Page<>(request.getPageNum(), request.getPageSize()),
+        return supportMapper.selectPage(new Page<>(request.getCurrent(), request.getSize()),
                 new LambdaQueryWrapper<SupportEntity>()
                         .eq(SupportEntity::getIsDelete, 0)
                         .like(null != request.getAbilityName(), SupportEntity::getAbilityName, MybatisUtil.likeBoth(request.getAbilityName()))

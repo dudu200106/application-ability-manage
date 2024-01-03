@@ -49,4 +49,15 @@ public class AppController {
         app.setAppStatus(StatusEnum.PENDING.getStatus());
         return Result.success(appService.save(app));
     }
+
+    @PostMapping("/update")
+    public Result<?> update(@RequestBody AppEntity app) {
+        app.setAppStatus(StatusEnum.PENDING.getStatus());
+        return Result.success(appService.updateById(app));
+    }
+
+    @PostMapping("/delete")
+    public Result<?> delete(@RequestParam Long  appId) {
+        return Result.success(appService.removeById(appId));
+    }
 }

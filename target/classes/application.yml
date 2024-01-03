@@ -1,7 +1,7 @@
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080
-  port: 18080
+  port: 8080
   servlet:
     # 应用的访问路径
     context-path: /common-support
@@ -16,6 +16,8 @@ spring:
     password: CSP_MANAGER_BD
     #指明使用druid 连接池
     type: com.alibaba.druid.pool.DruidDataSource
+
+
 
     #以下为新增
     druid:

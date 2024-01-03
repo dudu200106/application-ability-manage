@@ -39,7 +39,7 @@ public class AppController {
      * 分页查询
      */
     @GetMapping("/page")
-    public Result<?> page(Page page, AppEntity app) {
+    public Result<?> page(Page<AppEntity> page, AppEntity app) {
         return Result.success(appService.page(page, Wrappers.query(app)));
     }
 

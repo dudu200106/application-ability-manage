@@ -15,6 +15,7 @@ import com.dsj.csp.manage.service.SupportService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -162,9 +163,13 @@ public class SupportServiceImpl implements SupportService {
     public SupportCommunicationHistoryResponse getCommunicationBySupportId(Long supportId, Long lastCommunicationId) {
         SupportEntity support = selectSupportById(supportId);
         List<SupportCommunicationEntity> communicationList = selectCommunicationByIdOrderByCreateTimeDesc(support.getSupportId());
+        boolean refresh = false;
+        if (null != lastCommunicationId && !CollectionUtils.isEmpty(communicationList)) {
+            refresh = !communicationList.get(0).getCommunicationId().equals(lastCommunicationId);
+        }
         return new SupportCommunicationHistoryResponse()
                 .setAppId(support.getAppId())
-                .setRefresh(true)
+                .setRefresh(refresh)
                 .setCommunicationList(communicationList.stream()
                         .map(SupportServiceImpl::toCommunicationDto)
                         .toList()

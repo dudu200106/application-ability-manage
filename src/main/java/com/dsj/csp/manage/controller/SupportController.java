@@ -30,8 +30,8 @@ public class SupportController {
     private SupportService supportService;
 
     @Operation(summary = "获取工单列表")
-    @GetMapping("/list")
-    public Result<SupportQueryResponse> list(SupportQueryRequest request) {
+    @PostMapping("/list")
+    public Result<SupportQueryResponse> list(@RequestBody SupportQueryRequest request) {
         Page<SupportEntity> list = supportService.selectSupportList(request);
         List<SupportDto> dtoList = SupportConverter.toSupportDtoList(list.getRecords());
         return Result.success(
@@ -89,7 +89,7 @@ public class SupportController {
     @Operation(summary = "获取工单沟通记录")
     @GetMapping(value = "/{supportId}/communication")
     public Result<SupportCommunicationHistoryResponse> getCommunicationInfo(@Parameter(description = "工单ID") @PathVariable("supportId") Long supportId,
-                                                                            @Parameter(description = "最后一条记录ID")  @RequestParam(value = "lastCommunicationId", required = false) Long lastCommunicationId) {
+                                                                            @Parameter(description = "最后一条记录ID") @RequestParam(value = "lastCommunicationId", required = false) Long lastCommunicationId) {
         return Result.success(supportService.getCommunicationBySupportId(supportId, lastCommunicationId));
     }
 }

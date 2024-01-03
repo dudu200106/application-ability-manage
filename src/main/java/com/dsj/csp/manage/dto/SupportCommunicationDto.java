@@ -1,6 +1,5 @@
 package com.dsj.csp.manage.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -35,6 +34,5 @@ public class SupportCommunicationDto implements Serializable {
     private String content;
 
     @Schema(description = "创建时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 }

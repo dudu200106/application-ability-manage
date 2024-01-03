@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.dsj.csp.common.entity.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -65,7 +64,6 @@ public class SupportEntity extends BaseEntity {
     @TableField("STATUS")
     private Integer status;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField("FINISH_TIME")
     private Date finishTime;
 }

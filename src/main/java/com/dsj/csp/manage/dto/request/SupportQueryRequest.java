@@ -1,6 +1,5 @@
 package com.dsj.csp.manage.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -30,18 +29,14 @@ public class SupportQueryRequest implements Serializable {
     private Integer status;
 
     @Schema(description = "工单创建起始时间", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTimeBegin;
 
     @Schema(description = "工单创建结束时间", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTimeEnd;
 
     @Schema(description = "工单完成起始时间", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date finishTimeBegin;
 
     @Schema(description = "工单完成结束时间", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date finishTimeEnd;
 }

@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.csp.common.util.MybatisUtil;
 import com.dsj.csp.manage.dto.SupportCommunicationDto;
-import com.dsj.csp.manage.dto.request.SupportAcceptRequest;
-import com.dsj.csp.manage.dto.request.SupportQueryRequest;
-import com.dsj.csp.manage.dto.request.SupportReplyRequest;
-import com.dsj.csp.manage.dto.request.SupportUpdateRequest;
+import com.dsj.csp.manage.dto.request.*;
 import com.dsj.csp.manage.dto.response.SupportCommunicationHistoryResponse;
 import com.dsj.csp.manage.entity.SupportCommunicationEntity;
 import com.dsj.csp.manage.entity.SupportEntity;
@@ -69,6 +66,18 @@ public class SupportServiceImpl implements SupportService {
         supportEntity.setAcceptUserName(request.getAcceptUserName());
         supportEntity.setStatus(SupportStatus.PROCESSING.getCode());
         updateInternal(supportEntity);
+        return supportEntity;
+    }
+
+    @Override
+    public SupportEntity createSupport(SupportCreateRequest request) {
+        SupportEntity supportEntity = new SupportEntity();
+        BeanUtils.copyProperties(request, supportEntity);
+        supportEntity.setStatus(SupportStatus.SUBMITTED.getCode());
+        int successRow = supportMapper.insert(supportEntity);
+        if (successRow != 1) {
+            throw new RuntimeException("创建工单失败");
+        }
         return supportEntity;
     }
 

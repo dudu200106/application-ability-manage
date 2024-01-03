@@ -79,4 +79,17 @@ public class SupportController {
     public Result<SupportDto> supportFinish(@PathVariable Long supportId) {
         return Result.success(SupportConverter.toSupportDto(supportService.supportFinish(supportId)));
     }
+
+    @Operation(summary = "回复工单")
+    @PostMapping(value = "/{supportId}/reply")
+    public Result<SupportCommunicationHistoryResponse> reply(@Parameter(description = "工单ID") @PathVariable Long supportId, @RequestBody SupportReplyRequest request) {
+        return Result.success(supportService.replySupport(supportId, request));
+    }
+
+    @Operation(summary = "获取工单沟通记录")
+    @GetMapping(value = "/{supportId}/communication")
+    public Result<SupportCommunicationHistoryResponse> getCommunicationInfo(@Parameter(description = "工单ID") @PathVariable("supportId") Long supportId,
+                                                                            @Parameter(description = "最后一条记录ID")  @RequestParam(value = "lastCommunicationId", required = false) Long lastCommunicationId) {
+        return Result.success(supportService.getCommunicationBySupportId(supportId, lastCommunicationId));
+    }
 }

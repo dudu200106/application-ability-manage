@@ -1,10 +1,7 @@
 package com.dsj.csp.manage.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.dsj.csp.manage.dto.request.SupportAcceptRequest;
-import com.dsj.csp.manage.dto.request.SupportQueryRequest;
-import com.dsj.csp.manage.dto.request.SupportReplyRequest;
-import com.dsj.csp.manage.dto.request.SupportUpdateRequest;
+import com.dsj.csp.manage.dto.request.*;
 import com.dsj.csp.manage.dto.response.SupportCommunicationHistoryResponse;
 import com.dsj.csp.manage.entity.SupportEntity;
 
@@ -19,6 +16,8 @@ public interface SupportService {
     SupportEntity selectSupportById(Long supportId);
 
     SupportEntity acceptSupport(Long supportId, SupportAcceptRequest request);
+
+    SupportEntity createSupport(SupportCreateRequest request);
 
     SupportEntity updateSupport(Long supportId, SupportUpdateRequest request);
 

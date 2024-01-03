@@ -35,4 +35,8 @@ public class BaseEntity implements Serializable {
      */
     @TableField(value = "UPDATE_TIME", fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
+
+    public boolean isDeleted() {
+        return 1 == isDelete;
+    }
 }

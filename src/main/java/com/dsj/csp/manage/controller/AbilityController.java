@@ -1,6 +1,5 @@
 package com.dsj.csp.manage.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.Result;
@@ -75,6 +74,4 @@ public class AbilityController {
     public Result<?> page(Page page,AbilityEntity ability){
         return Result.success(abilityService.page(page, Wrappers.query(ability)));
     }
-
-
 }

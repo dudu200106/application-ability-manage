@@ -1,13 +1,8 @@
 package com.dsj.csp.manage.entity;
-
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * 能力表
@@ -55,13 +50,13 @@ public class AbilityEntity implements Serializable {
     /**
      * 创建时间
      */
-    @TableField(value = "CREATE_TIME")
+    @TableField(fill = FieldFill.INSERT,value = "CREATE_TIME")
     private Date createTime;
 
     /**
      * 更新时间
      */
-    @TableField(value = "UPDATE_TIME")
+    @TableField(fill = FieldFill.INSERT_UPDATE,value = "UPDATE_TIME")
     private Date updateTime;
 
     @TableField(exist = false)

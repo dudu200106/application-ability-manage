@@ -15,7 +15,7 @@ spring:
     default-property-inclusion: non_null
   datasource:
     driver-class-name: dm.jdbc.driver.DmDriver
-    url: jdbc:dm://106.227.91.135:5237?schema=ABILITY_MANAGE
+    url: jdbc:dm://106.227.91.135:5237?schema=CSP_MANAGER
     username: CSP_MANAGER
     password: CSP_MANAGER_BD
     #指明使用druid 连接池
@@ -36,6 +36,9 @@ spring:
       validation-query: select 1
   main:
     allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      location: D:/picture
 
 springdoc:
   api-docs:

@@ -143,7 +143,7 @@ public class UserEntity implements Serializable {
      * 账户是否可用（0可用(默认)  1已注销）
      */
     @TableField(value = "IS_DELETE")
-    private Long isDelete;
+    private Integer isDelete;
 
     /**
      * 创建时间
@@ -161,7 +161,7 @@ public class UserEntity implements Serializable {
      * 用户类型(0未实名游客 1企业用户 2政府用户)
      */
     @TableField(value = "USER_TYPE")
-    private long userType;
+    private Integer userType;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

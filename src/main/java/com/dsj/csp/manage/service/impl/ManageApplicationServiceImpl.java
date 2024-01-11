@@ -1,11 +1,10 @@
 package com.dsj.csp.manage.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.dsj.csp.manage.entity.CspApplication;
 import com.dsj.csp.manage.entity.ManageApplication;
-import com.dsj.csp.manage.mapper.CspApplicationMapper;
 import com.dsj.csp.manage.mapper.ManageApplicationMapper;
 import com.dsj.csp.manage.service.ManageApplicationService;
+import com.dsj.csp.manage.util.Sm4;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +29,26 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
     public int contAll() {
         return manageApplicationMapper.contAll();
     }
+
+    @Override
+    public List<ManageApplication> selectUserApp(String userId) {
+        return manageApplicationMapper.selectUserApp(userId);
+    }
+
+
+    @Override
+    public boolean updateSecret(Long appId) {
+        String appKey= Sm4.sm();
+        String appSecret =Sm4.sm();
+        return manageApplicationMapper.updateSecret(appId,appKey,appSecret);
+    }
+
+    @Override
+    public boolean upadataAppList(Long appId, String appName, String appSynopsis, String appIconpath) {
+        return manageApplicationMapper.upadataAppList(appId,appName,appSynopsis,appIconpath);
+    }
+
+
 }
 
 

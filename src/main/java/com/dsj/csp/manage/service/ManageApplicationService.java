@@ -1,7 +1,6 @@
 package com.dsj.csp.manage.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.dsj.csp.manage.entity.CspApplication;
 import com.dsj.csp.manage.entity.ManageApplication;
 
 import java.util.List;
@@ -15,4 +14,7 @@ public interface ManageApplicationService extends IService<ManageApplication> {
 
     List<ManageApplication> selectappID(Long appId , String appUserId );
     int contAll();
+    List<ManageApplication>selectUserApp(String userId );
+    boolean updateSecret(Long appId);
+    boolean upadataAppList(Long appId,String appName,String appSynopsis,String appIconpath);
 }

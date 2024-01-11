@@ -5,29 +5,30 @@
 <mapper namespace="com.dsj.csp.manage.mapper.ManageApplicationMapper">
 
     <resultMap id="BaseResultMap" type="com.dsj.csp.manage.entity.ManageApplication">
-            <id property="appId" column="APP_ID" jdbcType="BIGINT"/>
-            <result property="appName" column="APP_NAME" jdbcType="VARCHAR"/>
-            <result property="appSynopsis" column="APP_SYNOPSIS" jdbcType="VARCHAR"/>
-            <result property="appAbility" column="APP_ABILITY" jdbcType="VARCHAR"/>
-            <result property="appAgreement" column="APP_AGREEMENT" jdbcType="TINYINT"/>
-            <result property="appAuthentication" column="APP_AUTHENTICATION" jdbcType="TINYINT"/>
-            <result property="appKey" column="APP_KEY" jdbcType="VARCHAR"/>
-            <result property="appSecret" column="APP_SECRET" jdbcType="VARCHAR"/>
-            <result property="appStatus" column="APP_STATUS" jdbcType="TINYINT"/>
-            <result property="appIsdelete" column="APP_ISDELETE" jdbcType="TINYINT"/>
-            <result property="appCreatetime" column="APP_CREATETIME" jdbcType="TIMESTAMP"/>
-            <result property="appUpdatetime" column="APP_UPDATETIME" jdbcType="TIMESTAMP"/>
-            <result property="appRemarks" column="APP_REMARKS" jdbcType="VARCHAR"/>
-            <result property="appCreatename" column="APP_CREATENAME" jdbcType="VARCHAR"/>
-            <result property="appUpdatename" column="APP_UPDATENAME" jdbcType="VARCHAR"/>
-            <result property="appCode" column="APP_CODE" jdbcType="VARCHAR"/>
-            <result property="appExamine" column="APP_EXAMINE" jdbcType="TINYINT"/>
-            <result property="appIconpath" column="APP_ICONPATH" jdbcType="VARCHAR"/>
-            <result property="appUserId" column="APP_USER_ID" jdbcType="VARCHAR"/>
+        <id property="appId" column="APP_ID" jdbcType="BIGINT"/>
+        <result property="appName" column="APP_NAME" jdbcType="VARCHAR"/>
+        <result property="appSynopsis" column="APP_SYNOPSIS" jdbcType="VARCHAR"/>
+        <result property="appAbility" column="APP_ABILITY" jdbcType="VARCHAR"/>
+        <result property="appAgreement" column="APP_AGREEMENT" jdbcType="TINYINT"/>
+        <result property="appAuthentication" column="APP_AUTHENTICATION" jdbcType="TINYINT"/>
+        <result property="appKey" column="APP_KEY" jdbcType="VARCHAR"/>
+        <result property="appSecret" column="APP_SECRET" jdbcType="VARCHAR"/>
+        <result property="appStatus" column="APP_STATUS" jdbcType="TINYINT"/>
+        <result property="appIsdelete" column="APP_ISDELETE" jdbcType="TINYINT"/>
+        <result property="appCreatetime" column="APP_CREATETIME" jdbcType="TIMESTAMP"/>
+        <result property="appUpdatetime" column="APP_UPDATETIME" jdbcType="TIMESTAMP"/>
+        <result property="appRemarks" column="APP_REMARKS" jdbcType="VARCHAR"/>
+        <result property="appCreatename" column="APP_CREATENAME" jdbcType="VARCHAR"/>
+        <result property="appUpdatename" column="APP_UPDATENAME" jdbcType="VARCHAR"/>
+        <result property="appCode" column="APP_CODE" jdbcType="VARCHAR"/>
+        <result property="appExamine" column="APP_EXAMINE" jdbcType="TINYINT"/>
+        <result property="appIconpath" column="APP_ICONPATH" jdbcType="VARCHAR"/>
+        <result property="appUserId" column="APP_USER_ID" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        APP_ID,APP_NAME,APP_SYNOPSIS,
+        APP_ID
+        ,APP_NAME,APP_SYNOPSIS,
         APP_ABILITY,APP_AGREEMENT,APP_AUTHENTICATION,
         APP_KEY,APP_SECRET,APP_STATUS,
         APP_ISDELETE,APP_CREATETIME,APP_UPDATETIME,
@@ -37,12 +38,42 @@
     </sql>
 
     <select id="selectappID" resultType="com.dsj.csp.manage.entity.ManageApplication">
-        select * from MANAGE_APPLICATION
-        where APP_ID=#{appId} and APP_USER_ID=#{appUserId}
+        select *
+        from MANAGE_APPLICATION
+        where APP_ID = #{appId}
+          and APP_USER_ID = #{appUserId}
     </select>
 
 
     <select id="contAll" resultType="int">
-        select count(*) FROM MANAGE_APPLICATION  where APP_ISDELETE=0 and APP_STATUS=0
+        select count(*)
+        FROM MANAGE_APPLICATION
+        where APP_ISDELETE = 0
+          and APP_STATUS = 0
     </select>
+
+    <select id="selectUserApp" resultType="map">
+        SELECT*
+        from MANAGE_APPLICATION ma
+                 INNER join MANAGE_USER mu on
+            mu.user_id = ma.app_user_id
+        WHERE mu.user_id = #{userId};
+    </select>
+    <update id="updateSecret">
+        UPDATE MANAGE_APPLICATION ma
+        SET ma.APP_KEY = #{appKey},
+            ma.APP_SECRET=#{appSecret}
+
+        WHERE ma.APP_ID = #{appId}
+
+    </update>
+    <update id="upadataAppList">
+        UPDATE MANAGE_APPLICATION ma
+        SET ma.APP_NAME=#{appName},
+            ma.APP_SYNOPSIS=#{appSynopsis},
+            ma.APP_ICONPATH=#{appIconpath}
+
+        WHERE ma.APP_ID = #{appId}
+
+    </update>
 </mapper>

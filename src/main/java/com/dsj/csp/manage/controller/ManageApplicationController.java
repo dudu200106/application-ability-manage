@@ -5,11 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.common.enums.StatusEnum;
 import com.dsj.csp.manage.dto.PageQueryForm;
-import com.dsj.csp.manage.entity.CspApplication;
 import com.dsj.csp.manage.entity.ManageApplication;
-import com.dsj.csp.manage.service.CspApplicationService;
 import com.dsj.csp.manage.service.ManageApplicationService;
-import com.dsj.csp.manage.util.Sm4;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +21,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.dsj.csp.manage.util.RandomNumberGenerator.generateNumber;
-import static com.dsj.csp.manage.util.Sm4.sm;
 
 /**
  * @author Du Shun Chang
@@ -50,6 +46,7 @@ public class ManageApplicationController {
     public Result<List<ManageApplication>> list() {
         return Result.success(manageApplicationService.list());
     }
+
     /**
      * 分页查询
      */
@@ -59,12 +56,11 @@ public class ManageApplicationController {
     }
 
 
-
     /**
      * 新增应用
      */
     @PostMapping("/add")
-    public Result<?> add(@RequestPart("file") MultipartFile file, @RequestPart String appName, @RequestPart String appSynopsis) {
+    public Result<?> add(@RequestPart("file") MultipartFile file, @RequestParam String appName, @RequestParam String appSynopsis) {
         ManageApplication manageApplication = new ManageApplication();
         manageApplication.setAppName(appName);
         manageApplication.setAppSynopsis(appSynopsis);
@@ -83,13 +79,13 @@ public class ManageApplicationController {
             // 将文件保存到本地
             Files.write(path, bytes);
             manageApplication.setAppCode(generateNumber(8));//生成appid
-            manageApplication.setAppIconpath(String.valueOf(path));//应用名称
+            manageApplication.setAppIconpath(String.valueOf(path));//应用路径
 //            生成key
 //            状态
 
-            manageApplication.setAppStatus(StatusEnum.PENDING.getStatus());
+            manageApplication.setAppStatus(StatusEnum.NORMAL.getStatus());
 //            逻辑删除
-            manageApplication.setAppIsdelete(1);
+            manageApplication.setAppIsdelete(0);
             manageApplication.setAppCreatetime(new Date());
             manageApplication.setAppUpdatetime(new Date());
             return Result.success(manageApplicationService.save(manageApplication));
@@ -97,13 +93,6 @@ public class ManageApplicationController {
             e.printStackTrace();
             return Result.failed("上传失败");
         }
-    }
-
-
-    @PostMapping("/update")
-    public Result<?> update(@RequestBody ManageApplication app) {
-        app.setAppStatus(StatusEnum.PENDING.getStatus());
-        return Result.success(manageApplicationService.updateById(app));
     }
 
     @PostMapping("/delete")
@@ -114,16 +103,58 @@ public class ManageApplicationController {
     //查询appid和name
     @PostMapping("/selectappID")
     public Result selectappID(@RequestParam Long appId, @RequestParam String appUserId) {
-
         System.out.println(appId);
         System.out.println(appUserId);
-        return Result.success(manageApplicationService.selectappID(appId,appUserId));
+        return Result.success(manageApplicationService.selectappID(appId, appUserId));
     }
+
     //统计应用次数
     @GetMapping("/all")
     public Result countAll() {
         return Result.success(manageApplicationService.count());
     }
-//用户关联应用查询
+
+    //用户关联应用查询
+    @PostMapping("/selectUserApp")
+    public Result selectUserApp(@RequestParam String userId) {
+        return Result.success(manageApplicationService.selectUserApp(userId));
+    }
+
+    //审核通过后更新key和Secret
+    @PostMapping("/updateSecret")
+    public Result updateSecret(@RequestParam Long appId) {
+        return Result.success(manageApplicationService.updateSecret(appId));
+
+
+    }
+
+    //修改应用信息
+    @PostMapping("/upadataAppList")
+    public Result<?> upadataAppList(@RequestPart("file") MultipartFile file, @RequestParam Long appId, @RequestParam String appName, @RequestParam String appSynopsis) throws IOException {
+
+        System.out.println(appId);
+        // 获取文件名
+        String fileName = file.getOriginalFilename();
+        UUID uuid = UUID.randomUUID();
+        //获取文件名后缀
+        String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
+        // 获取文件的字节数组
+        //生成舞的义件名
+        String newFileName = uuid + "." + fileExtension;
+        byte[] bytes = file.getBytes();
+        // 构建文件路径
+        Path path = Paths.get("D:/picture/" + newFileName);
+        // 将文件保存到本地
+        Files.write(path, bytes);
+        String appIconpath = String.valueOf(path);
+        return Result.success(manageApplicationService.upadataAppList(appId, appName, appSynopsis, appIconpath));
+    }
+
+
+    @PostMapping("/upadataAppLists")
+    public Result<?> upadataAppLists(@RequestParam Long appId, @RequestParam String appName, @RequestParam String appSynopsis) {
+        System.out.println(appId);
+        return null;
+    }
 
 }

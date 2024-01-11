@@ -1,6 +1,5 @@
 package com.dsj.csp.manage.mapper;
 
-import com.dsj.csp.manage.entity.CspApplication;
 import com.dsj.csp.manage.entity.ManageApplication;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -16,6 +15,10 @@ public interface ManageApplicationMapper extends BaseMapper<ManageApplication> {
 
     List<ManageApplication> selectappID(Long appId , String appUserId );
     int contAll();
+    List<ManageApplication>selectUserApp(String userId );
+    boolean updateSecret(Long appId,String appKey,String appSecret);
+    boolean upadataAppList(Long appId,String appName,String appSynopsis,String appIconpath);
+
 }
 
 

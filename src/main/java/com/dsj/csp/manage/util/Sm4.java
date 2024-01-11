@@ -10,7 +10,7 @@ import cn.hutool.crypto.symmetric.SymmetricCrypto;
  * @Todo: 加密SM4算法
  */
 public class Sm4 {
-private  static String sm(){
+public static String sm(){
     SymmetricCrypto sm4 = SmUtil.sm4();
     String substring = SnowflakeIdGenerator.createId().substring(0,7);
     String acesKey = sm4.encryptHex(substring);
@@ -20,4 +20,7 @@ private  static String sm(){
     return acesKey;
 }
 
+    public static void main(String[] args) {
+        sm();
+    }
 }

@@ -4,13 +4,12 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.common.enums.StatusEnum;
-
 import com.dsj.csp.manage.dto.PageQueryForm;
-
 import com.dsj.csp.manage.entity.CspApplication;
+import com.dsj.csp.manage.entity.ManageApplication;
 import com.dsj.csp.manage.service.CspApplicationService;
-
-
+import com.dsj.csp.manage.service.ManageApplicationService;
+import com.dsj.csp.manage.util.Sm4;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +24,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.dsj.csp.manage.util.RandomNumberGenerator.generateNumber;
+import static com.dsj.csp.manage.util.Sm4.sm;
 
 /**
  * @author Du Shun Chang
@@ -33,29 +33,29 @@ import static com.dsj.csp.manage.util.RandomNumberGenerator.generateNumber;
  * @Todo:
  */
 @RestController
-@RequestMapping("/cspapplication")
-public class CspApplicationController {
+@RequestMapping("/magapplication")
+public class ManageApplicationController {
     @Autowired
-    private CspApplicationService cspApplicationService;
+    private ManageApplicationService manageApplicationService;
 
     /**
      * 分页查询
      */
     @PostMapping("/list")
-    public Result<?> pageAnother(@Valid @RequestBody PageQueryForm<CspApplication> pageQueryForm) {
-        return Result.success(cspApplicationService.page(pageQueryForm.toPage(), pageQueryForm.toQueryWrappers()));
+    public Result<?> pageAnother(@Valid @RequestBody PageQueryForm<ManageApplication> pageQueryForm) {
+        return Result.success(manageApplicationService.page(pageQueryForm.toPage(), pageQueryForm.toQueryWrappers()));
     }
 
     @PostMapping("/lists")
-    public Result<List<CspApplication>> list() {
-        return Result.success(cspApplicationService.list());
+    public Result<List<ManageApplication>> list() {
+        return Result.success(manageApplicationService.list());
     }
     /**
      * 分页查询
      */
     @PostMapping("/page")
-    public Result<?> page(Page<CspApplication> page, CspApplication app) {
-        return Result.success(cspApplicationService.page(page, Wrappers.query(app)));
+    public Result<?> page(Page<ManageApplication> page, ManageApplication app) {
+        return Result.success(manageApplicationService.page(page, Wrappers.query(app)));
     }
 
 
@@ -65,9 +65,9 @@ public class CspApplicationController {
      */
     @PostMapping("/add")
     public Result<?> add(@RequestPart("file") MultipartFile file, @RequestPart String appName, @RequestPart String appSynopsis) {
-        CspApplication cspApplication = new CspApplication();
-        cspApplication.setAppName(appName);
-        cspApplication.setAppSynopsis(appSynopsis);
+        ManageApplication manageApplication = new ManageApplication();
+        manageApplication.setAppName(appName);
+        manageApplication.setAppSynopsis(appSynopsis);
         try {
             // 获取文件名
             String fileName = file.getOriginalFilename();
@@ -82,15 +82,17 @@ public class CspApplicationController {
             Path path = Paths.get("D:/picture/" + newFileName);
             // 将文件保存到本地
             Files.write(path, bytes);
-            cspApplication.setAppCode(generateNumber(8));//生成appid
-            cspApplication.setAppIconpath(String.valueOf(path));//应用名称
+            manageApplication.setAppCode(generateNumber(8));//生成appid
+            manageApplication.setAppIconpath(String.valueOf(path));//应用名称
+//            生成key
 //            状态
-            cspApplication.setAppStatus(StatusEnum.PENDING.getStatus());
+
+            manageApplication.setAppStatus(StatusEnum.PENDING.getStatus());
 //            逻辑删除
-            cspApplication.setAppIsdelete(1);
-            cspApplication.setAppCreatetime(new Date());
-            cspApplication.setAppUpdatetime(new Date());
-            return Result.success(cspApplicationService.save(cspApplication));
+            manageApplication.setAppIsdelete(1);
+            manageApplication.setAppCreatetime(new Date());
+            manageApplication.setAppUpdatetime(new Date());
+            return Result.success(manageApplicationService.save(manageApplication));
         } catch (IOException e) {
             e.printStackTrace();
             return Result.failed("上传失败");
@@ -98,27 +100,30 @@ public class CspApplicationController {
     }
 
 
-//    @PostMapping("/update")
-//    public Result<?> update(@RequestBody CspApplication app) {
-//        app.setAppStatus(StatusEnum.PENDING.getStatus());
-//        return Result.success(cspApplicationService.updateById(app));
-//    }
+    @PostMapping("/update")
+    public Result<?> update(@RequestBody ManageApplication app) {
+        app.setAppStatus(StatusEnum.PENDING.getStatus());
+        return Result.success(manageApplicationService.updateById(app));
+    }
 
     @PostMapping("/delete")
     public Result<?> delete(@RequestParam Long appId) {
-        return Result.success(cspApplicationService.removeById(appId));
+        return Result.success(manageApplicationService.removeById(appId));
     }
 
     //查询appid和name
     @PostMapping("/selectappID")
-    public Result selectappID(@RequestParam Integer appId, @RequestParam String appUserId) {
+    public Result selectappID(@RequestParam Long appId, @RequestParam String appUserId) {
 
-        return Result.success(cspApplicationService.selectappID(appId,appUserId));
+        System.out.println(appId);
+        System.out.println(appUserId);
+        return Result.success(manageApplicationService.selectappID(appId,appUserId));
     }
     //统计应用次数
-
     @GetMapping("/all")
     public Result countAll() {
-        return Result.success(cspApplicationService.count());
+        return Result.success(manageApplicationService.count());
     }
+//用户关联应用查询
+
 }

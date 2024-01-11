@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dsj.csp.manage.mapper.CspApplicationMapper">
+<mapper namespace="com.dsj.csp.manage.mapper.ManageApplicationMapper">
 
-    <resultMap id="BaseResultMap" type="com.dsj.csp.manage.entity.CspApplication">
+    <resultMap id="BaseResultMap" type="com.dsj.csp.manage.entity.ManageApplication">
             <id property="appId" column="APP_ID" jdbcType="BIGINT"/>
             <result property="appName" column="APP_NAME" jdbcType="VARCHAR"/>
             <result property="appSynopsis" column="APP_SYNOPSIS" jdbcType="VARCHAR"/>
@@ -35,9 +35,14 @@
         APP_CODE,APP_EXAMINE,APP_ICONPATH,
         APP_USER_ID
     </sql>
-    <select id="selectappID" resultType="com.dsj.csp.manage.entity.CspApplication">
-select * from MANAGE_APPLICATION
-where appId=#{appId} and appUserId=#{appUserId}
 
+    <select id="selectappID" resultType="com.dsj.csp.manage.entity.ManageApplication">
+        select * from MANAGE_APPLICATION
+        where APP_ID=#{appId} and APP_USER_ID=#{appUserId}
+    </select>
+
+
+    <select id="contAll" resultType="int">
+        select count(*) FROM MANAGE_APPLICATION  where APP_ISDELETE=0 and APP_STATUS=0
     </select>
 </mapper>

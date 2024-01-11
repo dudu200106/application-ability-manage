@@ -59,3 +59,5 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   # configLocation: classpath:mybatis/mybatis-config.xml
+
+.

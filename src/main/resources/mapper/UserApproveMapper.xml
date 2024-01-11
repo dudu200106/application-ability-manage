@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dsj.csp.manage.mapper.UserMapper">
+<mapper namespace="com.dsj.csp.manage.mapper.UserApproveMapper">
 
-    <resultMap id="BaseResultMap" type="com.dsj.csp.manage.entity.UserEntity">
+    <resultMap id="BaseResultMap" type="com.dsj.csp.manage.entity.UserApproveEntity">
             <result property="userId" column="USER_ID" jdbcType="VARCHAR"/>
             <result property="userName" column="USER_NAME" jdbcType="VARCHAR"/>
             <result property="phone" column="PHONE" jdbcType="VARCHAR"/>
@@ -25,9 +25,10 @@
             <result property="govUser" column="GOV_USER" jdbcType="VARCHAR"/>
             <result property="govIdnum" column="GOV_IDNUM" jdbcType="VARCHAR"/>
             <result property="govPhone" column="GOV_PHONE" jdbcType="VARCHAR"/>
-            <result property="isDelete" column="IS_DELETE" jdbcType="BIGINT"/>
+            <result property="isDelete" column="IS_DELETE" jdbcType="TINYINT"/>
             <result property="createTime" column="CREATE_TIME" jdbcType="TIMESTAMP"/>
             <result property="note" column="NOTE" jdbcType="VARCHAR"/>
+            <result property="userType" column="USER_TYPE" jdbcType="TINYINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -38,7 +39,7 @@
         COMPANY_PHONE,GOV_NAME,GOV_NUM,
         GOV_REPRESENT,GOV_IMAGE,GOV_USER,
         GOV_IDNUM,GOV_PHONE,IS_DELETE,
-        CREATE_TIME,NOTE
+        CREATE_TIME,NOTE,USER_TYPE
     </sql>
 
 </mapper>

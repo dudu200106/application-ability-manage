@@ -1,8 +1,8 @@
 package com.dsj.csp.manage.controller;
 
 import com.dsj.common.dto.Result;
-import com.dsj.csp.manage.entity.UserEntity;
-import com.dsj.csp.manage.service.UserService;
+import com.dsj.csp.manage.entity.UserApproveEntity;
+import com.dsj.csp.manage.service.UserApproveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,11 +12,11 @@ import java.util.Date;
 @RequestMapping("/adminApprove")
 public class AdminApproveController {
     @Autowired
-    private UserService userService;
+    private UserApproveService userApproveService;
 
     @GetMapping("/search")
     public Result<?> search(int page,int size){
-        return Result.success(userService.search(page, size));
+        return Result.success(userApproveService.search(page, size));
     }
 
     /**
@@ -27,8 +27,8 @@ public class AdminApproveController {
      * @return
      */
     @GetMapping("/select")
-    public Result<?> select(UserEntity user, Date startTime, Date endTime){
-        return Result.success(userService.select(user, startTime, endTime));
+    public Result<?> select(UserApproveEntity user, Date startTime, Date endTime){
+        return Result.success(userApproveService.select(user, startTime, endTime));
     }
 
     /**
@@ -38,7 +38,7 @@ public class AdminApproveController {
      */
     @GetMapping("/find")
     public Result<?> find(String userId){
-        return Result.success(userService.find(userId));
+        return Result.success(userApproveService.find(userId));
     }
 
     /**
@@ -47,8 +47,8 @@ public class AdminApproveController {
      * @return
      */
     @PostMapping("/approveSuccess")
-    public Result<?> approveSuccess(@RequestBody UserEntity user){
-        userService.approveSuccess(user);
+    public Result<?> approveSuccess(@RequestBody UserApproveEntity user){
+        userApproveService.approveSuccess(user);
         return Result.success("审核通过");
     }
 
@@ -58,9 +58,10 @@ public class AdminApproveController {
      * @return
      */
     @PostMapping("/approveFail")
-    public Result<?> approveFail(@RequestBody UserEntity user){
-        userService.approveFail(user);
+    public Result<?> approveFail(@RequestBody UserApproveEntity user){
+        userApproveService.approveFail(user);
         return Result.success("审核未通过");
     }
+
 
 }

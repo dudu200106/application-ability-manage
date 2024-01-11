@@ -1,8 +1,8 @@
 package com.dsj.csp.manage.controller;
 
 import com.dsj.common.dto.Result;
-import com.dsj.csp.manage.entity.UserEntity;
-import com.dsj.csp.manage.service.UserService;
+import com.dsj.csp.manage.entity.UserApproveEntity;
+import com.dsj.csp.manage.service.UserApproveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,11 +11,11 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/user")
 public class UserController {
     @Autowired
-    private UserService userService;
+    private UserApproveService userApproveService;
 
     @GetMapping("/personCenter")
     public Result<?> personCenter(String userId){
-        return Result.success(userService.personCenter(userId));
+        return Result.success(userApproveService.personCenter(userId));
     }
     /**
      * 实名认证审核申请
@@ -23,8 +23,8 @@ public class UserController {
      * @return
      */
     @PostMapping("/approve")
-    public Result<?> approve(@RequestBody UserEntity user){
-        userService.approve(user);
+    public Result<?> approve(@RequestBody UserApproveEntity user){
+        userApproveService.approve(user);
         return Result.success("实名认证审核中");
     }
 
@@ -35,7 +35,7 @@ public class UserController {
      */
     @PostMapping("/upload")
     public Result<?> handleFileUpload(@RequestParam("file") MultipartFile file) {
-        String path= userService.handleFileUpload(file);
+        String path= userApproveService.handleFileUpload(file);
         return Result.success(path);
         // 图片保存，返回路径
         // 数据表中保存路径

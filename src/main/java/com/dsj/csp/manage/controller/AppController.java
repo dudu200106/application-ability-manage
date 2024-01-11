@@ -7,6 +7,7 @@ import com.dsj.csp.common.enums.StatusEnum;
 import com.dsj.csp.manage.entity.AppEntity;
 import com.dsj.csp.manage.dto.PageQueryForm;
 import com.dsj.csp.manage.service.AppService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,9 +39,18 @@ public class AppController {
      * 分页查询
      */
     @GetMapping("/page")
-    public Result<?> pageTest(Page page, AppEntity app) {
+    public Result<?> page(Page<AppEntity> page, AppEntity app) {
         return Result.success(appService.page(page, Wrappers.query(app)));
     }
+
+    /**
+     * 分页查询
+     */
+    @PostMapping ("/page-another")
+    public Result<?> pageAnother(@Valid @RequestBody PageQueryForm<AppEntity> pageQueryForm) {
+        return Result.success(appService.page(pageQueryForm.toPage(), pageQueryForm.toQueryWrappers()));
+    }
+
     /**
      * 新增应用
      */
@@ -48,5 +58,16 @@ public class AppController {
     public Result<?> add(@RequestBody AppEntity app) {
         app.setAppStatus(StatusEnum.PENDING.getStatus());
         return Result.success(appService.save(app));
+    }
+
+    @PostMapping("/update")
+    public Result<?> update(@RequestBody AppEntity app) {
+        app.setAppStatus(StatusEnum.PENDING.getStatus());
+        return Result.success(appService.updateById(app));
+    }
+
+    @PostMapping("/delete")
+    public Result<?> delete(@RequestParam Long appId) {
+        return Result.success(appService.removeById(appId));
     }
 }

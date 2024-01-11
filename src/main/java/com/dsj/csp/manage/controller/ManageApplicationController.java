@@ -151,10 +151,6 @@ public class ManageApplicationController {
     }
 
 
-    @PostMapping("/upadataAppLists")
-    public Result<?> upadataAppLists(@RequestParam Long appId, @RequestParam String appName, @RequestParam String appSynopsis) {
-        System.out.println(appId);
-        return null;
-    }
+
 
 }

@@ -1,7 +1,7 @@
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080
-  port: 18080
+  port: 28080
   servlet:
     # 应用的访问路径
     context-path: /common-support
@@ -48,7 +48,17 @@ springdoc:
 
 # mybatis-plus相关配置
 mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+
   # 对应为mybatis配置
+  #测除标记为1
+#  mybatis-plus.global-config.db-config.logic-delete-value=1
+#  #未删除标记为©
+#  mybatis-plus.global-config.db-config.logic-not-delete-value=0
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   # configLocation: classpath:mybatis/mybatis-config.xml

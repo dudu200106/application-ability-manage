@@ -1,64 +1,57 @@
 package com.dsj.csp.manage.entity;
+
 import com.baomidou.mybatisplus.annotation.*;
-import java.io.Serializable;
-import java.util.Date;
+import com.dsj.csp.common.entity.BaseEntity;
 import lombok.Data;
 
+import java.io.Serializable;
+import java.sql.Date;
+import java.sql.Timestamp;
+
 /**
- * 能力表
- * @TableName MANAGE_ABILITY
+ * @author Sean Du
+ * @version 1.0.0
+ * @date 2024/01/10
  */
-@TableName(value ="MANAGE_ABILITY")
 @Data
-public class AbilityEntity implements Serializable {
-    /**
-     * 能力id
-     */
+@TableName("MANAGE_ABILITY")
+public class AbilityEntity extends BaseEntity implements Serializable {
     @TableId(value = "ABILITY_ID", type = IdType.AUTO)
     private Long abilityId;
 
-    /**
-     * 能力类型
-     */
-    @TableField(value = "ABILITY_TYPE")
-    private Integer abilityType;
+    @TableField("ABILITY_TYPE")
+    private String abilityType;
 
-    /**
-     * 能力名称
-     */
-    @TableField(value = "ABILITY_NAME")
+    @TableField("ABILITY_NAME")
     private String abilityName;
 
-    /**
-     * 能力描述
-     */
-    @TableField(value = "ABILITY_DESC")
+    @TableField("USER_ID")
+    private Long userId;
+
+    @TableField("ABILITY_PROVIDER")
+    private String abilityProvider;
+
+    @TableField("ABILITY_DESC")
     private String abilityDesc;
 
-    /**
-     * 状态(0可用  1不可用)
-     */
-    @TableField(value = "STATUS")
+    @TableField("STATUS")
     private Integer status;
 
-    /**
-     * 逻辑删除(0未删除  1已删除)
-     */
-    @TableField(value = "IS_DELETE")
-    private Integer isDelete;
+    @TableField("NOTE")
+    private String note;
 
-    /**
-     * 创建时间
-     */
-    @TableField(fill = FieldFill.INSERT,value = "CREATE_TIME")
+//    @TableLogic
+//    private Integer isDelete;
+
+    @TableField(value = "CREATE_TIME")
     private Date createTime;
 
-    /**
-     * 更新时间
-     */
-    @TableField(fill = FieldFill.INSERT_UPDATE,value = "UPDATE_TIME")
+    @TableField(value = "UPDATE_TIME")
     private Date updateTime;
 
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
+    @TableField("RECALL_LIMIT")
+    private Integer recallLimit;
+
+    @TableField("QPS")
+    private Integer qps;
 }

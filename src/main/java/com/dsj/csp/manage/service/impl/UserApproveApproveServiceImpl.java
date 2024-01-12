@@ -118,11 +118,16 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
 
     @Override
     public void approveFail(UserApproveEntity user) {
-        LambdaQueryWrapper<UserApproveEntity> wrapper = new LambdaQueryWrapper();
-        wrapper.eq(Objects.nonNull(userApproveMapper.selectById(user).getStatus()), UserApproveEntity::getStatus,UserStatusEnum.WAIT.getStatus());
-        user.setStatus(UserStatusEnum.FAIL.getStatus());
-        user.setNote(user.getNote());
-        userApproveMapper.update(user,wrapper);
+        boolean updateResult = this.lambdaUpdate()
+                .eq(Objects.nonNull(user.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())
+                .eq(UserApproveEntity::getUserId, user.getUserId())
+                .set(UserApproveEntity::getStatus, UserStatusEnum.FAIL.getStatus())
+                .set(UserApproveEntity::getNote, user.getNote())
+                .update();
+        if(!updateResult){
+            log.error("更新失败");
+            throw new BusinessException("更新失败");
+        }
     }
 
     @Override

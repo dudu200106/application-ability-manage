@@ -73,6 +73,7 @@
             ma.APP_SYNOPSIS=#{appSynopsis},
             ma.APP_ICONPATH=#{appIconpath}
 
+
         WHERE ma.APP_ID = #{appId}
 
     </update>

@@ -59,7 +59,7 @@ public class ManageApplicationController {
     /**
      * 新增应用
      */
-    @PostMapping("/add")
+    @PutMapping("/add")
     public Result<?> add(@RequestPart("file") MultipartFile file, @RequestParam String appName, @RequestParam String appSynopsis) {
         ManageApplication manageApplication = new ManageApplication();
         manageApplication.setAppName(appName);
@@ -103,8 +103,6 @@ public class ManageApplicationController {
     //查询appid和name
     @PostMapping("/selectappID")
     public Result selectappID(@RequestParam Long appId, @RequestParam String appUserId) {
-        System.out.println(appId);
-        System.out.println(appUserId);
         return Result.success(manageApplicationService.selectappID(appId, appUserId));
     }
 
@@ -127,7 +125,6 @@ public class ManageApplicationController {
 
 
     }
-
     //修改应用信息
     @PostMapping("/upadataAppList")
     public Result<?> upadataAppList(@RequestPart("file") MultipartFile file, @RequestParam Long appId, @RequestParam String appName, @RequestParam String appSynopsis) throws IOException {

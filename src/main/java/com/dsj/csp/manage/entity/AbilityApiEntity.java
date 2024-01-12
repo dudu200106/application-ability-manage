@@ -49,9 +49,8 @@ public class AbilityApiEntity extends BaseEntity implements Serializable {
     @TableField("API_VERSION")
     private String apiVersion;
 
-    // mybatis plus 好像会与POJO里面的isDelete冲突
-//    @TableField("IS_DELETE")
-//    private Integer isDelete;
+    @TableLogic
+    private Integer isDelete;
 
     @TableField(value = "CREATE_TIME" )
     private Timestamp createTime;

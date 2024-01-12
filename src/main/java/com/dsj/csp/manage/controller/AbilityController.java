@@ -130,12 +130,14 @@ public class AbilityController {
         // 判断是否生成密钥
         String appSecretKey =  manageApplicationService.getById(appId).getAppSecret();
         if (flag==1 && (appSecretKey==null || "".equals(appSecretKey))){
+            String appKey = Sm4.sm();
             String secretKey = Sm4.sm();
             UpdateWrapper<ManageApplication> appUpdateWrapper = new UpdateWrapper<>();
             // 设置更新条件，这里假设要更新 id 为 1 的记录
             appUpdateWrapper.eq("APP_ID", appId);
             // 设置要更新的字段和值
             appUpdateWrapper.set("APP_SECRET", secretKey);
+            appUpdateWrapper.set("APP_KEY", appKey);
             manageApplicationService.update(appUpdateWrapper);
         }
         return Result.success("审核完成!");

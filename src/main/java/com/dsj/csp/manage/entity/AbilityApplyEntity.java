@@ -52,9 +52,8 @@ public class AbilityApplyEntity extends BaseEntity implements Serializable {
     @TableField("APPROVE_TIME")
     private Date approveTime;
 
-    // mybatis plus 好像会与POJO里面的isDelete冲突
-//    @TableField("IS_DELETE")
-//    private Integer isDelete;
+    @TableLogic
+    private Integer isDelete;
 
     @TableField(value = "CREATE_TIME")
     private Date createTime;

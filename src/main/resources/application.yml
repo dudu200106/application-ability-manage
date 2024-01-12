@@ -36,6 +36,9 @@ spring:
       validation-query: select 1
   main:
     allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      location: D:/picture
 
 springdoc:
   api-docs:

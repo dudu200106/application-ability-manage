@@ -49,8 +49,8 @@ public class AbilityApiEntity extends BaseEntity implements Serializable {
     @TableField("API_VERSION")
     private String apiVersion;
 
-    @TableLogic
-    private Integer isDelete;
+//    @TableLogic
+//    private Integer isDelete;
 
     @TableField(value = "CREATE_TIME" )
     private Timestamp createTime;

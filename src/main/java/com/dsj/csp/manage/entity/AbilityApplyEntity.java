@@ -52,8 +52,8 @@ public class AbilityApplyEntity extends BaseEntity implements Serializable {
     @TableField("APPROVE_TIME")
     private Date approveTime;
 
-    @TableLogic
-    private Integer isDelete;
+//    @TableLogic
+//    private Integer isDelete;
 
     @TableField(value = "CREATE_TIME")
     private Date createTime;

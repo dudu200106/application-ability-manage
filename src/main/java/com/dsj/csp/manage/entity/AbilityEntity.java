@@ -40,8 +40,8 @@ public class AbilityEntity extends BaseEntity implements Serializable {
     @TableField("NOTE")
     private String note;
 
-    @TableLogic
-    private Integer isDelete;
+//    @TableLogic
+//    private Integer isDelete;
 
     @TableField(value = "CREATE_TIME")
     private Date createTime;

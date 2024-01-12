@@ -127,9 +127,12 @@ public class AbilityController {
         updateWrapper.set("UPDATE_TIME", DateTime.now());
         abilityApplyMapper.update(updateWrapper);
 
-        // 判断是否生成密钥
+        // 判断是否生成APP Key 和 Secret Key
         String appSecretKey =  manageApplicationService.getById(appId).getAppSecret();
-        if (flag==1 && (appSecretKey==null || "".equals(appSecretKey))){
+        String appAppKey =  manageApplicationService.getById(appId).getAppSecret();
+        if (flag==1
+                && (appSecretKey==null || "".equals(appSecretKey))
+                && (appAppKey==null || "".equals(appAppKey))){
             String appKey = Sm4.sm();
             String secretKey = Sm4.sm();
             UpdateWrapper<ManageApplication> appUpdateWrapper = new UpdateWrapper<>();

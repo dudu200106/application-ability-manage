@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsj.csp.manage.mapper.AbilityApplyMapper">
+
+    <resultMap id="BaseResultMap" type="com.dsj.csp.manage.entity.AbilityApplyEntity">
+        <id column="ABILITY_APPLY_ID" property="abilityApplyId" />
+        <result column="ABILITY_ID" property="abilityId" />
+        <result column="APP_ID" property="appId" />
+        <result column="USER_ID" property="userId" />
+        <result column="ABILITY_NAME" property="abilityName" />
+        <result column="ABILITY_TYPE" property="abilityType" />
+        <result column="APP_NAME" property="appName" />
+        <result column="API_IDS" property="apiIds" />
+        <result column="COMPANY_NAME" property="companyName" />
+        <result column="GOV_NAME" property="govName" />
+        <result column="STATUS" property="status" />
+        <result column="EXPLAIN" property="explain" />
+        <result column="NOTE" property="note" />
+        <result column="APPROVE_TIME" property="approveTime" />
+        <result column="IS_DELETE" property="isDelete" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ABILITY_APPLY_ID, ABILITY_ID, APP_ID, USER_ID, ABILITY_NAME,
+        ABILITY_TYPE, APP_NAME, API_IDS, COMPANY_NAME, GOV_NAME, STATUS,
+        EXPLAIN, NOTE, APPROVE_TIME, IS_DELETE, CREATE_TIME, UPDATE_TIME
+    </sql>
+
+    <insert id="insertAbilityApply" parameterType="com.dsj.csp.manage.entity.AbilityApplyEntity">
+        INSERT INTO MANAGE_ABILITY_APPLY (<include refid="Base_Column_List" />)
+        VALUES (#{abilityApplyId}, #{abilityId}, #{appId}, #{userId}, #{abilityName},
+                #{abilityType}, #{appName}, #{apiIds}, #{companyName}, #{govName},
+                #{status}, #{explain}, #{note}, #{approveTime}, #{isDelete},
+                #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="updateAbilityApply" parameterType="com.dsj.csp.manage.entity.AbilityApplyEntity">
+        UPDATE MANAGE_ABILITY_APPLY
+        SET ABILITY_ID = #{abilityId},
+            APP_ID = #{appId},
+            USER_ID = #{userId},
+            ABILITY_NAME = #{abilityName},
+            ABILITY_TYPE = #{abilityType},
+            APP_NAME = #{appName},
+            API_IDS = #{apiIds},
+            COMPANY_NAME = #{companyName},
+            GOV_NAME = #{govName},
+            STATUS = #{status},
+            `EXPLAIN` = #{explain},
+            NOTE = #{note},
+            APPROVE_TIME = #{approveTime},
+            IS_DELETE = #{isDelete},
+            UPDATE_TIME = #{updateTime}
+        WHERE ABILITY_APPLY_ID = #{abilityApplyId}
+    </update>
+
+    <delete id="deleteAbilityApply" parameterType="com.dsj.csp.manage.entity.AbilityApplyEntity">
+        DELETE FROM MANAGE_ABILITY_APPLY
+        WHERE ABILITY_APPLY_ID = #{abilityApplyId}
+    </delete>
+
+    <select id="getAbilityApply" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM MANAGE_ABILITY_APPLY
+        WHERE ABILITY_APPLY_ID = #{abilityApplyId}
+    </select>
+
+</mapper>

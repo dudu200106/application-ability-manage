@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsj.csp.manage.mapper.AbilityMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="com.dsj.csp.manage.entity.AbilityEntity">
+        <id column="ABILITY_ID" property="abilityId" />
+        <result column="ABILITY_NAME" property="abilityName" />
+        <result column="ABILITY_TYPE" property="abilityType" />
+        <result column="USER_ID" property="userId" />
+        <result column="ABILITY_PROVIDER" property="abilityProvider" />
+        <result column="ABILITY_DESC" property="abilityDesc" />
+        <result column="STATUS" property="status" />
+        <result column="NOTE" property="note" />
+        <result column="IS_DELETE" property="isDelete" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="RECALL_LIMIT" property="recallLimit" />
+        <result column="QPS" property="qps" />
+
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ABILITY_ID, ABILITY_NAME, ABILITY_TYPE, USER_ID, ABILITY_PROVIDER,
+        ABILITY_DESC, STATUS, ILLUSTRATE, NOTE, APPROVE_TIME, IS_DELETE,
+        CREATE_TIME, UPDATE_TIME, RECALL_LIMIT, QPS
+    </sql>
+
+
+    <resultMap id="AbilityList" type="com.dsj.csp.manage.dto.AbilityListDTO">
+        <id column="ABILITY_ID" property="abilityId" />
+        <result column="ABILITY_TYPE" property="abilityType" />
+        <result column="ABILITY_NAME" property="abilityName" />
+        <result column="ability_provider" property="abilityProvider" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="RECALL_LIMIT" property="recallLimit" />
+        <result column="QPS" property="qps" />
+        <collection property="apiListDTOS" ofType="com.dsj.csp.manage.dto.ApiListDTO">
+            <result column="API_ID" property="apiId" />
+            <result column="API_NAME" property="apiName" />
+        </collection>
+    </resultMap>
+
+    <select id="getAbilityList" resultMap="AbilityList">
+        select
+            ab.ABILITY_ID, ab.ABILITY_TYPE, ab.ABILITY_NAME, ab.ability_provider, ab.CREATE_TIME,
+            ab.RECALL_LIMIT, ab.QPS, api.API_ID, api.API_NAME
+        from
+            MANAGE_ABILITY ab
+        left join
+            MANAGE_ABILITY_API api
+        on
+            ab.ABILITY_ID = api.ABILITY_ID
+    </select>
+
+    <insert id="insertAbility" parameterType="com.dsj.csp.manage.entity.AbilityEntity">
+        INSERT INTO MANAGE_ABILITY_APPLY (<include refid="Base_Column_List" />)
+        VALUES (#{abilityId}, #{abilityType}, #{abilityName}, #{userId}, #{abilityProvider},
+                #{abilityDesc}, #{status}, #{note}, #{isDelete}, #{createTime},
+                #{updateTime}, #{recallLimit}, #{qps})
+    </insert>
+
+<!--    <update id="updateAbility" parameterType="com.example.model.Ability">-->
+<!--        UPDATE MANAGE_ABILITY_APPLY-->
+<!--        SET ABILITY_NAME = #{abilityName},-->
+<!--            ABILITY_TYPE = #{abilityType},-->
+<!--            APP_NAME = #{appName},-->
+<!--            RECALL_LIMIT = #{recallLimit},-->
+<!--            QPS = #{qps},-->
+<!--            API_IDS = #{apiIds},-->
+<!--            COMPANY_NAME = #{companyName},-->
+<!--            GOV_NAME = #{govName},-->
+<!--            STATUS = #{status},-->
+<!--            ILLUSTRATE = #{illustrate},-->
+<!--            NOTE = #{note},-->
+<!--            APPROVE_TIME = #{approveTime},-->
+<!--            IS_DELETE = #{isDelete},-->
+<!--            UPDATE_TIME = #{updateTime}-->
+<!--        WHERE ABILITY_ID = #{abilityId} AND APP_ID = #{appId}-->
+<!--    </update>-->
+
+<!--    <delete id="deleteAbility" parameterType="com.example.model.Ability">-->
+<!--        DELETE FROM MANAGE_ABILITY_APPLY-->
+<!--        WHERE ABILITY_ID = #{abilityId} AND APP_ID = #{appId}-->
+<!--    </delete>-->
+
+<!--    <select id="getAbility" parameterType="java.util.Map" resultMap="AbilityResultMap">-->
+<!--        SELECT <include refid="Base_Column_List" />-->
+<!--        FROM MANAGE_ABILITY_APPLY-->
+<!--        WHERE ABILITY_ID = #{abilityId} AND APP_ID = #{appId}-->
+<!--    </select>-->
+
+</mapper>

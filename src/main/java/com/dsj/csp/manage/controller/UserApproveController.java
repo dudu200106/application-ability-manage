@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/user")
-public class UserController {
+public class UserApproveController {
     @Autowired
     private UserApproveService userApproveService;
 

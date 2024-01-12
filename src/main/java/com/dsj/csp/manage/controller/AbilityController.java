@@ -17,6 +17,9 @@ import com.dsj.csp.manage.service.AbilityService;
 
 import com.dsj.csp.manage.service.ManageApplicationService;
 import com.dsj.csp.manage.util.Sm4;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,94 +33,88 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/ability")
+@Tag(name = "能力管理", description = "用于管理能力的API")
 public class AbilityController {
 
     @Autowired
-    AbilityService abilityService;
-    @Autowired
-    ManageApplicationService manageApplicationService;
-    @Autowired
-    AbilityApplyMapper abilityApplyMapper;
-    @Autowired
-    AbilityApiMapper abilityApiMapper;
+    private AbilityService abilityService;
 
+    @Autowired
+    private ManageApplicationService manageApplicationService;
 
-    // 能力注册/新增
+    @Autowired
+    private AbilityApplyMapper abilityApplyMapper;
+
+    @Autowired
+    private AbilityApiMapper abilityApiMapper;
+
+    @Operation(summary = "添加能力", description = "注册一个新的能力")
     @PostMapping("/add")
-    public Result<?> loginNewAbility(@RequestBody AbilityLoginVO ability){
-
+    public Result<?> addAbility(@RequestBody AbilityLoginVO ability) {
         abilityService.saveAbility(ability);
-        return Result.success("能力注册申请成功! 等待审核……");
+        return Result.success("能力注册申请成功！等待审核...");
     }
 
-    // 查看能力详情
+    @Operation(summary = "获取能力详情", description = "获取特定能力的详细信息")
     @GetMapping("/ability-info")
-    public Result<?> getAbilityInfoById(@RequestParam Long abilityId){
-
+    public Result<?> getAbilityInfoById(
+            @Parameter(description = "能力ID") @RequestParam Long abilityId) {
         return Result.success(abilityService.getById(abilityId));
     }
 
-    // 查询能力列表
+    @Operation(summary = "查询能力列表", description = "获取能力列表")
     @GetMapping("/queryList")
-    public Result<?> queryAbilityList(){
-
+    public Result<?> queryAbilityList() {
         return Result.success(abilityService.getAllAbilityList());
-
     }
 
-    /**
-     * 分页查询
-     */
+    @Operation(summary = "分页查询能力", description = "分页查询能力列表")
     @PostMapping("/page")
-    public Result<?> page(Page<AbilityEntity> page, AbilityEntity app) {
+    public Result<?> page(@RequestBody Page<AbilityEntity> page, @RequestBody AbilityEntity app) {
         return Result.success(abilityService.page(page, Wrappers.query(app)));
     }
 
-
-    // 能力注册审核
+    @Operation(summary = "能力注册审核", description = "审核能力注册申请")
     @PostMapping("/audit")
-    public Result<?> auditLoginAbility(@RequestParam Long abilityId, @RequestParam Integer flag){
-        // 创建更新条件构造器
+    public Result<?> auditAbility(
+            @Parameter(description = "能力ID") @RequestParam Long abilityId,
+            @Parameter(description = "审核标志") @RequestParam Integer flag) {
         UpdateWrapper<AbilityEntity> updateWrapper = new UpdateWrapper<>();
-        // 设置更新条件，这里假设要更新 id 为 1 的记录
         updateWrapper.eq("ability_id", abilityId);
-        // 设置要更新的字段和值
         updateWrapper.set("STATUS", flag);
         updateWrapper.set("UPDATE_TIME", DateTime.now());
         abilityService.update(updateWrapper);
-
-        return Result.success("审核完成!");
+        return Result.success("审核完成！");
     }
 
-
-    // 查询接口信息
+    @Operation(summary = "查询接口信息", description = "查询特定接口的信息")
     @GetMapping("/query-apiInfo")
-    public Result<?> queryApiInfo(@RequestParam Long apiId){
+    public Result<?> queryApiInfo(@Parameter(description = "接口ID") @RequestParam Long apiId) {
         return Result.success(abilityApiMapper.selectById(apiId));
-
     }
 
-
-    // 能力使用申请
+    @Operation(summary = "能力使用申请", description = "申请使用能力")
     @PostMapping("/apply-use")
-    public Result<?> applyAbility(@RequestBody List<AbilityApplyVO> applyVOs){
-        // 建立申请
-        for (AbilityApplyVO applyVO : applyVOs){
+    public Result<?> applyAbility(@RequestBody List<AbilityApplyVO> applyVOs) {
+        for (AbilityApplyVO applyVO : applyVOs) {
             abilityService.saveAbilityApply(applyVO);
         }
-        return Result.success("能力申请完毕! 请等待耐心审核......");
+        return Result.success("能力申请完毕！请等待审核...");
     }
 
-    // 查看申请使用的能力详情
+    @Operation(summary = "查看申请使用的能力详情", description = "获取特定申请的能力详细信息")
     @GetMapping("/apply-info")
-    public Result<?> getApplyInfoById(@RequestParam Long abilityApplyId){
-
+    public Result<?> getApplyInfoById(@Parameter(
+            description = "能力申请ID") @RequestParam Long abilityApplyId) {
         return Result.success(abilityApplyMapper.selectById(abilityApplyId));
     }
 
-    // 能力申请审核
+    @Operation(summary = "能力申请审核", description = "审核能力使用申请")
     @PostMapping("/apply-audit")
-    public Result<?> auditAbilityApply(@RequestParam Long abilityApplyId, @RequestParam Long appId, @RequestParam Integer flag){
+    public Result<?> auditAbilityApply(
+            @Parameter(description = "能力申请ID") @RequestParam Long abilityApplyId,
+            @Parameter(description = "申请试用的应用ID") @RequestParam Long appId,
+            @Parameter(description = "审核标志")  @RequestParam Integer flag){
         // 创建更新条件构造器
         UpdateWrapper<AbilityApplyEntity> updateWrapper = new UpdateWrapper<>();
         // 设置更新条件，这里假设要更新 id 为 1 的记录
@@ -146,12 +143,11 @@ public class AbilityController {
         return Result.success("审核完成!");
     }
 
-    // 页查询自己应用下的能力
+    @Operation(summary = "分页查询申请能力", description = "分页查询申请能力列表")
     @PostMapping("/apply-page")
-    public Result<?> queryApplyPage(Page<AbilityApplyEntity> page, AbilityApplyEntity app) {
+    public Result<?> queryApplyPage(@RequestBody Page<AbilityApplyEntity> page,
+                                    @RequestBody AbilityApplyEntity app) {
         return Result.success(abilityApplyMapper.selectPage(page, Wrappers.query(app)));
     }
-
-
 
 }

@@ -56,27 +56,6 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         }
     }
 
-    @Override
-    public String handleFileUpload(MultipartFile file){
-        // 图片保存，返回路径
-        // 数据表中保存路径
-        try {
-            // 获取文件名
-            String fileName = file.getOriginalFilename();
-            // 获取文件的字节数组
-            byte[] bytes = file.getBytes();
-            // 构建文件路径
-            Path path = Paths.get("D:/picture/" + fileName);
-            // 将文件保存到本地
-            Files.write(path, bytes);
-            return path.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "上传图片失败";
-    }
-
-
     /**
      * 管理员实名认证审核模块
      */

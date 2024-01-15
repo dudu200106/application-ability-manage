@@ -32,17 +32,4 @@ public class UserApproveController {
         return Result.success("实名认证审核中");
     }
 
-    /**
-     * 上传图片接口
-     * @param file
-     * @return
-     */
-    @Operation(summary = "上传图片接口")
-    @PostMapping("/upload")
-    public Result<?> handleFileUpload(@RequestParam("file") MultipartFile file) {
-        String path= userApproveService.handleFileUpload(file);
-        return Result.success(path);
-        // 图片保存，返回路径
-        // 数据表中保存路径
-    }
 }

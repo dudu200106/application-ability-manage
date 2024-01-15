@@ -23,8 +23,6 @@ public interface UserApproveService extends IService<UserApproveEntity> {
     void updateUser(UserApproveEntity user);
     //用户申请实名认证
     void approve(UserApproveEntity user);
-    //上传图片
-    String handleFileUpload(MultipartFile file);
 
     /**
      * 管理员实名认证审核模块

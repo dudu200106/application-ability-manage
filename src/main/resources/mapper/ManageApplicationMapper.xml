@@ -57,7 +57,7 @@
         from MANAGE_APPLICATION ma
                  INNER join MANAGE_USER mu on
             mu.user_id = ma.app_user_id
-        WHERE mu.user_id = #{userId};
+        WHERE mu.user_id = #{appUserId};
     </select>
     <update id="updateSecret">
         UPDATE MANAGE_APPLICATION ma
@@ -72,8 +72,19 @@
         SET ma.APP_NAME=#{appName},
             ma.APP_SYNOPSIS=#{appSynopsis},
             ma.APP_ICONPATH=#{appIconpath},
-            ma.APP_USER_ID=#{appUserId}
+            ma.APP_USER_ID=#{appUserId},
+            ma.APP_UPDATETIME=now()
 
+
+        WHERE ma.APP_ID = #{appId}
+
+    </update>
+    <update id="updateIsdetele">
+        UPDATE MANAGE_APPLICATION ma
+        SET
+            ma.APP_USER_ID=#{appUserId},
+            ma.APP_ISDELETE=1,
+            ma.APP_UPDATETIME=NOW()
 
         WHERE ma.APP_ID = #{appId}
 

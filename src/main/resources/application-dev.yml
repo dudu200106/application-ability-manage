@@ -47,6 +47,7 @@ springdoc:
     path: /swagger-ui
 
 # mybatis-plus相关配置
+#配置逻辑删除
 mybatis-plus:
   global-config:
     db-config:

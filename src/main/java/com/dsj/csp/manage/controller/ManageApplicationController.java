@@ -1,11 +1,14 @@
 package com.dsj.csp.manage.controller;
 
+import com.alibaba.druid.util.StringUtils;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.common.enums.StatusEnum;
 import com.dsj.csp.manage.dto.PageQueryForm;
 import com.dsj.csp.manage.entity.ManageApplication;
+import com.dsj.csp.manage.entity.UserApproveEntity;
 import com.dsj.csp.manage.service.ManageApplicationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import static com.dsj.csp.manage.util.RandomNumberGenerator.generateNumber;
@@ -41,12 +45,12 @@ public class ManageApplicationController {
     /**
      * 分页查询
      */
-    @Operation(summary = "分页查询")
-    @PostMapping("/list")
-    public Result<?> pageAnother(@Valid @RequestBody PageQueryForm<ManageApplication> pageQueryForm) {
-        return Result.success(manageApplicationService.page(pageQueryForm.toPage(), pageQueryForm.toQueryWrappers()));
-    }
-    @Operation(summary = "查询所有")
+//    @Operation(summary = "分页查询")
+//    @PostMapping("/list")
+//    public Result<?> pageAnother(@Valid @RequestBody PageQueryForm<ManageApplication> pageQueryForm) {
+//        return Result.success(manageApplicationService.page(pageQueryForm.toPage(), pageQueryForm.toQueryWrappers()));
+//    }
+    @Operation(summary = "查询所有数据")
     @PostMapping("/lists")
     public Result<List<ManageApplication>> list() {
         return Result.success(manageApplicationService.list());
@@ -55,10 +59,22 @@ public class ManageApplicationController {
     /**
      * 分页查询
      */
-    @Operation(summary = "分页")
+    @Operation(summary = "分页查询")
     @PostMapping("/page")
-    public Result<?> page(Page<ManageApplication> page, ManageApplication app) {
-        return Result.success(manageApplicationService.page(page, Wrappers.query(app)));
+    public Result<?> page(Page<ManageApplication> page, String keyword, Date startTime, Date endTime) {
+        LambdaQueryWrapper<ManageApplication> wrapper = Wrappers.lambdaQuery();
+        System.out.println(keyword);
+        if (!StringUtils.isEmpty(keyword)) {
+            wrapper.or().like(ManageApplication::getAppName, keyword)
+                    .or().like(ManageApplication::getAppCode, keyword)
+                    .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), ManageApplication::getAppCreatetime, startTime, endTime)
+            ;
+
+        } else {
+            wrapper.between(Objects.nonNull(startTime) && Objects.nonNull(endTime), ManageApplication::getAppCreatetime, startTime, endTime);
+        }
+
+        return Result.success(manageApplicationService.page(page, wrapper));
     }
 
 
@@ -66,10 +82,12 @@ public class ManageApplicationController {
      * 新增应用
      */
     @Operation(summary = "添加应用")
-    @PutMapping("/add")
-    public Result<?> add(@RequestPart("file") MultipartFile file, @Parameter(description = "APP名字") @RequestParam String appName, @RequestParam String appSynopsis) {
+    @PostMapping("/add")
+    public Result<?> add(@RequestPart("file") MultipartFile file, @Parameter(description = "APP名字") @RequestParam String appName, @Parameter(description = "APP简介") @RequestParam String appSynopsis, @Parameter(description = "用户Id") @RequestParam String userId) {
         ManageApplication manageApplication = new ManageApplication();
         manageApplication.setAppName(appName);
+        userId = "56415082533";
+        manageApplication.setAppUserId(userId);
         manageApplication.setAppSynopsis(appSynopsis);
         try {
             // 获取文件名
@@ -100,6 +118,7 @@ public class ManageApplicationController {
             return Result.failed("上传失败");
         }
     }
+
     @Operation(summary = "删除应用")
     @PostMapping("/delete")
     public Result<?> delete(@RequestParam Long appId) {
@@ -156,8 +175,6 @@ public class ManageApplicationController {
         String appIconpath = String.valueOf(path);
         return Result.success(manageApplicationService.upadataAppList(appId, appName, appSynopsis, appIconpath));
     }
-
-
 
 
 }

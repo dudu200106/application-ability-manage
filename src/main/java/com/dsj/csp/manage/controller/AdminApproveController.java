@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 @Tag(name = "管理员实名认证审核")
 @RestController
+
+
 @RequestMapping("/adminApprove")
 public class AdminApproveController {
     @Autowired

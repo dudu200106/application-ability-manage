@@ -80,28 +80,28 @@ public class ManageApplicationController {
      */
     @Operation(summary = "添加应用")
     @PostMapping("/addInfo")
-    public Result<?> add(@RequestPart("file") MultipartFile file, @Parameter(description = "APP名字") @RequestParam String appName, @Parameter(description = "APP简介") @RequestParam String appSynopsis, @Parameter(description = "用户Id") @RequestParam String userId) {
+    public Result<?> add(@Parameter(description = "应用图片路径") @RequestParam String appIconpath , @Parameter(description = "应用名字") @RequestParam String appName, @Parameter(description = "应用简介") @RequestParam String appSynopsis, @Parameter(description = "用户Id") @RequestParam String userId) {
         ManageApplication manageApplication = new ManageApplication();
         manageApplication.setAppName(appName);
         userId = "56415082533";
         manageApplication.setAppUserId(userId);
         manageApplication.setAppSynopsis(appSynopsis);
-        try {
-            // 获取文件名
-            String fileName = file.getOriginalFilename();
-            UUID uuid = UUID.randomUUID();
-            //获取文件名后缀
-            String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
-            // 获取文件的字节数组
-            //生成舞的义件名
-            String newFileName = uuid + "." + fileExtension;
-            byte[] bytes = file.getBytes();
-            // 构建文件路径
-            Path path = Paths.get("D:/picture/" + newFileName);
-            // 将文件保存到本地
-            Files.write(path, bytes);
+//        try {
+//            // 获取文件名
+//            String fileName = file.getOriginalFilename();
+//            UUID uuid = UUID.randomUUID();
+//            //获取文件名后缀
+//            String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
+//            // 获取文件的字节数组
+//            //生成舞的义件名
+//            String newFileName = uuid + "." + fileExtension;
+//            byte[] bytes = file.getBytes();
+//            // 构建文件路径
+//            Path path = Paths.get("D:/picture/" + newFileName);
+//            // 将文件保存到本地
+//            Files.write(path, bytes);
             manageApplication.setAppCode(generateNumber(8));//生成appid
-            manageApplication.setAppIconpath(String.valueOf(path));//应用路径
+            manageApplication.setAppIconpath(appIconpath);//应用路径
 //            生成key
 //            状态
             manageApplication.setAppStatus(StatusEnum.NORMAL.getStatus());
@@ -110,10 +110,10 @@ public class ManageApplicationController {
             manageApplication.setAppCreatetime(new Date());
             manageApplication.setAppUpdatetime(new Date());
             return Result.success(manageApplicationService.save(manageApplication));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return Result.failed("上传失败");
-        }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return Result.failed("上传失败");
+//        }
     }
 
     @Operation(summary = "删除应用")
@@ -153,23 +153,23 @@ public class ManageApplicationController {
     //修改应用信息
     @Operation(summary = "修改应用")
     @PostMapping("/upadataAppInfo")
-    public Result<?> upadataAppList(@RequestPart("file") MultipartFile file, @Parameter(description = "id") @RequestParam Long appId, @Parameter(description = "名称") @RequestParam String appName, @Parameter(description = "简介") @RequestParam String appSynopsis, @Parameter(description = "用户id") @RequestParam String appUserId) throws IOException {
+    public Result<?> upadataAppList(@Parameter(description = "应用图片路径") @RequestParam String appIconpath , @Parameter(description = "id") @RequestParam Long appId, @Parameter(description = "名称") @RequestParam String appName, @Parameter(description = "简介") @RequestParam String appSynopsis, @Parameter(description = "用户id") @RequestParam String appUserId) throws IOException {
 
-        System.out.println(appId);
-        // 获取文件名
-        String fileName = file.getOriginalFilename();
-        UUID uuid = UUID.randomUUID();
-        //获取文件名后缀
-        String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
-        // 获取文件的字节数组
-        //生成舞的义件名
-        String newFileName = uuid + "." + fileExtension;
-        byte[] bytes = file.getBytes();
-        // 构建文件路径
-        Path path = Paths.get("D:/picture/" + newFileName);
-        // 将文件保存到本地
-        Files.write(path, bytes);
-        String appIconpath = String.valueOf(path);
+//        System.out.println(appId);
+//        // 获取文件名
+//        String fileName = file.getOriginalFilename();
+//        UUID uuid = UUID.randomUUID();
+//        //获取文件名后缀
+//        String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
+//        // 获取文件的字节数组
+//        //生成舞的义件名
+//        String newFileName = uuid + "." + fileExtension;
+//        byte[] bytes = file.getBytes();
+//        // 构建文件路径
+//        Path path = Paths.get("D:/picture/" + newFileName);
+//        // 将文件保存到本地
+//        Files.write(path, bytes);
+//        String appIconpath = String.valueOf(path);
         return Result.success(manageApplicationService.upadataAppList(appId, appName, appSynopsis, appIconpath, appUserId));
     }
 

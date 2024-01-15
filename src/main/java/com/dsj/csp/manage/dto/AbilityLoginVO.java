@@ -1,5 +1,7 @@
 package com.dsj.csp.manage.dto;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -18,6 +20,8 @@ import java.util.List;
 @Data
 @Schema(description = "能力注册VO")
 public class AbilityLoginVO implements Serializable {
+    @Schema(description = "能力注册id", requiredMode = Schema.RequiredMode.AUTO)
+    private Long abilityId;
 
     @Schema(description = "能力类型", requiredMode = Schema.RequiredMode.REQUIRED)
     private String abilityType;

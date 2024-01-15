@@ -4,6 +4,7 @@ import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.entity.UserApproveEntity;
 import com.dsj.csp.manage.service.UserApproveService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class UserApproveController {
 
     @Operation(summary = "个人中心‘待完善’")
     @GetMapping("/personCenter")
-    public Result<?> personCenter(String userId){
+    public Result<?> personCenter(@Parameter(description = "用户ID")String userId){
         return Result.success(userApproveService.personCenter(userId));
     }
     /**

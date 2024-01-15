@@ -30,9 +30,7 @@ public interface UserApproveService extends IService<UserApproveEntity> {
      * 管理员实名认证审核模块
      */
     //条件查询实名认证审核申请
-    List<UserApproveEntity> select(UserApproveEntity user, Date startTime, Date endTime);
-    //分页查询实名认证审核申请
-    Page<UserApproveEntity> search(int page, int size);
+    Page<UserApproveEntity> select(UserApproveEntity user, Date startTime, Date endTime,int page,int size);
     //查看实名认证申请详情
     UserApproveEntity find(String userId);
     //实名认证审核通过

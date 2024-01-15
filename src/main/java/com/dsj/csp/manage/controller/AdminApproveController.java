@@ -4,6 +4,7 @@ import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.entity.UserApproveEntity;
 import com.dsj.csp.manage.service.UserApproveService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,28 +12,25 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 @Tag(name = "管理员实名认证审核")
 @RestController
+
+
 @RequestMapping("/adminApprove")
 public class AdminApproveController {
     @Autowired
     private UserApproveService userApproveService;
 
-    @Operation(summary = "分页查询审核申请")
-    @GetMapping("/search")
-    public Result<?> search(int page,int size){
-        return Result.success(userApproveService.search(page, size));
-    }
 
     /**
-     * 按条件查询实名认证申请
+     * 按条件分页查询实名认证申请
      * @param user
      * @param startTime
      * @param endTime
      * @return
      */
-    @Operation(summary = "按条件查询实名认证申请")
+    @Operation(summary = "按条件分页查询实名认证申请")
     @GetMapping("/select")
-    public Result<?> select(UserApproveEntity user, Date startTime, Date endTime){
-        return Result.success(userApproveService.select(user, startTime, endTime));
+    public Result<?> select(UserApproveEntity user, @Parameter(description = "开始时间（可为空）") Date startTime, @Parameter(description = "最后时间（可为空）")Date endTime, int page, int size){
+        return Result.success(userApproveService.select(user, startTime, endTime,page,size));
     }
 
     /**
@@ -42,7 +40,7 @@ public class AdminApproveController {
      */
     @Operation(summary = "查看实名申请详情")
     @GetMapping("/find")
-    public Result<?> find(String userId){
+    public Result<?> find(@Parameter(description = "用户ID")String userId){
         return Result.success(userApproveService.find(userId));
     }
 

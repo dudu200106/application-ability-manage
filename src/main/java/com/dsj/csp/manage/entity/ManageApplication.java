@@ -4,110 +4,135 @@ import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
  * 应用列表
+ *
  * @TableName MANAGE_APPLICATION
  */
-@TableName(value ="MANAGE_APPLICATION")
+@TableName(value = "MANAGE_APPLICATION")
 @Data
 public class ManageApplication implements Serializable {
     /**
      * id
      */
     @TableId
+    @Schema(description = "appID数据库id")
     private Long appId;
 
     /**
      * 应用名称
      */
+
+    @Schema(description = "app名称")
     private String appName;
 
     /**
      * 应用简介
      */
+    @Schema(description = "简介")
     private String appSynopsis;
 
     /**
      * 能力绑定
      */
+    @Schema(description = "能力绑定")
     private String appAbility;
 
     /**
      * 同意服务协议 0否 1是
      */
+    @Schema(description = "同意服务协议")
     private Integer appAgreement;
 
     /**
      * 是否实名（认证） 0否 1是
      */
+    @Schema(description = "是否实名（认证）")
     private Integer appAuthentication;
 
     /**
      * 密钥
      */
+    @Schema(description = "秘钥")
     private String appKey;
 
     /**
      * 密令
      */
+    @Schema(description = "密令")
     private String appSecret;
 
     /**
      * 状态（认证） 0不启用 1启用
      */
+    @Schema(description = "状态（认证）")
     private Integer appStatus;
 
     /**
      * 是否删除 0正常 1删除
      */
+    @Schema(description = "是否删除")
     @TableLogic
     private Integer appIsdelete;
 
     /**
      * 创建时间
      */
+    @Schema(description = "创建时间")
+    @TableField(fill = FieldFill.INSERT)
     private Date appCreatetime;
 
     /**
      * 修改时间
      */
+    @Schema(description = "修改时间")
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date appUpdatetime;
 
     /**
      * 备注
      */
+    @Schema(description = " 备注")
     private String appRemarks;
 
     /**
      * 创建人
      */
+    @Schema(description = "创建人")
     private String appCreatename;
 
     /**
      * 修改人
      */
+    @Schema(description = "修改人")
     private String appUpdatename;
 
     /**
      * appid
      */
+    @Schema(description = "appid展示")
     private String appCode;
 
     /**
      * 审核状态 0正常 1删除 2锁定 3待审核 4未通过
      */
+    @Schema(description = "审核状态")
     private Integer appExamine;
 
     /**
      * 应用图标路径
      */
+    @Schema(description = "图表路径")
     private String appIconpath;
 
     /**
      * 用户id
      */
+    @Schema(description = "用户id")
     private String appUserId;
 
     @TableField(exist = false)
@@ -126,24 +151,24 @@ public class ManageApplication implements Serializable {
         }
         ManageApplication other = (ManageApplication) that;
         return (this.getAppId() == null ? other.getAppId() == null : this.getAppId().equals(other.getAppId()))
-            && (this.getAppName() == null ? other.getAppName() == null : this.getAppName().equals(other.getAppName()))
-            && (this.getAppSynopsis() == null ? other.getAppSynopsis() == null : this.getAppSynopsis().equals(other.getAppSynopsis()))
-            && (this.getAppAbility() == null ? other.getAppAbility() == null : this.getAppAbility().equals(other.getAppAbility()))
-            && (this.getAppAgreement() == null ? other.getAppAgreement() == null : this.getAppAgreement().equals(other.getAppAgreement()))
-            && (this.getAppAuthentication() == null ? other.getAppAuthentication() == null : this.getAppAuthentication().equals(other.getAppAuthentication()))
-            && (this.getAppKey() == null ? other.getAppKey() == null : this.getAppKey().equals(other.getAppKey()))
-            && (this.getAppSecret() == null ? other.getAppSecret() == null : this.getAppSecret().equals(other.getAppSecret()))
-            && (this.getAppStatus() == null ? other.getAppStatus() == null : this.getAppStatus().equals(other.getAppStatus()))
-            && (this.getAppIsdelete() == null ? other.getAppIsdelete() == null : this.getAppIsdelete().equals(other.getAppIsdelete()))
-            && (this.getAppCreatetime() == null ? other.getAppCreatetime() == null : this.getAppCreatetime().equals(other.getAppCreatetime()))
-            && (this.getAppUpdatetime() == null ? other.getAppUpdatetime() == null : this.getAppUpdatetime().equals(other.getAppUpdatetime()))
-            && (this.getAppRemarks() == null ? other.getAppRemarks() == null : this.getAppRemarks().equals(other.getAppRemarks()))
-            && (this.getAppCreatename() == null ? other.getAppCreatename() == null : this.getAppCreatename().equals(other.getAppCreatename()))
-            && (this.getAppUpdatename() == null ? other.getAppUpdatename() == null : this.getAppUpdatename().equals(other.getAppUpdatename()))
-            && (this.getAppCode() == null ? other.getAppCode() == null : this.getAppCode().equals(other.getAppCode()))
-            && (this.getAppExamine() == null ? other.getAppExamine() == null : this.getAppExamine().equals(other.getAppExamine()))
-            && (this.getAppIconpath() == null ? other.getAppIconpath() == null : this.getAppIconpath().equals(other.getAppIconpath()))
-            && (this.getAppUserId() == null ? other.getAppUserId() == null : this.getAppUserId().equals(other.getAppUserId()));
+                && (this.getAppName() == null ? other.getAppName() == null : this.getAppName().equals(other.getAppName()))
+                && (this.getAppSynopsis() == null ? other.getAppSynopsis() == null : this.getAppSynopsis().equals(other.getAppSynopsis()))
+                && (this.getAppAbility() == null ? other.getAppAbility() == null : this.getAppAbility().equals(other.getAppAbility()))
+                && (this.getAppAgreement() == null ? other.getAppAgreement() == null : this.getAppAgreement().equals(other.getAppAgreement()))
+                && (this.getAppAuthentication() == null ? other.getAppAuthentication() == null : this.getAppAuthentication().equals(other.getAppAuthentication()))
+                && (this.getAppKey() == null ? other.getAppKey() == null : this.getAppKey().equals(other.getAppKey()))
+                && (this.getAppSecret() == null ? other.getAppSecret() == null : this.getAppSecret().equals(other.getAppSecret()))
+                && (this.getAppStatus() == null ? other.getAppStatus() == null : this.getAppStatus().equals(other.getAppStatus()))
+                && (this.getAppIsdelete() == null ? other.getAppIsdelete() == null : this.getAppIsdelete().equals(other.getAppIsdelete()))
+                && (this.getAppCreatetime() == null ? other.getAppCreatetime() == null : this.getAppCreatetime().equals(other.getAppCreatetime()))
+                && (this.getAppUpdatetime() == null ? other.getAppUpdatetime() == null : this.getAppUpdatetime().equals(other.getAppUpdatetime()))
+                && (this.getAppRemarks() == null ? other.getAppRemarks() == null : this.getAppRemarks().equals(other.getAppRemarks()))
+                && (this.getAppCreatename() == null ? other.getAppCreatename() == null : this.getAppCreatename().equals(other.getAppCreatename()))
+                && (this.getAppUpdatename() == null ? other.getAppUpdatename() == null : this.getAppUpdatename().equals(other.getAppUpdatename()))
+                && (this.getAppCode() == null ? other.getAppCode() == null : this.getAppCode().equals(other.getAppCode()))
+                && (this.getAppExamine() == null ? other.getAppExamine() == null : this.getAppExamine().equals(other.getAppExamine()))
+                && (this.getAppIconpath() == null ? other.getAppIconpath() == null : this.getAppIconpath().equals(other.getAppIconpath()))
+                && (this.getAppUserId() == null ? other.getAppUserId() == null : this.getAppUserId().equals(other.getAppUserId()));
     }
 
     @Override

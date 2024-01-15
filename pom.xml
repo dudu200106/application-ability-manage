@@ -17,6 +17,7 @@
 
     <properties>
         <java.version>17</java.version>
+        <minio.version>8.4.1</minio.version>
     </properties>
 
     <dependencies>
@@ -61,9 +62,11 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
 
+        <!--MinIO JAVA SDK-->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>${minio.version}</version>
         </dependency>
 
     </dependencies>
@@ -96,5 +99,43 @@
         <plugins>
         </plugins>
     </build>
+
+
+    <profiles>
+        <profile>
+            <id>local</id>
+            <properties>
+                <profile.active>local</profile.active>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <profile.active>dev</profile.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <profile.active>test</profile.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>pre</id>
+            <properties>
+                <profile.active>pre</profile.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <profile.active>prod</profile.active>
+            </properties>
+        </profile>
+    </profiles>
+
 
 </project>

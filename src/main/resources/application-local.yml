@@ -62,3 +62,9 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   # configLocation: classpath:mybatis/mybatis-config.xml
+
+minio:
+  endpoint: http://106.227.92.123:9000 #MinIO服务所在地址
+  bucketName: manager #存储桶名称
+  accessKey: admin #访问的key
+  secretKey: dsjGS20240101 #访问的秘钥

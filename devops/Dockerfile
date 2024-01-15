@@ -5,7 +5,7 @@ ARG project_name
 ARG version
 ARG port
 
-COPY ../target/${project_name}-${version}.jar /application-ability-manage.jar
+COPY target/${project_name}-${version}.jar /application-ability-manage.jar
 
 WORKDIR /
 

@@ -1,15 +1,18 @@
 package com.dsj.csp.manage.controller;
 
 import cn.hutool.core.date.DateTime;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.dto.AbilityApplyVO;
 import com.dsj.csp.manage.dto.AbilityLoginVO;
+import com.dsj.csp.manage.dto.PageQueryForm;
 import com.dsj.csp.manage.entity.AbilityApplyEntity;
 import com.dsj.csp.manage.entity.AbilityEntity;
 
+import com.dsj.csp.manage.entity.AppEntity;
 import com.dsj.csp.manage.entity.ManageApplication;
 import com.dsj.csp.manage.mapper.AbilityApiMapper;
 import com.dsj.csp.manage.mapper.AbilityApplyMapper;
@@ -20,6 +23,7 @@ import com.dsj.csp.manage.util.Sm4;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,7 +52,7 @@ public class AbilityController {
     @Autowired
     private AbilityApiMapper abilityApiMapper;
 
-    @Operation(summary = "添加能力", description = "注册一个新的能力")
+    @Operation(summary = "能力注册", description = "注册一个新的能力")
     @PostMapping("/add")
     public Result<?> addAbility(@RequestBody AbilityLoginVO ability) {
         abilityService.saveAbility(ability);
@@ -62,16 +66,17 @@ public class AbilityController {
         return Result.success(abilityService.getById(abilityId));
     }
 
-    @Operation(summary = "查询能力列表", description = "获取能力列表")
+    @Operation(summary = "查询全部能力列表", description = "获取能力列表")
     @GetMapping("/queryList")
     public Result<?> queryAbilityList() {
         return Result.success(abilityService.getAllAbilityList());
     }
 
-    @Operation(summary = "分页查询能力", description = "分页查询能力列表")
-    @PostMapping("/page")
-    public Result<?> page(@RequestBody Page<AbilityEntity> page, @RequestBody AbilityEntity app) {
-        return Result.success(abilityService.page(page, Wrappers.query(app)));
+    @Operation(summary = "分页查询注册能力列表", description = "分页查询注册能力列表")
+    @PostMapping ("/page-login")
+    public Result<?> pageAnother(
+            @Valid @RequestBody PageQueryForm<AbilityEntity> pageQueryForm) {
+        return Result.success(abilityService.page(pageQueryForm.toPage(), pageQueryForm.toQueryWrappers()));
     }
 
     @Operation(summary = "能力注册审核", description = "审核能力注册申请")
@@ -143,11 +148,10 @@ public class AbilityController {
         return Result.success("审核完成!");
     }
 
-    @Operation(summary = "分页查询申请能力", description = "分页查询申请能力列表")
+    @Operation(summary = "分页查询申请能力列表", description = "分页查询申请能力列表")
     @PostMapping("/apply-page")
-    public Result<?> queryApplyPage(@RequestBody Page<AbilityApplyEntity> page,
-                                    @RequestBody AbilityApplyEntity app) {
-        return Result.success(abilityApplyMapper.selectPage(page, Wrappers.query(app)));
+    public Result<?> queryApplyPage(@RequestBody PageQueryForm<AbilityApplyEntity> applyQuery ) {
+        return Result.success(abilityApplyMapper.selectPage(applyQuery.toPage(), applyQuery.toQueryWrappers()));
     }
 
 }

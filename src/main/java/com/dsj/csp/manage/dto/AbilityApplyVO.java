@@ -16,16 +16,16 @@ import java.io.Serializable;
 @Schema(description = "能力申请VO")
 public class AbilityApplyVO implements Serializable {
 
-    @Schema(description = "能力ID")
+    @Schema(description = "能力ID", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long abilityId;
 
-    @Schema(description = "应用ID")
+    @Schema(description = "应用ID", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long appId;
 
     @Schema(description = "用户ID")
     private Long userId;
 
-    @Schema(description = "能力名称")
+    @Schema(description = "能力名称", requiredMode = Schema.RequiredMode.REQUIRED)
     private String abilityName;
 
     @Schema(description = "能力类型")
@@ -34,7 +34,7 @@ public class AbilityApplyVO implements Serializable {
     @Schema(description = "应用名称")
     private String appName;
 
-    @Schema(description = "申请使用的接口列表")
+    @Schema(description = "申请使用的接口列表", requiredMode = Schema.RequiredMode.REQUIRED)
     private String apiIds;
 
     @Schema(description = "公司名称")

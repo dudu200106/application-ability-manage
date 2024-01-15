@@ -1,8 +1,6 @@
 package com.dsj.csp.manage.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dsj.common.dto.BusinessException;
@@ -13,14 +11,7 @@ import com.dsj.csp.manage.service.UserApproveService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -55,26 +46,6 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
             user.setCreateTime(new Date());
             userApproveMapper.updateById(user);
         }
-    }
-
-    @Override
-    public String handleFileUpload(MultipartFile file) {
-        // 图片保存，返回路径
-        // 数据表中保存路径
-        try {
-            // 获取文件名
-            String fileName = file.getOriginalFilename();
-            // 获取文件的字节数组
-            byte[] bytes = file.getBytes();
-            // 构建文件路径
-            Path path = Paths.get("D:/picture/" + fileName);
-            // 将文件保存到本地
-            Files.write(path, bytes);
-            return path.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "上传图片失败";
     }
 
 

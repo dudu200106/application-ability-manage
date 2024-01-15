@@ -1,5 +1,7 @@
 package com.dsj.csp.manage.dto;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -18,11 +20,13 @@ import java.util.List;
 @Data
 @Schema(description = "能力注册VO")
 public class AbilityLoginVO implements Serializable {
+    @Schema(description = "能力注册id", requiredMode = Schema.RequiredMode.AUTO)
+    private Long abilityId;
 
-    @Schema(description = "能力类型")
+    @Schema(description = "能力类型", requiredMode = Schema.RequiredMode.REQUIRED)
     private String abilityType;
 
-    @Schema(description = "能力名称")
+    @Schema(description = "能力名称", requiredMode = Schema.RequiredMode.REQUIRED)
     private String abilityName;
 
     @Schema(description = "用户ID")
@@ -34,19 +38,19 @@ public class AbilityLoginVO implements Serializable {
     @Schema(description = "能力描述")
     private String abilityDesc;
 
-    @Schema(description = "状态")
+    @Schema(description = "状态", requiredMode = Schema.RequiredMode.AUTO)
     private Integer status;
 
     @Schema(description = "备注")
     private String note;
 
-    @Schema(description = "是否删除")
+    @Schema(description = "是否删除", requiredMode = Schema.RequiredMode.AUTO)
     private Integer isDelete;
 
-    @Schema(description = "创建时间")
+    @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.AUTO)
     private Date createTime;
 
-    @Schema(description = "更新时间")
+    @Schema(description = "更新时间", requiredMode = Schema.RequiredMode.AUTO)
     private Date updateTime;
 
     @Schema(description = "调用数量限制")

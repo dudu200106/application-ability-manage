@@ -61,19 +61,16 @@ public class ManageApplicationController {
      */
     @Operation(summary = "分页查询")
     @PostMapping("/page")
-    public Result<?> page(Page<ManageApplication> page, String keyword, Date startTime, Date endTime) {
+    public Result<?> page(Page<ManageApplication> page,  @Parameter(description = "查询关键字 Id或名称")String keyword, @Parameter(description = "开始时间") Date startTime, @Parameter(description = "结束时间") Date endTime) {
         LambdaQueryWrapper<ManageApplication> wrapper = Wrappers.lambdaQuery();
         System.out.println(keyword);
         if (!StringUtils.isEmpty(keyword)) {
             wrapper.or().like(ManageApplication::getAppName, keyword)
                     .or().like(ManageApplication::getAppCode, keyword)
-                    .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), ManageApplication::getAppCreatetime, startTime, endTime)
-            ;
-
+                    .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), ManageApplication::getAppCreatetime, startTime, endTime);
         } else {
             wrapper.between(Objects.nonNull(startTime) && Objects.nonNull(endTime), ManageApplication::getAppCreatetime, startTime, endTime);
         }
-
         return Result.success(manageApplicationService.page(page, wrapper));
     }
 
@@ -121,7 +118,7 @@ public class ManageApplicationController {
 
     @Operation(summary = "删除应用")
     @PostMapping("/delete")
-    public Result<?> delete(@RequestParam Long appId) {
+    public Result<?> delete( @Parameter(description = "应用id")@RequestParam Long appId,@RequestParam String appUserId) {
         return Result.success(manageApplicationService.removeById(appId));
     }
 
@@ -142,8 +139,8 @@ public class ManageApplicationController {
     //用户关联应用查询
     @Operation(summary = "用户下的应用")
     @PostMapping("/selectUserApp")
-    public Result selectUserApp(@RequestParam String userId) {
-        return Result.success(manageApplicationService.selectUserApp(userId));
+    public Result selectUserApp(@RequestParam String appUserId) {
+        return Result.success(manageApplicationService.selectUserApp(appUserId));
     }
 
     //审核通过后更新key和Secret
@@ -156,7 +153,7 @@ public class ManageApplicationController {
     //修改应用信息
     @Operation(summary = "修改应用")
     @PostMapping("/upadataAppList")
-    public Result<?> upadataAppList(@RequestPart("file") MultipartFile file, @RequestParam Long appId, @RequestParam String appName, @RequestParam String appSynopsis) throws IOException {
+    public Result<?> upadataAppList(@RequestPart("file") MultipartFile file, @Parameter(description = "id") @RequestParam Long appId,  @Parameter(description = "名称")@RequestParam String appName,  @Parameter(description = "简介")@RequestParam String appSynopsis,@Parameter(description = "用户id")@RequestParam String appUserId ) throws IOException {
 
         System.out.println(appId);
         // 获取文件名
@@ -173,7 +170,7 @@ public class ManageApplicationController {
         // 将文件保存到本地
         Files.write(path, bytes);
         String appIconpath = String.valueOf(path);
-        return Result.success(manageApplicationService.upadataAppList(appId, appName, appSynopsis, appIconpath));
+        return Result.success(manageApplicationService.upadataAppList(appId, appName, appSynopsis, appIconpath,appUserId));
     }
 
 

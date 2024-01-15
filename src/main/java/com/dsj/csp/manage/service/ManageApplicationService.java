@@ -14,7 +14,7 @@ public interface ManageApplicationService extends IService<ManageApplication> {
 
     List<ManageApplication> selectappID(Long appId , String appUserId );
     int contAll();
-    List<ManageApplication>selectUserApp(String userId );
+    List<ManageApplication>selectUserApp(String appUserId );
     boolean updateSecret(Long appId);
-    boolean upadataAppList(Long appId,String appName,String appSynopsis,String appIconpath);
+    boolean upadataAppList(Long appId,String appName,String appSynopsis,String appIconpath,String appUserId);
 }

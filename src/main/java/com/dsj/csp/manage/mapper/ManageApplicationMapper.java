@@ -17,7 +17,7 @@ public interface ManageApplicationMapper extends BaseMapper<ManageApplication> {
     int contAll();
     List<ManageApplication>selectUserApp(String userId );
     boolean updateSecret(Long appId,String appKey,String appSecret);
-    boolean upadataAppList(Long appId,String appName,String appSynopsis,String appIconpath);
+    boolean upadataAppList(Long appId,String appName,String appSynopsis,String appIconpath,String appUserId);
 
 }
 

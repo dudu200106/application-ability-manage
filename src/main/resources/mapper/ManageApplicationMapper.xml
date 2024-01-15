@@ -71,7 +71,8 @@
         UPDATE MANAGE_APPLICATION ma
         SET ma.APP_NAME=#{appName},
             ma.APP_SYNOPSIS=#{appSynopsis},
-            ma.APP_ICONPATH=#{appIconpath}
+            ma.APP_ICONPATH=#{appIconpath},
+            ma.APP_USER_ID=#{appUserId}
 
 
         WHERE ma.APP_ID = #{appId}

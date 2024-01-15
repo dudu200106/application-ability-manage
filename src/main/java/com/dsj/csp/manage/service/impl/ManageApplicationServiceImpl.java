@@ -31,8 +31,8 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
     }
 
     @Override
-    public List<ManageApplication> selectUserApp(String userId) {
-        return manageApplicationMapper.selectUserApp(userId);
+    public List<ManageApplication> selectUserApp(String appUserId) {
+        return manageApplicationMapper.selectUserApp(appUserId);
     }
 
 
@@ -44,8 +44,8 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
     }
 
     @Override
-    public boolean upadataAppList(Long appId, String appName, String appSynopsis, String appIconpath) {
-        return manageApplicationMapper.upadataAppList(appId,appName,appSynopsis,appIconpath);
+    public boolean upadataAppList(Long appId, String appName, String appSynopsis, String appIconpath ,String appUserId) {
+        return manageApplicationMapper.upadataAppList(appId,appName,appSynopsis,appIconpath,appUserId);
     }
 
 

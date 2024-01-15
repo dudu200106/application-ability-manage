@@ -60,7 +60,7 @@ public class ManageApplicationController {
      * 分页查询
      */
     @Operation(summary = "分页查询")
-    @PostMapping("/page")
+    @PostMapping("/selectPage")
     public Result<?> page(Page<ManageApplication> page, @Parameter(description = "查询关键字 Id或名称") String keyword, @Parameter(description = "开始时间") Date startTime, @Parameter(description = "结束时间") Date endTime) {
         LambdaQueryWrapper<ManageApplication> wrapper = Wrappers.lambdaQuery();
         System.out.println(keyword);
@@ -79,7 +79,7 @@ public class ManageApplicationController {
      * 新增应用
      */
     @Operation(summary = "添加应用")
-    @PostMapping("/add")
+    @PostMapping("/addInfo")
     public Result<?> add(@RequestPart("file") MultipartFile file, @Parameter(description = "APP名字") @RequestParam String appName, @Parameter(description = "APP简介") @RequestParam String appSynopsis, @Parameter(description = "用户Id") @RequestParam String userId) {
         ManageApplication manageApplication = new ManageApplication();
         manageApplication.setAppName(appName);
@@ -131,7 +131,7 @@ public class ManageApplicationController {
 
     //统计应用次数
     @Operation(summary = "统计应用")
-    @GetMapping("/all")
+    @GetMapping("/allTotal")
     public Result countAll() {
         return Result.success(manageApplicationService.count());
     }
@@ -152,7 +152,7 @@ public class ManageApplicationController {
 //    }
     //修改应用信息
     @Operation(summary = "修改应用")
-    @PostMapping("/upadataAppList")
+    @PostMapping("/upadataAppInfo")
     public Result<?> upadataAppList(@RequestPart("file") MultipartFile file, @Parameter(description = "id") @RequestParam Long appId, @Parameter(description = "名称") @RequestParam String appName, @Parameter(description = "简介") @RequestParam String appSynopsis, @Parameter(description = "用户id") @RequestParam String appUserId) throws IOException {
 
         System.out.println(appId);

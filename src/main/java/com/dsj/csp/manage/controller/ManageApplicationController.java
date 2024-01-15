@@ -83,7 +83,7 @@ public class ManageApplicationController {
     public Result<?> add(@Parameter(description = "应用图片路径") @RequestParam String appIconpath , @Parameter(description = "应用名字") @RequestParam String appName, @Parameter(description = "应用简介") @RequestParam String appSynopsis, @Parameter(description = "用户Id") @RequestParam String userId) {
         ManageApplication manageApplication = new ManageApplication();
         manageApplication.setAppName(appName);
-        userId = "56415082533";
+//        userId = "56415082533";
         manageApplication.setAppUserId(userId);
         manageApplication.setAppSynopsis(appSynopsis);
 //        try {

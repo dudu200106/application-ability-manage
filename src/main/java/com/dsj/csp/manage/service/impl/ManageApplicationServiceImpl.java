@@ -48,6 +48,11 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
         return manageApplicationMapper.upadataAppList(appId,appName,appSynopsis,appIconpath,appUserId);
     }
 
+    @Override
+    public boolean updateIsdetele(Long appId, String appUserId) {
+        return manageApplicationMapper.updateIsdetele(appId,appUserId);
+    }
+
 
 }
 

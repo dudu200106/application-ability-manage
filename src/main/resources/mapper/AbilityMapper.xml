@@ -62,34 +62,4 @@
                 #{updateTime}, #{recallLimit}, #{qps})
     </insert>
 
-<!--    <update id="updateAbility" parameterType="com.example.model.Ability">-->
-<!--        UPDATE MANAGE_ABILITY_APPLY-->
-<!--        SET ABILITY_NAME = #{abilityName},-->
-<!--            ABILITY_TYPE = #{abilityType},-->
-<!--            APP_NAME = #{appName},-->
-<!--            RECALL_LIMIT = #{recallLimit},-->
-<!--            QPS = #{qps},-->
-<!--            API_IDS = #{apiIds},-->
-<!--            COMPANY_NAME = #{companyName},-->
-<!--            GOV_NAME = #{govName},-->
-<!--            STATUS = #{status},-->
-<!--            ILLUSTRATE = #{illustrate},-->
-<!--            NOTE = #{note},-->
-<!--            APPROVE_TIME = #{approveTime},-->
-<!--            IS_DELETE = #{isDelete},-->
-<!--            UPDATE_TIME = #{updateTime}-->
-<!--        WHERE ABILITY_ID = #{abilityId} AND APP_ID = #{appId}-->
-<!--    </update>-->
-
-<!--    <delete id="deleteAbility" parameterType="com.example.model.Ability">-->
-<!--        DELETE FROM MANAGE_ABILITY_APPLY-->
-<!--        WHERE ABILITY_ID = #{abilityId} AND APP_ID = #{appId}-->
-<!--    </delete>-->
-
-<!--    <select id="getAbility" parameterType="java.util.Map" resultMap="AbilityResultMap">-->
-<!--        SELECT <include refid="Base_Column_List" />-->
-<!--        FROM MANAGE_ABILITY_APPLY-->
-<!--        WHERE ABILITY_ID = #{abilityId} AND APP_ID = #{appId}-->
-<!--    </select>-->
-
 </mapper>

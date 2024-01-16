@@ -25,6 +25,10 @@ public interface AbilityService extends IService<AbilityEntity> {
 
     void saveAbilityApply(AbilityApplyVO applyVO);
 
+    void updateAbilityLogin(AbilityLoginVO abilityLogin);
+
+    void auditApply(Long abilityApplyId, Long appId, Integer flag);
+
 //    // 审核应用注册是否通过
 //    void auditAbility(Long abilityId);
 

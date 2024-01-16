@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jdk.jfr.Description;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -53,7 +52,7 @@ public class UserApproveEntity implements Serializable {
      * 认证状态（（0未实名 1待审核 2审核通过 3审核不通过））
      */
     @TableField(value = "STATUS")
-    @Schema(description = "认证状态（0未实名 1待审核 2审核通过 3审核不通过）")
+    @Schema(description = "认证状态（0未实名（默认） 1待审核 2审核通过 3审核不通过）")
     private Integer status;
 
     /**
@@ -165,7 +164,7 @@ public class UserApproveEntity implements Serializable {
      * 账户是否可用（0可用(默认)  1已注销）
      */
     @TableField(value = "IS_DELETE")
-    @Schema(description = "账户是否可用（0可用  1已注销）")
+    @Schema(description = "账户是否可用（0可用(默认)  1已注销）")
     private Integer isDelete;
 
     /**
@@ -186,7 +185,7 @@ public class UserApproveEntity implements Serializable {
      * 用户类型(0未实名游客 1企业用户 2政府用户)
      */
     @TableField(value = "USER_TYPE")
-    @Schema(description = "用户类型（0未实名游客 1企业用户 2政府用户）")
+    @Schema(description = "用户类型（0未实名游客（默认） 1企业用户 2政府用户）")
     private Integer userType;
 
     @TableField(exist = false)

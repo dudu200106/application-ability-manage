@@ -1,6 +1,7 @@
 package com.dsj.csp.manage.service.impl;
 
 import cn.hutool.core.date.DateTime;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dsj.csp.manage.dto.AbilityApplyVO;
@@ -121,5 +122,12 @@ public class AbilityServiceImpl extends ServiceImpl<AbilityMapper, AbilityEntity
             appUpdateWrapper.set("APP_KEY", appKey);
             manageApplicationService.update(appUpdateWrapper);
         }
+    }
+
+    @Override
+    public long countAbility(Integer status) {
+        QueryWrapper<AbilityEntity> qw = new QueryWrapper<>();
+        qw.eq("STATUS", status);
+        return abilityMapper.selectCount(qw);
     }
 }

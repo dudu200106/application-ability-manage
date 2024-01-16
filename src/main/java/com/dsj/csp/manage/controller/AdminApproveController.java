@@ -51,7 +51,7 @@ public class AdminApproveController {
      */
     @Operation(summary = "实名认证审核通过")
     @PostMapping("/approveSuccess")
-    public Result<?> approveSuccess(String userId){
+    public Result<?> approveSuccess(@Parameter(description = "用户ID")String userId){
         userApproveService.approveSuccess(userId);
         return Result.success("审核通过");
     }
@@ -64,7 +64,7 @@ public class AdminApproveController {
      */
     @Operation(summary = "实名认证审核未通过")
     @PostMapping("/approveFail")
-    public Result<?> approveFail(String userId,String note){
+    public Result<?> approveFail(@Parameter(description = "用户ID")String userId,@Parameter(description = "未通过原因")String note){
         userApproveService.approveFail(userId,note);
         return Result.success("审核未通过");
     }

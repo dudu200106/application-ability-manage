@@ -106,7 +106,7 @@ public class AbilityController {
     @PostMapping("/add-apply")
     public Result<?> applyAbility(@RequestBody List<AbilityApplyVO> applyVOs) {
         for (AbilityApplyVO applyVO : applyVOs) {
-            abilityService.saveAbilityApply(applyVO);
+            abilityApplyService.saveAbilityApply(applyVO);
         }
         return Result.success("能力申请完毕！请等待审核...");
     }

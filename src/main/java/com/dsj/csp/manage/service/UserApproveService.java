@@ -29,13 +29,12 @@ public interface UserApproveService extends IService<UserApproveEntity> {
      */
     //条件分页查询实名认证审核申请
     Page<UserApproveEntity> select(UserApproveEntity user, Date startTime, Date endTime,int page, int size);
-
     //查看实名认证申请详情
     UserApproveEntity find(String userId);
     //实名认证审核通过
-    void approveSuccess(UserApproveEntity user);
+    void approveSuccess(String userId);
     //实名认证审核未通过
-    void approveFail(UserApproveEntity user);
+    void approveFail(String userId,String note);
     //统计用户总数
     Long userCount();
 

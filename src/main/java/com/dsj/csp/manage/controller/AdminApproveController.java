@@ -46,25 +46,26 @@ public class AdminApproveController {
 
     /**
      * 实名认证审核通过
-     * @param user
+     * @param userId
      * @return
      */
     @Operation(summary = "实名认证审核通过")
     @PostMapping("/approveSuccess")
-    public Result<?> approveSuccess(@RequestBody UserApproveEntity user){
-        userApproveService.approveSuccess(user);
+    public Result<?> approveSuccess(String userId){
+        userApproveService.approveSuccess(userId);
         return Result.success("审核通过");
     }
 
     /**
-     * 实名认证审核未通过
-     * @param user
+     *
+     * @param userId
+     * @param note
      * @return
      */
     @Operation(summary = "实名认证审核未通过")
     @PostMapping("/approveFail")
-    public Result<?> approveFail(@RequestBody UserApproveEntity user){
-        userApproveService.approveFail(user);
+    public Result<?> approveFail(String userId,String note){
+        userApproveService.approveFail(userId,note);
         return Result.success("审核未通过");
     }
 

@@ -11,6 +11,7 @@ import com.dsj.csp.manage.service.UserApproveService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.Date;
 import java.util.Objects;
 
@@ -70,7 +71,8 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     }
 
     @Override
-    public void approveSuccess(UserApproveEntity user) {
+    public void approveSuccess(String userId) {
+        UserApproveEntity user=userApproveMapper.selectById(userId);
         boolean updateResult = this.lambdaUpdate()
                 .eq(Objects.nonNull(user.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())
                 .eq(UserApproveEntity::getUserId, user.getUserId())
@@ -86,12 +88,13 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     }
 
     @Override
-    public void approveFail(UserApproveEntity user) {
+    public void approveFail(String userId,String note) {
+        UserApproveEntity user=userApproveMapper.selectById(userId);
         boolean updateResult = this.lambdaUpdate()
                 .eq(Objects.nonNull(user.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())
                 .eq(UserApproveEntity::getUserId, user.getUserId())
                 .set(UserApproveEntity::getStatus, UserStatusEnum.FAIL.getStatus())
-                .set(UserApproveEntity::getNote, user.getNote())
+                .set(UserApproveEntity::getNote, note)
                 .update();
         if (!updateResult) {
             log.error("更新失败");

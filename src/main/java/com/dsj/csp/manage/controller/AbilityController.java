@@ -1,6 +1,7 @@
 package com.dsj.csp.manage.controller;
 
 import cn.hutool.core.date.DateTime;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.dto.AbilityApplyVO;
@@ -35,6 +36,8 @@ public class AbilityController {
     @Autowired
     private AbilityService abilityService;
 
+//    @Autowired
+//    private AbilityApiService abilituapiService;
 
     @Autowired
     private AbilityApplyMapper abilityApplyMapper;
@@ -139,4 +142,32 @@ public class AbilityController {
         updateWrapper.eq("ability_apply_id", abilityApply.getAbilityApplyId());
         return Result.success(abilityApplyMapper.update(abilityApply, updateWrapper));
     }
+
+    @Operation(summary = "统计可用能力数")
+    @GetMapping("/count-avail-ability")
+    public Result<?> countAvailableAbility(){
+        QueryWrapper<AbilityEntity> abilityQW = new QueryWrapper<>();
+        // 4:已发布能力
+        abilityQW.eq("Status", 4);
+        return Result.success(abilityService.count(abilityQW));
+
+    }
+
+    @Operation(summary = "统计能力数量")
+    @GetMapping("/count-ability")
+    public Result<?> countAbility(@Parameter(description = "能力状态") @RequestParam Integer status){
+        QueryWrapper<AbilityEntity> abilityQW = new QueryWrapper<>();
+        // 4:已发布能力
+        abilityQW.eq("Status", status);
+        return Result.success(abilityService.count(abilityQW));
+
+    }
+
+    @Operation(summary = "统计接口数量")
+    @GetMapping("/count-api")
+    public Result<?> countApi(){
+        return Result.success(abilityService.count());
+
+    }
+
 }

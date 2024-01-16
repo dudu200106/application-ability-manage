@@ -18,9 +18,6 @@ public interface AbilityService extends IService<AbilityEntity> {
     // 查询所以能力目录
     List<AbilityListDTO> getAllAbilityList();
 
-//    // 查询本人拥有的能力目录
-//    List<AbilityListDTO> getMyAbiliityList();
-
     void saveAbility(AbilityLoginVO abilityLoginVO);
 
     void saveAbilityApply(AbilityApplyVO applyVO);
@@ -31,5 +28,8 @@ public interface AbilityService extends IService<AbilityEntity> {
 
 //    // 审核应用注册是否通过
 //    void auditAbility(Long abilityId);
+
+    // 统计不同能力数量
+    long countAbility(Integer status);
 
 }

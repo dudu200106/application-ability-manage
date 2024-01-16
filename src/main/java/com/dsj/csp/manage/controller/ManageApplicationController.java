@@ -45,11 +45,6 @@ public class ManageApplicationController {
     /**
      * 分页查询
      */
-//    @Operation(summary = "分页查询")
-//    @PostMapping("/list")
-//    public Result<?> pageAnother(@Valid @RequestBody PageQueryForm<ManageApplication> pageQueryForm) {
-//        return Result.success(manageApplicationService.page(pageQueryForm.toPage(), pageQueryForm.toQueryWrappers()));
-//    }
     @Operation(summary = "查询所有数据")
     @PostMapping("/lists")
     public Result<List<ManageApplication>> list() {
@@ -63,7 +58,6 @@ public class ManageApplicationController {
     @PostMapping("/selectPage")
     public Result<?> page(Page<ManageApplication> page, @Parameter(description = "查询关键字 Id或名称") String keyword, @Parameter(description = "开始时间") Date startTime, @Parameter(description = "结束时间") Date endTime) {
         LambdaQueryWrapper<ManageApplication> wrapper = Wrappers.lambdaQuery();
-        System.out.println(keyword);
         if (!StringUtils.isEmpty(keyword)) {
             wrapper.or().like(ManageApplication::getAppName, keyword)
                     .or().like(ManageApplication::getAppCode, keyword)
@@ -80,40 +74,22 @@ public class ManageApplicationController {
      */
     @Operation(summary = "添加应用")
     @PostMapping("/addInfo")
-    public Result<?> add(@Parameter(description = "应用图片路径") @RequestParam String appIconpath , @Parameter(description = "应用名字") @RequestParam String appName, @Parameter(description = "应用简介") @RequestParam String appSynopsis, @Parameter(description = "用户Id") @RequestParam String userId) {
+    public Result<?> add(@Parameter(description = "应用图片路径") @RequestParam String appIconpath, @Parameter(description = "应用名字") @RequestParam String appName, @Parameter(description = "应用简介") @RequestParam String appSynopsis, @Parameter(description = "用户Id") @RequestParam String userId) {
         ManageApplication manageApplication = new ManageApplication();
         manageApplication.setAppName(appName);
-//        userId = "56415082533";
+
         manageApplication.setAppUserId(userId);
         manageApplication.setAppSynopsis(appSynopsis);
-//        try {
-//            // 获取文件名
-//            String fileName = file.getOriginalFilename();
-//            UUID uuid = UUID.randomUUID();
-//            //获取文件名后缀
-//            String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
-//            // 获取文件的字节数组
-//            //生成舞的义件名
-//            String newFileName = uuid + "." + fileExtension;
-//            byte[] bytes = file.getBytes();
-//            // 构建文件路径
-//            Path path = Paths.get("D:/picture/" + newFileName);
-//            // 将文件保存到本地
-//            Files.write(path, bytes);
-            manageApplication.setAppCode(generateNumber(8));//生成appid
-            manageApplication.setAppIconpath(appIconpath);//应用路径
-//            生成key
+
+        manageApplication.setAppCode(generateNumber(8));//生成appid
+        manageApplication.setAppIconpath(appIconpath);//应用路径
 //            状态
-            manageApplication.setAppStatus(StatusEnum.NORMAL.getStatus());
+        manageApplication.setAppStatus(StatusEnum.NORMAL.getStatus());
 //            逻辑删除
-            manageApplication.setAppIsdelete(0);
-            manageApplication.setAppCreatetime(new Date());
-            manageApplication.setAppUpdatetime(new Date());
-            return Result.success(manageApplicationService.save(manageApplication));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return Result.failed("上传失败");
-//        }
+        manageApplication.setAppIsdelete(0);
+        manageApplication.setAppCreatetime(new Date());
+        manageApplication.setAppUpdatetime(new Date());
+        return Result.success(manageApplicationService.save(manageApplication));
     }
 
     @Operation(summary = "删除应用")
@@ -130,7 +106,7 @@ public class ManageApplicationController {
     }
 
     //统计应用次数
-    @Operation(summary = "统计应用")
+    @Operation(summary = "统计应用总数")
     @GetMapping("/allTotal")
     public Result countAll() {
         return Result.success(manageApplicationService.count());
@@ -143,33 +119,10 @@ public class ManageApplicationController {
         return Result.success(manageApplicationService.selectUserApp(appUserId));
     }
 
-    //审核通过后更新key和Secret
-//    @PostMapping("/updateSecret")
-//    public Result updateSecret(@RequestParam Long appId) {
-//        return Result.success(manageApplicationService.updateSecret(appId));
-//
-//
-//    }
     //修改应用信息
     @Operation(summary = "修改应用")
     @PostMapping("/upadataAppInfo")
-    public Result<?> upadataAppList(@Parameter(description = "应用图片路径") @RequestParam String appIconpath , @Parameter(description = "id") @RequestParam Long appId, @Parameter(description = "名称") @RequestParam String appName, @Parameter(description = "简介") @RequestParam String appSynopsis, @Parameter(description = "用户id") @RequestParam String appUserId) throws IOException {
-
-//        System.out.println(appId);
-//        // 获取文件名
-//        String fileName = file.getOriginalFilename();
-//        UUID uuid = UUID.randomUUID();
-//        //获取文件名后缀
-//        String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
-//        // 获取文件的字节数组
-//        //生成舞的义件名
-//        String newFileName = uuid + "." + fileExtension;
-//        byte[] bytes = file.getBytes();
-//        // 构建文件路径
-//        Path path = Paths.get("D:/picture/" + newFileName);
-//        // 将文件保存到本地
-//        Files.write(path, bytes);
-//        String appIconpath = String.valueOf(path);
+    public Result<?> upadataAppList(@Parameter(description = "应用图片路径") @RequestParam String appIconpath, @Parameter(description = "id") @RequestParam Long appId, @Parameter(description = "名称") @RequestParam String appName, @Parameter(description = "简介") @RequestParam String appSynopsis, @Parameter(description = "用户id") @RequestParam String appUserId) throws IOException {
         return Result.success(manageApplicationService.upadataAppList(appId, appName, appSynopsis, appIconpath, appUserId));
     }
 

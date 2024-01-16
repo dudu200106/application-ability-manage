@@ -30,43 +30,5 @@
         EXPLAIN, NOTE, APPROVE_TIME, IS_DELETE, CREATE_TIME, UPDATE_TIME
     </sql>
 
-    <insert id="insertAbilityApply" parameterType="com.dsj.csp.manage.entity.AbilityApplyEntity">
-        INSERT INTO MANAGE_ABILITY_APPLY (<include refid="Base_Column_List" />)
-        VALUES (#{abilityApplyId}, #{abilityId}, #{appId}, #{userId}, #{abilityName},
-                #{abilityType}, #{appName}, #{apiIds}, #{companyName}, #{govName},
-                #{status}, #{explain}, #{note}, #{approveTime}, #{isDelete},
-                #{createTime}, #{updateTime})
-    </insert>
-
-    <update id="updateAbilityApply" parameterType="com.dsj.csp.manage.entity.AbilityApplyEntity">
-        UPDATE MANAGE_ABILITY_APPLY
-        SET ABILITY_ID = #{abilityId},
-            APP_ID = #{appId},
-            USER_ID = #{userId},
-            ABILITY_NAME = #{abilityName},
-            ABILITY_TYPE = #{abilityType},
-            APP_NAME = #{appName},
-            API_IDS = #{apiIds},
-            COMPANY_NAME = #{companyName},
-            GOV_NAME = #{govName},
-            STATUS = #{status},
-            `EXPLAIN` = #{explain},
-            NOTE = #{note},
-            APPROVE_TIME = #{approveTime},
-            IS_DELETE = #{isDelete},
-            UPDATE_TIME = #{updateTime}
-        WHERE ABILITY_APPLY_ID = #{abilityApplyId}
-    </update>
-
-    <delete id="deleteAbilityApply" parameterType="com.dsj.csp.manage.entity.AbilityApplyEntity">
-        DELETE FROM MANAGE_ABILITY_APPLY
-        WHERE ABILITY_APPLY_ID = #{abilityApplyId}
-    </delete>
-
-    <select id="getAbilityApply" parameterType="java.lang.Long" resultMap="BaseResultMap">
-        SELECT <include refid="Base_Column_List" />
-        FROM MANAGE_ABILITY_APPLY
-        WHERE ABILITY_APPLY_ID = #{abilityApplyId}
-    </select>
 
 </mapper>

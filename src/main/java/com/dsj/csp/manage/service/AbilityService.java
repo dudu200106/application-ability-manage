@@ -20,8 +20,6 @@ public interface AbilityService extends IService<AbilityEntity> {
 
     void saveAbility(AbilityLoginVO abilityLoginVO);
 
-    void saveAbilityApply(AbilityApplyVO applyVO);
-
     void updateAbilityLogin(AbilityLoginVO abilityLogin);
 
     void auditApply(Long abilityApplyId, Long appId, Integer flag);

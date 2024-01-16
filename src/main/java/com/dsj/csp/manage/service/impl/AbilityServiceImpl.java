@@ -58,38 +58,34 @@ public class AbilityServiceImpl extends ServiceImpl<AbilityMapper, AbilityEntity
         abilityMapper.insert(ability);
         Long abilityId = ability.getAbilityId();
 
+//        this.saveBatch()
+
         // 2.插入接口
         for (AbilityApiEntity abilityApi : abilityLoginVO.getApiList()){
-            abilityApi.setAbilityId(1L);
+            abilityApi.setAbilityId(abilityId);
             abilityApiMapper.insert(abilityApi);
         }
     }
 
-    @Override
-    public void saveAbilityApply(AbilityApplyVO applyVO) {
-        AbilityApplyEntity applyEntity = new AbilityApplyEntity();
-        BeanUtils.copyProperties(applyVO, applyEntity);
-        abilityApplyMapper.insert(applyEntity);
-
-    }
 
     @Override
     public void updateAbilityLogin(AbilityLoginVO abilityLogin) {
 
-        UpdateWrapper<AbilityEntity> abilityUW = new UpdateWrapper<>();
-        abilityUW.eq("ability_id", abilityLogin.getAbilityId());
         AbilityEntity ability = new AbilityEntity();
         BeanUtils.copyProperties(abilityLogin, ability);
-        abilityMapper.update(ability, abilityUW);
+        Long abilityId = abilityLogin.getAbilityId();
+        abilityMapper.updateById(ability);
+
         // 更新能力接口列表
         for(AbilityApiEntity api : abilityLogin.getApiList()){
             // 是否为新增的接口
             if (api.getApiId() == null || "".equals(api.getApiId())){
+                api.setAbilityId(abilityId);
                 abilityApiMapper.insert(api);
             }
             else {
                 UpdateWrapper<AbilityApiEntity> apiUW = new UpdateWrapper<>();
-                abilityUW.eq("api_id", api.getApiId());
+                apiUW.eq("api_id", api.getApiId());
                 abilityApiMapper.update(api, apiUW);
             }
         }

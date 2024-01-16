@@ -29,41 +29,4 @@
         API_VERSION, IS_DELETE, CREATE_TIME, UPDATE_TIME
     </sql>
 
-    <insert id="insertAbilityApi" parameterType="com.dsj.csp.manage.entity.AbilityApiEntity">
-        INSERT INTO MANAGE_ABILITY_API (<include refid="Base_Column_List" />)
-        VALUES (#{apiId}, #{abilityId}, #{apiName}, #{description}, #{recallLimit},
-                #{qps}, #{requestParam}, #{responseParam}, #{protocol}, #{apiHost},
-                #{basePath}, #{apiUrl}, #{apiVersion}, #{isDelete}, #{createTime}, #{updateTime})
-    </insert>
-
-    <update id="updateAbilityApi" parameterType="com.dsj.csp.manage.entity.AbilityApiEntity">
-        UPDATE MANAGE_ABILITY_API
-        SET ABILITY_ID = #{abilityId},
-            API_NAME = #{apiName},
-            DESCRIPTION = #{description},
-            RECALL_LIMIT = #{recallLimit},
-            QPS = #{qps},
-            REQUEST_PARAM = #{requestParam},
-            RESPONSE_PARAM = #{responseParam},
-            PROTOCOL = #{protocol},
-            API_HOST = #{apiHost},
-            BASE_PATH = #{basePath},
-            API_URL = #{apiUrl},
-            API_VERSION = #{apiVersion},
-            IS_DELETE = #{isDelete},
-            UPDATE_TIME = #{updateTime}
-        WHERE API_ID = #{apiId}
-    </update>
-
-    <delete id="deleteAbilityApi" parameterType="com.dsj.csp.manage.entity.AbilityApiEntity">
-        DELETE FROM MANAGE_ABILITY_API
-        WHERE API_ID = #{apiId}
-    </delete>
-
-    <select id="getAbilityApi" parameterType="java.lang.Long" resultMap="BaseResultMap">
-        SELECT <include refid="Base_Column_List" />
-        FROM MANAGE_ABILITY_API
-        WHERE API_ID = #{apiId}
-    </select>
-
 </mapper>

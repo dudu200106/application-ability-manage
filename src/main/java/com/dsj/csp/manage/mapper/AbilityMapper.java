@@ -16,5 +16,4 @@ import java.util.List;
 public interface AbilityMapper extends BaseMapper<AbilityEntity> {
     List<AbilityListDTO> getAbilityList();
 
-    void insertAbility(AbilityEntity ability);
 }

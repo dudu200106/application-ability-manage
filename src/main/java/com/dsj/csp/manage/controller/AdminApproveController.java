@@ -51,13 +51,12 @@ public class AdminApproveController {
      */
     @Operation(summary = "实名认证审核通过")
     @PostMapping("/approveSuccess")
-    public Result<?> approveSuccess(@Parameter(description = "用户ID")String userId){
+    public Result<?> approveSuccess(@Parameter(description = "用户ID") String userId){
         userApproveService.approveSuccess(userId);
         return Result.success("审核通过");
     }
 
     /**
-     *
      * @param userId
      * @param note
      * @return

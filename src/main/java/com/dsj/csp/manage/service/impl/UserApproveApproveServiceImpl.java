@@ -56,7 +56,6 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
                 .or()
                 .like(StringUtils.isNotBlank(keyword), UserApproveEntity::getCompanyName, keyword);
         return userApproveMapper.selectPage(new Page(page, size), wrapper);
-
     }
 
     @Override
@@ -89,6 +88,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
                 .eq(UserApproveEntity::getUserId, user.getUserId())
                 .set(UserApproveEntity::getStatus, UserStatusEnum.FAIL.getStatus())
                 .set(UserApproveEntity::getNote, note)
+                .set(UserApproveEntity::getUserType,0)
                 .update();
         if (!updateResult) {
             log.error("更新失败");

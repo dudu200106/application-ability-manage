@@ -130,4 +130,14 @@ public class AbilityServiceImpl extends ServiceImpl<AbilityMapper, AbilityEntity
         qw.eq("STATUS", status);
         return abilityMapper.selectCount(qw);
     }
+
+    @Override
+    public long countAvailAbility() {
+        QueryWrapper<AbilityEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("Status", 3)
+                .or()
+                .eq("status", 4);
+        return abilityMapper.selectCount(queryWrapper);
+    }
+
 }

@@ -9,8 +9,9 @@ import com.dsj.csp.manage.dto.AbilityLoginVO;
 import com.dsj.csp.manage.dto.PageQueryForm;
 import com.dsj.csp.manage.entity.*;
 
-import com.dsj.csp.manage.mapper.AbilityApiMapper;
 import com.dsj.csp.manage.mapper.AbilityApplyMapper;
+import com.dsj.csp.manage.service.AbilityApiService;
+import com.dsj.csp.manage.service.AbilityApplyService;
 import com.dsj.csp.manage.service.AbilityService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,14 +37,14 @@ public class AbilityController {
     @Autowired
     private AbilityService abilityService;
 
-//    @Autowired
-//    private AbilityApiService abilituapiService;
+    @Autowired
+    private AbilityApiService abilityApiService;
+
+    @Autowired
+    private AbilityApplyService abilityApplyService;
 
     @Autowired
     private AbilityApplyMapper abilityApplyMapper;
-
-    @Autowired
-    private AbilityApiMapper abilityApiMapper;
 
     @Operation(summary = "能力注册", description = "注册一个新的能力")
     @PostMapping("/add-login")
@@ -98,7 +99,7 @@ public class AbilityController {
     @Operation(summary = "查询接口信息", description = "查询特定接口的信息")
     @GetMapping("/query-api-info")
     public Result<?> queryApiInfo(@Parameter(description = "接口ID") @RequestParam Long apiId) {
-        return Result.success(abilityApiMapper.selectById(apiId));
+        return Result.success(abilityApiService.getById(apiId));
     }
 
     @Operation(summary = "新增能力使用申请", description = "申请使用能力")
@@ -114,7 +115,7 @@ public class AbilityController {
     @GetMapping("/info-apply")
     public Result<?> getApplyInfoById(@Parameter(
             description = "能力申请ID") @RequestParam Long abilityApplyId) {
-        return Result.success(abilityApplyMapper.selectById(abilityApplyId));
+        return Result.success(abilityApplyService.getById(abilityApplyId));
     }
 
     @Operation(summary = "审核能力使用申请", description = "审核能力使用申请")
@@ -132,7 +133,7 @@ public class AbilityController {
     @PostMapping("/page-apply")
     public Result<?> queryApplyPage(
             @Valid @RequestBody PageQueryForm<AbilityApplyEntity> applyQuery ) {
-        return Result.success(abilityApplyMapper.selectPage(applyQuery.toPage(), applyQuery.toQueryWrappers()));
+        return Result.success(abilityApplyService.page(applyQuery.toPage(), applyQuery.toQueryWrappers()));
     }
 
     @Operation(summary = "编辑能力使用申请", description = "编辑能力使用申请")
@@ -140,16 +141,13 @@ public class AbilityController {
     public Result<?> editAbilityApply(@RequestBody AbilityApplyEntity abilityApply){
         UpdateWrapper<AbilityApplyEntity> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("ability_apply_id", abilityApply.getAbilityApplyId());
-        return Result.success(abilityApplyMapper.update(abilityApply, updateWrapper));
+        return Result.success(abilityApplyService.update(abilityApply, updateWrapper));
     }
 
     @Operation(summary = "统计可用能力数")
     @GetMapping("/count-avail-ability")
     public Result<?> countAvailableAbility(){
-        QueryWrapper<AbilityEntity> abilityQW = new QueryWrapper<>();
-        // 4:已发布能力
-        abilityQW.eq("Status", 4);
-        return Result.success(abilityService.count(abilityQW));
+        return Result.success(abilityService.countAvailAbility());
 
     }
 

@@ -32,4 +32,8 @@ public interface AbilityService extends IService<AbilityEntity> {
     // 统计不同能力数量
     long countAbility(Integer status);
 
+    // 统计可用能力数量
+    long countAvailAbility();
+
+
 }

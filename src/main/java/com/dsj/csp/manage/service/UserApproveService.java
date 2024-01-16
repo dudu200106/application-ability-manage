@@ -19,8 +19,6 @@ public interface UserApproveService extends IService<UserApproveEntity> {
      */
     //根据id查看个人中心
     UserApproveEntity personCenter(String userId);
-    //修改用户信息
-    void updateUser(UserApproveEntity user);
     //用户申请实名认证
     void approve(UserApproveEntity user);
 
@@ -28,7 +26,7 @@ public interface UserApproveService extends IService<UserApproveEntity> {
      * 管理员实名认证审核模块
      */
     //条件分页查询实名认证审核申请
-    Page<UserApproveEntity> select(UserApproveEntity user, Date startTime, Date endTime,int page, int size);
+    Page<UserApproveEntity> select(String status,String keyword, Date startTime, Date endTime,int page, int size);
     //查看实名认证申请详情
     UserApproveEntity find(String userId);
     //实名认证审核通过

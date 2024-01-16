@@ -23,168 +23,168 @@ public class UserApproveEntity implements Serializable {
     /**
      * 用户ID
      */
-    @TableId(value = "USER_ID")
+    @TableId(value = "YH_XH")
     @Schema(description = "用户ID")
     private String userId;
 
     /**
      * 用户账号
      */
-    @TableField(value = "USER_NAME")
+    @TableField(value = "YH_MC")
     @Schema(description = "用户账号名")
     private String userName;
 
     /**
      * 用户手机号
      */
-    @TableField(value = "PHONE")
+    @TableField(value = "DHHM")
     @Schema(description = "用户手机号")
     private String phone;
 
     /**
      * 邮箱
      */
-    @TableField(value = "EMAIL")
+    @TableField(value = "DZYX")
     @Schema(description = "邮箱")
     private String email;
 
     /**
      * 认证状态（（0未实名 1待审核 2审核通过 3审核不通过））
      */
-    @TableField(value = "STATUS")
+    @TableField(value = "ZT")
     @Schema(description = "认证状态（0未实名（默认） 1待审核 2审核通过 3审核不通过）")
     private Integer status;
 
     /**
      * 企业名称
      */
-    @TableField(value = "COMPANY_NAME")
+    @TableField(value = "QY_MC")
     @Schema(description = "企业名称")
     private String companyName;
 
     /**
      * 营业执照注册号
      */
-    @TableField(value = "COMPANY_NUM")
+    @TableField(value = "QY_ZCH")
     @Schema(description = "企业营业执照注册号")
     private String companyNum;
 
     /**
      * 企业法定代表人
      */
-    @TableField(value = "COMPANY_REPRESENT")
+    @TableField(value = "QY_FDDBR")
     @Schema(description = "企业法定代表人")
     private String companyRepresent;
 
     /**
      * 营业执照扫描件
      */
-    @TableField(value = "COMPANY_IMAGE")
+    @TableField(value = "QY_TP")
     @Schema(description = "企业营业执照扫描件")
     private String companyImage;
 
     /**
      * 授权函
      */
-    @TableField(value = "AUTHORIZATION")
+    @TableField(value = "SQH")
     @Schema(description = "政府授权函")
     private String authorization;
 
     /**
      * 企业联系人姓名
      */
-    @TableField(value = "COMPANY_USER")
+    @TableField(value = "QY_LXRXM")
     @Schema(description = "企业联系人姓名")
     private String companyUser;
 
     /**
      * 企业联系人身份证号
      */
-    @TableField(value = "COMPANY_IDNUM")
+    @TableField(value = "QY_SFZH")
     @Schema(description = "企业联系人身份证号")
     private String companyIdnum;
 
     /**
      * 企业联系人手机号码
      */
-    @TableField(value = "COMPANY_PHONE")
+    @TableField(value = "QY_DHHM")
     @Schema(description = "企业联系人手机号码")
     private String companyPhone;
 
     /**
      * 政府部门名称
      */
-    @TableField(value = "GOV_NAME")
+    @TableField(value = "ZF_MC")
     @Schema(description = "政府部门名称")
     private String govName;
 
     /**
      * 营业执照注册号
      */
-    @TableField(value = "GOV_NUM")
+    @TableField(value = "ZF_ZCH")
     @Schema(description = "政府营业执照注册号")
     private String govNum;
 
     /**
      * 政府部门法定代表人
      */
-    @TableField(value = "GOV_REPRESENT")
+    @TableField(value = "ZF_FDDBR")
     @Schema(description = "政府部门法定代表人")
     private String govRepresent;
 
     /**
      * 政府部门营业执照扫描件
      */
-    @TableField(value = "GOV_IMAGE")
+    @TableField(value = "ZF_TP")
     @Schema(description = "政府部门营业执照扫描件")
     private String govImage;
 
     /**
      * 政府部门联系人姓名
      */
-    @TableField(value = "GOV_USER")
+    @TableField(value = "ZF_LXRXM")
     @Schema(description = "政府部门联系人姓名")
     private String govUser;
 
     /**
      * 政府部门身份证号
      */
-    @TableField(value = "GOV_IDNUM")
+    @TableField(value = "ZF_SFZH")
     @Schema(description = "政府部门联系人身份证号")
     private String govIdnum;
 
     /**
      * 政府部门联系人手机号码
      */
-    @TableField(value = "GOV_PHONE")
+    @TableField(value = "ZF_DHHM")
     @Schema(description = "政府部门联系人手机号码")
     private String govPhone;
 
     /**
      * 账户是否可用（0可用(默认)  1已注销）
      */
-    @TableField(value = "IS_DELETE")
+    @TableField(value = "SFKY")
     @Schema(description = "账户是否可用（0可用(默认)  1已注销）")
     private Integer isDelete;
 
     /**
      * 创建时间
      */
-    @TableField(value = "CREATE_TIME")
+    @TableField(value = "CJSJ")
     @Schema(description = "创建时间")
     private Date createTime;
 
     /**
      * 备注
      */
-    @TableField(value = "NOTE")
+    @TableField(value = "BZ")
     @Schema(description = "备注")
     private String note;
 
     /**
      * 用户类型(0未实名游客 1企业用户 2政府用户)
      */
-    @TableField(value = "USER_TYPE")
+    @TableField(value = "YH_LX")
     @Schema(description = "用户类型（0未实名游客（默认） 1企业用户 2政府用户）")
     private Integer userType;
 

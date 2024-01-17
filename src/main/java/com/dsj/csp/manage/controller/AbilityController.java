@@ -2,12 +2,15 @@ package com.dsj.csp.manage.controller;
 
 import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.biz.AbilityBizService;
 import com.dsj.csp.manage.dto.AbilityApplyVO;
 import com.dsj.csp.manage.dto.AbilityLoginVO;
 import com.dsj.csp.manage.dto.PageQueryForm;
+import com.dsj.csp.manage.dto.*;
 import com.dsj.csp.manage.entity.*;
 
 import com.dsj.csp.manage.mapper.AbilityApplyMapper;
@@ -17,6 +20,7 @@ import com.dsj.csp.manage.service.AbilityService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -75,19 +79,18 @@ public class AbilityController {
     @Operation(summary = "分页查询注册能力列表", description = "分页查询注册能力列表")
     @PostMapping ("/page-login")
     public Result<?> pageAnother(
-            @Valid @RequestBody PageQueryForm<AbilityEntity> pageQueryForm) {
-        return Result.success(abilityService.page(pageQueryForm.toPage(), pageQueryForm.toQueryWrappers()));
+            @Valid @RequestBody AbilityQueryDTO abilityQuery) {
+        return Result.success(abilityService.page(abilityQuery.toPage(), abilityQuery.getQueryWrapper()));
     }
 
     @Operation(summary = "审核能力注册", description = "审核能力注册申请")
-    @PostMapping("/audit")
-    public Result<?> auditAbility(
-            @Parameter(description = "能力ID") @RequestParam Long abilityId,
-            @Parameter(description = "审核标志") @RequestParam Integer flag) {
-        UpdateWrapper<AbilityEntity> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("ability_id", abilityId);
-        updateWrapper.set("STATUS", flag);
-        updateWrapper.set("UPDATE_TIME", DateTime.now());
+    @PostMapping("/audit-login")
+    public Result<?> auditAbility(@RequestBody AbilityAuditVO auditVO) {
+        LambdaUpdateWrapper<AbilityEntity> updateWrapper = Wrappers.lambdaUpdate();
+        updateWrapper.eq(AbilityEntity::getAbilityId, auditVO.getAbilityId());
+        updateWrapper.set(AbilityEntity::getStatus, auditVO.getFlag());
+        updateWrapper.set(AbilityEntity::getNote, auditVO.getNote());
+        updateWrapper.set(AbilityEntity::getUpdateTime, DateTime.now());
         abilityService.update(updateWrapper);
         return Result.success("审核完成！");
     }
@@ -125,20 +128,17 @@ public class AbilityController {
 
     @Operation(summary = "审核能力使用申请", description = "审核能力使用申请")
     @PostMapping("/audit-apply")
-    public Result<?> auditAbilityApply(
-            @Parameter(description = "能力申请ID") @RequestParam Long abilityApplyId,
-            @Parameter(description = "申请试用的应用ID") @RequestParam Long appId,
-            @Parameter(description = "审核标志")  @RequestParam Integer flag){
+    public Result<?> auditAbilityApply(@RequestBody AbilityAuditVO auditVO){
 
-        abilityService.auditApply(abilityApplyId, appId, flag);
+        abilityService.auditApply(auditVO);
         return Result.success("审核完成!");
     }
 
     @Operation(summary = "分页查询申请能力列表", description = "分页查询申请能力列表")
     @PostMapping("/page-apply")
     public Result<?> queryApplyPage(
-            @Valid @RequestBody PageQueryForm<AbilityApplyEntity> applyQuery ) {
-        return Result.success(abilityApplyService.page(applyQuery.toPage(), applyQuery.toQueryWrappers()));
+            @Valid @RequestBody AbilityApplyQueryVO abilityApplyQueryVO) {
+        return Result.success(abilityApplyService.page(abilityApplyQueryVO.toPage(), abilityApplyQueryVO.getQueryWrapper()));
     }
 
     @Operation(summary = "编辑能力使用申请", description = "编辑能力使用申请")

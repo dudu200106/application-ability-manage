@@ -60,4 +60,13 @@ public class AbilityApplyEntity extends BaseEntity implements Serializable {
 
     @TableField(value = "UPDATE_TIME")
     private Date updateTime;
+
+    @TableField("IS_AGREE_PROTOCOL")
+    private Integer isAgreeProtocols;
+
+    @TableField("RECALL_LIMIT")
+    private Integer recallLimit;
+
+    @TableField("QPS")
+    private Integer qps;
 }

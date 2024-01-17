@@ -55,6 +55,4 @@ public class AbilityEntity extends BaseEntity implements Serializable {
     @TableField("QPS")
     private Integer qps;
 
-    @TableField("IS_AGREE_PROTOCOL")
-    private Integer isAgreeProtocols;
 }

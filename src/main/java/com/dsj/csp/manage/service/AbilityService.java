@@ -22,7 +22,7 @@ public interface AbilityService extends IService<AbilityEntity> {
 
     void updateAbilityLogin(AbilityLoginVO abilityLogin);
 
-    void auditApply(Long abilityApplyId, Long appId, Integer flag);
+    void auditApply(Long abilityApplyId, Long appId, Integer flag, String note);
 
 //    // 审核应用注册是否通过
 //    void auditAbility(Long abilityId);

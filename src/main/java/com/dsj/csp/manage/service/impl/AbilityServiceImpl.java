@@ -14,6 +14,7 @@ import com.dsj.csp.manage.entity.ManageApplication;
 import com.dsj.csp.manage.mapper.AbilityApiMapper;
 import com.dsj.csp.manage.mapper.AbilityApplyMapper;
 import com.dsj.csp.manage.mapper.AbilityMapper;
+import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.AbilityService;
 import com.dsj.csp.manage.service.ManageApplicationService;
 import com.dsj.csp.manage.util.Sm4;
@@ -23,7 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Sean Du
@@ -39,6 +42,8 @@ public class AbilityServiceImpl extends ServiceImpl<AbilityMapper, AbilityEntity
     AbilityMapper abilityMapper;
     @Autowired
     AbilityApiMapper abilityApiMapper;
+    @Autowired
+    AbilityApiService abilityApiService;
     @Autowired
     AbilityApplyMapper abilityApplyMapper;
     @Autowired
@@ -58,13 +63,14 @@ public class AbilityServiceImpl extends ServiceImpl<AbilityMapper, AbilityEntity
         abilityMapper.insert(ability);
         Long abilityId = ability.getAbilityId();
 
-//        this.saveBatch()
-
         // 2.插入接口
-        for (AbilityApiEntity abilityApi : abilityLoginVO.getApiList()){
-            abilityApi.setAbilityId(abilityId);
-            abilityApiMapper.insert(abilityApi);
-        }
+        List<AbilityApiEntity> list =
+                abilityLoginVO.getApiList().stream().map(item -> {
+            item.setAbilityId(abilityId);
+            return item;
+        }).collect(Collectors.toList());
+        abilityApiService.saveBatch((Collection<AbilityApiEntity>) list);
+
     }
 
 
@@ -92,13 +98,14 @@ public class AbilityServiceImpl extends ServiceImpl<AbilityMapper, AbilityEntity
     }
 
     @Override
-    public void auditApply(Long abilityApplyId, Long appId, Integer flag) {
+    public void auditApply(Long abilityApplyId, Long appId, Integer flag, String note) {
         // 创建更新条件构造器
         UpdateWrapper<AbilityApplyEntity> updateWrapper = new UpdateWrapper<>();
         // 设置更新条件，这里假设要更新 id 为 1 的记录
         updateWrapper.eq("ability_apply_id", abilityApplyId);
         // 设置要更新的字段和值
         updateWrapper.set("STATUS", flag);
+        updateWrapper.set("note", note);
         updateWrapper.set("UPDATE_TIME", DateTime.now());
         abilityApplyMapper.update(updateWrapper);
 

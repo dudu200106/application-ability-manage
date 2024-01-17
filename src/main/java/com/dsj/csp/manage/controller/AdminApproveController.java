@@ -5,18 +5,16 @@ import com.dsj.csp.manage.service.UserApproveService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 @Tag(name = "管理员实名认证审核")
 @RestController
-
-
+@RequiredArgsConstructor
 @RequestMapping("/adminApprove")
 public class AdminApproveController {
-    @Autowired
-    private UserApproveService userApproveService;
-
+    private final UserApproveService userApproveService;
     /**
      * 按条件分页查询实名认证申请
      * @param status 用户实名状态

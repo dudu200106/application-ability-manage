@@ -10,7 +10,6 @@ import com.dsj.csp.manage.entity.UserApproveEntity;
 import com.dsj.csp.manage.mapper.UserApproveMapper;
 import com.dsj.csp.manage.service.UserApproveService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -23,25 +22,23 @@ import java.util.Objects;
  */
 @Service
 public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper, UserApproveEntity> implements UserApproveService {
-    @Autowired
-    private UserApproveMapper userApproveMapper;
 
     /**
      * 用户实名认证申请模块
      */
     @Override
     public UserApproveEntity personCenter(String userId) {
-        return userApproveMapper.selectById(userId);
+        return baseMapper.selectById(userId);
     }
 
     @Override
     public void approve(UserApproveEntity user) {
-        UserApproveEntity userApproveEntity = userApproveMapper.selectById(user);
+        UserApproveEntity userApproveEntity = baseMapper.selectById(user);
         Integer status = userApproveEntity.getStatus();
         if (status.equals(0) || status.equals(3)) {
             user.setStatus(UserStatusEnum.WAIT.getStatus());
             user.setCreateTime(new Date());
-            userApproveMapper.updateById(user);
+            baseMapper.updateById(user);
         }
     }
 
@@ -57,12 +54,12 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
                 .like(StringUtils.isNotBlank(keyword), UserApproveEntity::getGovName, keyword)
                 .or()
                 .like(StringUtils.isNotBlank(keyword), UserApproveEntity::getCompanyName, keyword);
-        return userApproveMapper.selectPage(new Page(page, size), wrapper);
+        return baseMapper.selectPage(new Page(page, size), wrapper);
     }
 
     @Override
     public UserApproveEntity find(String userId) {
-        return userApproveMapper.selectById(userId);
+        return baseMapper.selectById(userId);
     }
 
     @Override
@@ -98,6 +95,6 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
 
     @Override
     public Long userCount() {
-        return userApproveMapper.selectCount(null);
+        return baseMapper.selectCount(null);
     }
 }

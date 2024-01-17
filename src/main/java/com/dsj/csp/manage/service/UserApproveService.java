@@ -33,6 +33,7 @@ public interface UserApproveService extends IService<UserApproveEntity> {
     //实名认证审核未通过
     void approveFail(UserApproveRequest user);
     //统计用户总数
+
     Long userCount();
 
 }

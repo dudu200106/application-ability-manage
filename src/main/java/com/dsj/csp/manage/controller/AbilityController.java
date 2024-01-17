@@ -1,32 +1,29 @@
 package com.dsj.csp.manage.controller;
 
 import cn.hutool.core.date.DateTime;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.dto.AbilityApplyVO;
 import com.dsj.csp.manage.dto.AbilityLoginVO;
+import com.dsj.csp.manage.dto.AbilityQueryDTO;
 import com.dsj.csp.manage.dto.PageQueryForm;
 import com.dsj.csp.manage.entity.*;
 
-import com.dsj.csp.manage.mapper.AbilityApplyMapper;
 import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.AbilityApplyService;
 import com.dsj.csp.manage.service.AbilityService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Sean Du
@@ -46,9 +43,6 @@ public class AbilityController {
 
     @Autowired
     private AbilityApplyService abilityApplyService;
-
-    @Autowired
-    private AbilityApplyMapper abilityApplyMapper;
 
     @Operation(summary = "能力注册", description = "注册一个新的能力")
     @PostMapping("/add-login")
@@ -74,26 +68,16 @@ public class AbilityController {
     @Operation(summary = "分页查询注册能力列表", description = "分页查询注册能力列表")
     @PostMapping ("/page-login")
     public Result<?> pageAnother(
-            @NotNull @Valid @RequestBody PageQueryForm<AbilityEntity> pageQueryForm,
-            @Parameter(description = "创建开始时间") @RequestParam Date startTime,
-            @Parameter(description = "创建结束时间") @RequestParam Date endTime,
-            @Parameter(description = "搜索关键字") @RequestParam String keyword) {
-        QueryWrapper<AbilityEntity> qw = pageQueryForm.toQueryWrappers();
-
-        qw.ge(Objects.nonNull(startTime), "CREATE_TIME", startTime)
-                .and(i-> i.le(Objects.nonNull(endTime), "CREATE_TIME", endTime))
-                .and(keyword!=null && !"".equals(keyword),
-                        i -> i.like("ABILITY_NAME", keyword)
-                                .or().like("ABILITY_PROVIDER", keyword));
-        return Result.success(abilityService.page(pageQueryForm.toPage(), qw));
+            @Valid @RequestBody AbilityQueryDTO abilityQuery) {
+        return Result.success(abilityService.page(abilityQuery.toPage(), abilityQuery.getQueryWrapper()));
     }
 
     @Operation(summary = "审核能力注册", description = "审核能力注册申请")
     @PostMapping("/audit-login")
     public Result<?> auditAbility(
-            @Parameter(description = "能力ID") @RequestParam Long abilityId,
-            @Parameter(description = "审核标志") @RequestParam Integer flag,
-            @Parameter(description = "审核操作说明") @RequestParam String note) {
+             @RequestParam("abilityId") Long abilityId,
+            @Parameter(description = "审核标志") @RequestParam("flag") Integer flag,
+            @Parameter(description = "审核操作说明") @RequestParam("note") String note) {
         UpdateWrapper<AbilityEntity> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("ability_id", abilityId);
         updateWrapper.set("STATUS", flag);
@@ -137,10 +121,10 @@ public class AbilityController {
     @Operation(summary = "审核能力使用申请", description = "审核能力使用申请")
     @PostMapping("/audit-apply")
     public Result<?> auditAbilityApply(
-            @Parameter(description = "能力申请ID") @RequestParam Long abilityApplyId,
-            @Parameter(description = "申请试用的应用ID") @RequestParam Long appId,
-            @Parameter(description = "审核标志")  @RequestParam Integer flag,
-            @Parameter(description = "审核操作说明") @RequestParam String note){
+            @Parameter(description = "能力申请ID") Long abilityApplyId,
+            @Parameter(description = "申请试用的应用ID") Long appId,
+            @Parameter(description = "审核标志") Integer flag,
+            @Parameter(description = "审核操作说明") String note){
 
         abilityService.auditApply(abilityApplyId, appId, flag, note);
         return Result.success("审核完成!");

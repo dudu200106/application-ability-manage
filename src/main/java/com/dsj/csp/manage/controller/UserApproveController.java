@@ -6,15 +6,16 @@ import com.dsj.csp.manage.service.UserApproveService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "用户提交实名认证申请")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserApproveController {
-    @Autowired
-    private UserApproveService userApproveService;
+    private final UserApproveService userApproveService;
 
     @Operation(summary = "个人中心‘待完善’")
     @GetMapping("/personCenter")

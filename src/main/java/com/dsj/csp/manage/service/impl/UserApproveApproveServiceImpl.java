@@ -1,17 +1,19 @@
 package com.dsj.csp.manage.service.impl;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.common.enums.UserStatusEnum;
+import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.UserApproveEntity;
 import com.dsj.csp.manage.mapper.UserApproveMapper;
 import com.dsj.csp.manage.service.UserApproveService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -47,7 +49,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
      * 管理员实名认证审核模块
      */
     @Override
-    public Page<UserApproveEntity> select(String status,String keyword, Date startTime, Date endTime, int page, int size) {
+    public Page<UserApproveEntity> select(String status, String keyword, Date startTime, Date endTime, int page, int size) {
         QueryWrapper<UserApproveEntity> wrapper = new QueryWrapper();
         wrapper.lambda()
                 .eq(Objects.nonNull(status), UserApproveEntity::getStatus, status)
@@ -64,8 +66,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     }
 
     @Override
-    public void approveSuccess(String userId) {
-        UserApproveEntity user=userApproveMapper.selectById(userId);
+    public void approveSuccess(UserApproveRequest user) {
         boolean updateResult = this.lambdaUpdate()
                 .eq(Objects.nonNull(user.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())
                 .eq(UserApproveEntity::getUserId, user.getUserId())
@@ -81,14 +82,13 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     }
 
     @Override
-    public void approveFail(String userId,String note) {
-        UserApproveEntity user=userApproveMapper.selectById(userId);
+    public void approveFail(UserApproveRequest user) {
         boolean updateResult = this.lambdaUpdate()
                 .eq(Objects.nonNull(user.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())
                 .eq(UserApproveEntity::getUserId, user.getUserId())
                 .set(UserApproveEntity::getStatus, UserStatusEnum.FAIL.getStatus())
-                .set(UserApproveEntity::getNote, note)
-                .set(UserApproveEntity::getUserType,0)
+                .set(UserApproveEntity::getNote, user.getNote())
+                .set(UserApproveEntity::getUserType, 0)
                 .update();
         if (!updateResult) {
             log.error("更新失败");

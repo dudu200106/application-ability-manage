@@ -1,6 +1,6 @@
 package com.dsj.csp.manage.controller;
 import com.dsj.common.dto.Result;
-import com.dsj.csp.manage.entity.UserApproveEntity;
+import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.service.UserApproveService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -46,25 +46,31 @@ public class AdminApproveController {
 
     /**
      * 实名认证审核通过
-     * @param userId
+     * @param user
      * @return
      */
     @Operation(summary = "实名认证审核通过")
     @PostMapping("/approveSuccess")
-    public Result<?> approveSuccess(@Parameter(description = "用户ID") String userId){
-        userApproveService.approveSuccess(userId);
+    public Result<?> approveSuccess(@RequestBody UserApproveRequest user){
+        userApproveService.approveSuccess(user);
+
         return Result.success("审核通过");
     }
+//
+//    @PostMapping(value = "/{userId}/edit")
+//    public Result<String> editUser(@PathVariable(value = "userId") String userId, @RequestBody UserIdRequest request) {
+//        return Result.success();
+//    }
 
     /**
-     * @param userId
-     * @param note
+     * 实名认证审核未通过
+     * @param user
      * @return
      */
     @Operation(summary = "实名认证审核未通过")
     @PostMapping("/approveFail")
-    public Result<?> approveFail(@Parameter(description = "用户ID")String userId,@Parameter(description = "未通过原因")String note){
-        userApproveService.approveFail(userId,note);
+    public Result<?> approveFail(@RequestBody UserApproveRequest user){
+        userApproveService.approveFail(user);
         return Result.success("审核未通过");
     }
 }

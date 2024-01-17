@@ -2,6 +2,7 @@ package com.dsj.csp.manage.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.dsj.csp.manage.dto.AbilityApplyVO;
+import com.dsj.csp.manage.dto.AbilityAuditVO;
 import com.dsj.csp.manage.dto.AbilityListDTO;
 import com.dsj.csp.manage.dto.AbilityLoginVO;
 import com.dsj.csp.manage.entity.AbilityEntity;
@@ -22,7 +23,7 @@ public interface AbilityService extends IService<AbilityEntity> {
 
     void updateAbilityLogin(AbilityLoginVO abilityLogin);
 
-    void auditApply(Long abilityApplyId, Long appId, Integer flag, String note);
+    void auditApply(AbilityAuditVO abilityAuditVO);
 
 //    // 审核应用注册是否通过
 //    void auditAbility(Long abilityId);

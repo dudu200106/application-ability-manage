@@ -2,9 +2,12 @@ package com.dsj.csp.manage.service.impl;
 
 import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dsj.csp.manage.dto.AbilityApplyVO;
+import com.dsj.csp.manage.dto.AbilityAuditVO;
 import com.dsj.csp.manage.dto.AbilityListDTO;
 import com.dsj.csp.manage.dto.AbilityLoginVO;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
@@ -98,33 +101,31 @@ public class AbilityServiceImpl extends ServiceImpl<AbilityMapper, AbilityEntity
     }
 
     @Override
-    public void auditApply(Long abilityApplyId, Long appId, Integer flag, String note) {
+    public void auditApply(AbilityAuditVO auditVO) {
         // 创建更新条件构造器
-        UpdateWrapper<AbilityApplyEntity> updateWrapper = new UpdateWrapper<>();
-        // 设置更新条件，这里假设要更新 id 为 1 的记录
-        updateWrapper.eq("ability_apply_id", abilityApplyId);
-        // 设置要更新的字段和值
-        updateWrapper.set("STATUS", flag);
-        updateWrapper.set("note", note);
-        updateWrapper.set("UPDATE_TIME", DateTime.now());
+        LambdaUpdateWrapper<AbilityApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
+        updateWrapper.eq(AbilityApplyEntity::getAbilityId, auditVO.getAbilityId());
+        updateWrapper.set(AbilityApplyEntity::getStatus, auditVO.getFlag());
+        updateWrapper.set(AbilityApplyEntity::getNote, auditVO.getNote());
+        updateWrapper.set(AbilityApplyEntity::getUpdateTime, DateTime.now());
         abilityApplyMapper.update(updateWrapper);
 
-//        // 判断是否生成APP Key 和 Secret Key
-//        String appSecretKey =  manageApplicationService.getById(appId).getAppSecret();
-//        String appAppKey =  manageApplicationService.getById(appId).getAppSecret();
-//        if (flag==1
-//                && (appSecretKey==null || "".equals(appSecretKey))
-//                && (appAppKey==null || "".equals(appAppKey))){
-//            String appKey = Sm4.sm();
-//            String secretKey = Sm4.sm();
-//            UpdateWrapper<ManageApplication> appUpdateWrapper = new UpdateWrapper<>();
-//            // 设置更新条件，这里假设要更新 id 为 1 的记录
-//            appUpdateWrapper.eq("APP_ID", appId);
-//            // 设置要更新的字段和值
-//            appUpdateWrapper.set("APP_SECRET", secretKey);
-//            appUpdateWrapper.set("APP_KEY", appKey);
-//            manageApplicationService.update(appUpdateWrapper);
-//        }
+        // 判断是否生成APP Key 和 Secret Key
+        String appSecretKey =  manageApplicationService.getById(auditVO.getAppId()).getAppSecret();
+        String appAppKey =  manageApplicationService.getById(auditVO.getAppId()).getAppSecret();
+        if (auditVO.getFlag()==1
+                && (appSecretKey==null || "".equals(appSecretKey))
+                && (appAppKey==null || "".equals(appAppKey))){
+            String appKey = Sm4.sm();
+            String secretKey = Sm4.sm();
+            LambdaUpdateWrapper<ManageApplication> appUpdateWrapper = Wrappers.lambdaUpdate();
+            // 设置更新条件，这里假设要更新 id 为 1 的记录
+            appUpdateWrapper.eq(ManageApplication::getAppId, auditVO.getAppId());
+            // 设置要更新的字段和值
+            appUpdateWrapper.set(ManageApplication::getAppKey, appKey);
+            appUpdateWrapper.set(ManageApplication::getAppSecret, secretKey);
+            manageApplicationService.update(appUpdateWrapper);
+        }
     }
 
     @Override

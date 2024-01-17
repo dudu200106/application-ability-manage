@@ -19,62 +19,70 @@ public class ManageApplication implements Serializable {
     /**
      * id
      */
-    @TableId
+    @TableId(value = "YY_ID")
     @Schema(description = "appID数据库id")
     private Long appId;
 
     /**
      * 应用名称
      */
-
+    @TableField(value = "YY_MC")
     @Schema(description = "app名称")
     private String appName;
 
     /**
      * 应用简介
      */
+    @TableField(value = "YY_JC")
     @Schema(description = "简介")
     private String appSynopsis;
 
     /**
      * 能力绑定
      */
+    @TableField(value = "YY_NLBD")
     @Schema(description = "能力绑定")
     private String appAbility;
 
     /**
      * 同意服务协议 0否 1是
      */
+    @TableField(value = "YY_FWXY")
     @Schema(description = "同意服务协议")
     private Integer appAgreement;
 
     /**
      * 是否实名（认证） 0否 1是
      */
+    @TableField(value = "YY_SMRZ")
     @Schema(description = "是否实名（认证）")
     private Integer appAuthentication;
 
     /**
      * 密钥
      */
+    @TableField(value = "YY_KEY")
     @Schema(description = "秘钥")
     private String appKey;
 
     /**
      * 密令
      */
+    @TableField(value = "YY_SECRET")
     @Schema(description = "密令")
     private String appSecret;
 
     /**
      * 状态（认证） 0不启用 1启用
      */
+    @TableField(value = "YY_ZT")
     @Schema(description = "状态（认证）")
     private Integer appStatus;
 
     /**
      * 是否删除 0正常 1删除
      */
+    @TableField(value = "YY_ISDELETE")
     @Schema(description = "是否删除")
     @TableLogic
     private Integer appIsdelete;
@@ -82,56 +90,63 @@ public class ManageApplication implements Serializable {
     /**
      * 创建时间
      */
+    @TableField(value = "YY_CREATETIME" ,fill = FieldFill.INSERT)
     @Schema(description = "创建时间")
-    @TableField(fill = FieldFill.INSERT)
     private Date appCreatetime;
 
     /**
      * 修改时间
      */
+    @TableField(value = "YY_UPDATETIME", fill = FieldFill.INSERT_UPDATE)
     @Schema(description = "修改时间")
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date appUpdatetime;
 
     /**
      * 备注
      */
-    @Schema(description = " 备注")
+    @TableField(value = "YY_BZ")
+    @Schema(description = "备注")
     private String appRemarks;
 
     /**
      * 创建人
      */
+    @TableField(value = "YY_CREATENAME")
     @Schema(description = "创建人")
     private String appCreatename;
 
     /**
      * 修改人
      */
+    @TableField(value = "YY_UPDATENAME")
     @Schema(description = "修改人")
     private String appUpdatename;
 
     /**
      * appid
      */
+    @TableField(value = "YY_CODE")
     @Schema(description = "appid展示")
     private String appCode;
 
     /**
      * 审核状态 0正常 1删除 2锁定 3待审核 4未通过
      */
+    @TableField(value = "YY_SHZT")
     @Schema(description = "审核状态")
     private Integer appExamine;
 
     /**
      * 应用图标路径
      */
+    @TableField(value = "YY_TB")
     @Schema(description = "图表路径")
     private String appIconpath;
 
     /**
      * 用户id
      */
+    @TableField(value = "YH_XH_ID")
     @Schema(description = "用户id")
     private String appUserId;
 

@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.dsj.common.dto.Result;
+import com.dsj.csp.manage.biz.AbilityBizService;
 import com.dsj.csp.manage.dto.AbilityApplyVO;
 import com.dsj.csp.manage.dto.AbilityLoginVO;
 import com.dsj.csp.manage.dto.PageQueryForm;
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +31,7 @@ import java.util.List;
  * @version 1.0.0
  * @date 2024/01/10
  */
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/ability")
 @Tag(name = "能力管理", description = "用于管理能力的API")
@@ -46,11 +49,13 @@ public class AbilityController {
     @Autowired
     private AbilityApplyMapper abilityApplyMapper;
 
+    private final AbilityBizService abilityBizService;
+
     @Operation(summary = "能力注册", description = "注册一个新的能力")
     @PostMapping("/add-login")
     public Result<?> addAbility(@RequestBody AbilityLoginVO ability) {
-        abilityService.saveAbility(ability);
-        return Result.success("能力注册申请成功！等待审核...");
+        Boolean saveAbility = abilityBizService.saveAbility(ability);
+        return Result.success("能力注册申请成功！等待审核...", saveAbility);
     }
 
     @Operation(summary = "获取能力详情", description = "获取特定能力的详细信息")

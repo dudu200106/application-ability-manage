@@ -89,4 +89,12 @@
         WHERE ma.APP_ID = #{appId}
 
     </update>
+
+    <select id="selectPages" resultType="map">
+        SELECT*
+        from MANAGE_APPLICATION ma
+                 INNER join MANAGE_USER mu on
+            mu.user_id = ma.app_user_id
+        WHERE mu.user_id = #{appUserId};
+    </select>
 </mapper>

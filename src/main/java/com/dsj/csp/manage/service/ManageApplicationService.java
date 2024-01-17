@@ -1,8 +1,13 @@
 package com.dsj.csp.manage.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.dsj.csp.manage.entity.ManageApplication;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,7 +20,11 @@ public interface ManageApplicationService extends IService<ManageApplication> {
     List<ManageApplication> selectappID(Long appId , String appUserId );
     int contAll();
     List<ManageApplication>selectUserApp(String appUserId );
-    boolean updateSecret(Long appId);
+//    boolean updateSecret(Long appId);
     boolean upadataAppList(Long appId,String appName,String appSynopsis,String appIconpath,String appUserId);
     boolean updateIsdetele(Long appId,String appUserId);
+//    IPage<ManageApplication> selectJoinPage(Page<Object> objectPage, Class<ManageApplication> manageApplicationClass, MPJLambdaWrapper<Object> eq);
+
+//    List<ManageApplication> selectPages(LambdaQueryWrapper<ManageApplication> wrapper, String appUserId, String keyword, Date startTime, Date endTime, int page, int size);
+
 }

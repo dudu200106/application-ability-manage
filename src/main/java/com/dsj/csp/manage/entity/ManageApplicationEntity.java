@@ -13,9 +13,9 @@ import lombok.Data;
  *
  * @TableName MANAGE_APPLICATION
  */
-@TableName(value = "MANAGE_APPLICATION")
+@TableName(value = "GXYYZC_YYB")
 @Data
-public class ManageApplication implements Serializable {
+public class ManageApplicationEntity implements Serializable {
     /**
      * id
      */
@@ -164,7 +164,7 @@ public class ManageApplication implements Serializable {
         if (getClass() != that.getClass()) {
             return false;
         }
-        ManageApplication other = (ManageApplication) that;
+        ManageApplicationEntity other = (ManageApplicationEntity) that;
         return (this.getAppId() == null ? other.getAppId() == null : this.getAppId().equals(other.getAppId()))
                 && (this.getAppName() == null ? other.getAppName() == null : this.getAppName().equals(other.getAppName()))
                 && (this.getAppSynopsis() == null ? other.getAppSynopsis() == null : this.getAppSynopsis().equals(other.getAppSynopsis()))

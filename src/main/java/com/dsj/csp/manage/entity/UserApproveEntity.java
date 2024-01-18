@@ -16,9 +16,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * 用户信息表（个人信息，认证信息）
- * @TableName MANAGE_USER
+ * @TableName GXYYZC_YHB
  */
-@TableName(value ="MANAGE_USER")
+@TableName(value ="GXYYZC_YHB")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

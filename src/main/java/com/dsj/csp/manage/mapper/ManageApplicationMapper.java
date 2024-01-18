@@ -3,8 +3,9 @@ package com.dsj.csp.manage.mapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.dsj.csp.manage.entity.ManageApplication;
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.dsj.csp.manage.entity.ManageApplicationEntity;
 import com.github.yulichang.base.MPJBaseMapper;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 
@@ -17,13 +18,13 @@ import java.util.List;
  * @createDate 2024-01-11 10:43:10
  * @Entity generator.entity.ManageApplication
  */
-public interface ManageApplicationMapper extends MPJBaseMapper<ManageApplication> {
+public interface ManageApplicationMapper extends MPJBaseMapper<ManageApplicationEntity> {
 
-    List<ManageApplication> selectappID(Long appId, String appUserId);
+    List<ManageApplicationEntity> selectappID(Long appId, String appUserId);
 
     int contAll();
 
-    List<ManageApplication> selectUserApp(String appUserId);
+    List<ManageApplicationEntity> selectUserApp(String appUserId);
 
     boolean updateSecret(Long appId, String appKey, String appSecret);
 

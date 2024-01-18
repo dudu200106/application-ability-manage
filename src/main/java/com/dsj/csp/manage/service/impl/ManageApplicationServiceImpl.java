@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.dsj.csp.manage.entity.ManageApplication;
+import com.dsj.csp.manage.entity.ManageApplicationEntity;
 import com.dsj.csp.manage.entity.UserApproveEntity;
 import com.dsj.csp.manage.mapper.ManageApplicationMapper;
 import com.dsj.csp.manage.service.ManageApplicationService;
@@ -24,13 +24,13 @@ import java.util.Objects;
  * @createDate 2024-01-11 10:43:10
  */
 @Service
-public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationMapper, ManageApplication>
+public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationMapper, ManageApplicationEntity>
         implements ManageApplicationService {
 //    @Autowired
 //    ManageApplicationMapper manageApplicationMapper;
 
     @Override
-    public List<ManageApplication> selectappID(Long appId, String appUserId) {
+    public List<ManageApplicationEntity> selectappID(Long appId, String appUserId) {
         return baseMapper.selectappID(appId, appUserId);
     }
 
@@ -39,10 +39,10 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
         return baseMapper.contAll();
     }
 
-    @Override
-    public List<ManageApplication> selectUserApp(String appUserId) {
-        return baseMapper.selectUserApp(appUserId);
-    }
+//    @Override
+//    public List<ManageApplicationEntity> selectUserApp(String appUserId) {
+//        return baseMapper.selectUserApp(appUserId);
+//    }
 
 
 //    @Override

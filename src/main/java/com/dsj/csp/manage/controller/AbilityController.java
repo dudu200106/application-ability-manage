@@ -50,9 +50,6 @@ public class AbilityController {
     @Autowired
     private AbilityApplyService abilityApplyService;
 
-    @Autowired
-    private AbilityApplyMapper abilityApplyMapper;
-
     private final AbilityBizService abilityBizService;
 
     @Operation(summary = "能力注册", description = "注册一个新的能力")
@@ -78,7 +75,7 @@ public class AbilityController {
 
     @Operation(summary = "分页查询注册能力列表", description = "分页查询注册能力列表")
     @PostMapping ("/page-login")
-    public Result<?> pageAnother(
+    public Result<?> queryLoginPage(
             @Valid @RequestBody AbilityQueryDTO abilityQuery) {
         return Result.success(abilityService.page(abilityQuery.toPage(), abilityQuery.getQueryWrapper()));
     }
@@ -145,7 +142,7 @@ public class AbilityController {
     @PostMapping("/edit-apply")
     public Result<?> editAbilityApply(@RequestBody AbilityApplyEntity abilityApply){
         UpdateWrapper<AbilityApplyEntity> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("ability_apply_id", abilityApply.getAbilityApplyId());
+        updateWrapper.lambda().eq(AbilityApplyEntity::getAbilityApplyId, abilityApply.getAbilityApplyId());
         return Result.success(abilityApplyService.update(abilityApply, updateWrapper));
     }
 
@@ -161,7 +158,7 @@ public class AbilityController {
     public Result<?> countAbility(@Parameter(description = "能力状态") @RequestParam Integer status){
         QueryWrapper<AbilityEntity> abilityQW = new QueryWrapper<>();
         // 4:已发布能力
-        abilityQW.eq("Status", status);
+        abilityQW.lambda().eq(AbilityEntity::getStatus, status);
         return Result.success(abilityService.count(abilityQW));
 
     }

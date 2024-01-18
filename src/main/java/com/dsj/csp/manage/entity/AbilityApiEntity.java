@@ -10,51 +10,51 @@ import java.sql.Timestamp;
 @Data
 @TableName("MANAGE_ABILITY_API")
 public class AbilityApiEntity extends BaseEntity implements Serializable {
-    @TableId
+    @TableId("NLJK_XH")
     private Long apiId;
 
-    @TableField("ABILITY_ID")
+    @TableField("NL_XH")
     private Long abilityId;
 
-    @TableField("API_NAME")
+    @TableField("NLJK_MC")
     private String apiName;
 
-    @TableField("DESCRIPTION")
+    @TableField("NLJK_MS")
     private String description;
 
-    @TableField("RECALL_LIMIT")
+    @TableField("DYLXZ")
     private Integer recallLimit;
 
-    @TableField("QPS")
+    @TableField("BFSXZ")
     private Integer qps;
 
-    @TableField("REQUEST_PARAM")
+    @TableField("NLJK_QQCS")
     private String requestParam;
 
-    @TableField("RESPONSE_PARAM")
+    @TableField("NLJK_XYCS")
     private String responseParam;
 
-    @TableField("PROTOCOL")
+    @TableField("NLJK_XY")
     private String protocol;
 
-    @TableField("API_HOST")
+    @TableField("NLJK_ZJDZ")
     private String apiHost;
 
-    @TableField("BASE_PATH")
+    @TableField("NLJK_JCLJ")
     private String basePath;
 
-    @TableField("API_URL")
+    @TableField("NLJK_URL")
     private String apiUrl;
 
-    @TableField("API_VERSION")
+    @TableField("NLJK_BBH")
     private String apiVersion;
 
 //    @TableLogic
 //    private Integer isDelete;
 
-    @TableField(value = "CREATE_TIME" )
+    @TableField(value = "CJSJ" )
     private Timestamp createTime;
 
-    @TableField(value = "UPDATE_TIME")
+    @TableField(value = "GXSJ")
     private Timestamp updateTime;
 }

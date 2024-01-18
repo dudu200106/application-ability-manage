@@ -16,43 +16,43 @@ import java.sql.Timestamp;
 @Data
 @TableName("MANAGE_ABILITY")
 public class AbilityEntity extends BaseEntity implements Serializable {
-    @TableId(value = "ABILITY_ID", type = IdType.AUTO)
+    @TableId(value = "NL_XH", type = IdType.AUTO)
     private Long abilityId;
 
-    @TableField("ABILITY_TYPE")
+    @TableField("NL_LX")
     private String abilityType;
 
-    @TableField("ABILITY_NAME")
+    @TableField("NL_MC")
     private String abilityName;
 
-    @TableField("USER_ID")
+    @TableField("YH_ID")
     private Long userId;
 
-    @TableField("ABILITY_PROVIDER")
+    @TableField("NL_TGZ")
     private String abilityProvider;
 
-    @TableField("ABILITY_DESC")
+    @TableField("NL_MS")
     private String abilityDesc;
 
-    @TableField("STATUS")
+    @TableField("ZT")
     private Integer status;
 
-    @TableField("NOTE")
+    @TableField("BZ")
     private String note;
 
-//    @TableLogic
+//    @TableField("SFSC")
 //    private Integer isDelete;
 
-    @TableField(value = "CREATE_TIME")
+    @TableField(value = "CJSJ")
     private Date createTime;
 
-    @TableField(value = "UPDATE_TIME")
+    @TableField(value = "GXSJ")
     private Date updateTime;
 
-    @TableField("RECALL_LIMIT")
+    @TableField("DYLXZ")
     private Integer recallLimit;
 
-    @TableField("QPS")
+    @TableField("BFSXZ")
     private Integer qps;
 
 }

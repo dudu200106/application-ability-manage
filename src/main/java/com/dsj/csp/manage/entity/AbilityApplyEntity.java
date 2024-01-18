@@ -10,63 +10,63 @@ import java.sql.Date;
 @Data
 @TableName("MANAGE_ABILITY_APPLY")
 public class AbilityApplyEntity extends BaseEntity implements Serializable {
-    @TableId(value = "ABILITY_APPLY_ID", type = IdType.AUTO)
+    @TableId(value = "NLSQ_XH", type = IdType.AUTO)
     private Long abilityApplyId;
 
-    @TableField("ABILITY_ID")
+    @TableField("NL_XH")
     private Long abilityId;
 
-    @TableField("APP_ID")
+    @TableField("YY_XH")
     private Long appId;
 
-    @TableField("USER_ID")
+    @TableField("YH_XH")
     private Long userId;
 
-    @TableField("ABILITY_NAME")
+    @TableField("NL_MC")
     private String abilityName;
 
-    @TableField("ABILITY_TYPE")
+    @TableField("NL_LX")
     private String abilityType;
 
-    @TableField("APP_NAME")
+    @TableField("YY_MC")
     private String appName;
 
-    @TableField("API_IDS")
+    @TableField("SQJKLB")
     private String apiIds;
 
-    @TableField("COMPANY_NAME")
+    @TableField("QY_MC")
     private String companyName;
 
-    @TableField("GOV_NAME")
+    @TableField("ZF_BMMC")
     private String govName;
 
-    @TableField("STATUS")
+    @TableField("zt")
     private Integer status;
 
-    @TableField("illustrate")
+    @TableField("SQSM")
     private String illustrate;
 
-    @TableField("NOTE")
+    @TableField("BZ")
     private String note;
 
-    @TableField("APPROVE_TIME")
+    @TableField("SPSJ")
     private Date approveTime;
 
 //    @TableLogic
 //    private Integer isDelete;
 
-    @TableField(value = "CREATE_TIME")
+    @TableField(value = "CJSJ")
     private Date createTime;
 
-    @TableField(value = "UPDATE_TIME")
+    @TableField(value = "GXSJ")
     private Date updateTime;
 
-    @TableField("IS_AGREE_PROTOCOL")
+    @TableField("SFTYXY")
     private Integer isAgreeProtocols;
 
-    @TableField("RECALL_LIMIT")
+    @TableField("DYLXZ")
     private Integer recallLimit;
 
-    @TableField("QPS")
+    @TableField("BFSXZ")
     private Integer qps;
 }

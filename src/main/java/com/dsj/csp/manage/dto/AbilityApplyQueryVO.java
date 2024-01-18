@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.PageQuery;
 import com.dsj.csp.manage.entity.AbilityApplyEntity;
 import com.dsj.csp.manage.entity.AbilityEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -22,8 +23,10 @@ public class AbilityApplyQueryVO extends PageQuery<AbilityApplyEntity> implement
 
     private AbilityApplyEntity entity;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date startTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date endTime;
 
     private String keyword;

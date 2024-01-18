@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.dsj.csp.manage.dto.AbilityApplyVO;
 import com.dsj.csp.manage.dto.AbilityAuditVO;
 import com.dsj.csp.manage.dto.AbilityListDTO;
 import com.dsj.csp.manage.dto.AbilityLoginVO;
@@ -94,7 +93,7 @@ public class AbilityServiceImpl extends ServiceImpl<AbilityMapper, AbilityEntity
             }
             else {
                 UpdateWrapper<AbilityApiEntity> apiUW = new UpdateWrapper<>();
-                apiUW.eq("api_id", api.getApiId());
+                apiUW.lambda().eq(AbilityApiEntity::getApiId, api.getApiId());
                 abilityApiMapper.update(api, apiUW);
             }
         }
@@ -131,16 +130,17 @@ public class AbilityServiceImpl extends ServiceImpl<AbilityMapper, AbilityEntity
     @Override
     public long countAbility(Integer status) {
         QueryWrapper<AbilityEntity> qw = new QueryWrapper<>();
-        qw.eq("STATUS", status);
+        qw.lambda().eq(AbilityEntity::getStatus, status);
         return abilityMapper.selectCount(qw);
     }
 
     @Override
     public long countAvailAbility() {
         QueryWrapper<AbilityEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("Status", 3)
+        queryWrapper.lambda()
+                .eq(AbilityEntity::getStatus, 3)
                 .or()
-                .eq("status", 4);
+                .eq(AbilityEntity::getStatus, 4);
         return abilityMapper.selectCount(queryWrapper);
     }
 

@@ -51,9 +51,12 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         wrapper.lambda()
                 .eq(Objects.nonNull(status), UserApproveEntity::getStatus, status)
                 .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), UserApproveEntity::getCreateTime, startTime, endTime)
-                .like(StringUtils.isNotBlank(keyword), UserApproveEntity::getGovName, keyword)
-                .or()
-                .like(StringUtils.isNotBlank(keyword), UserApproveEntity::getCompanyName, keyword);
+                .and(StringUtils.isNotBlank(keyword),lambdaQuery->{
+                    lambdaQuery
+                            .like(StringUtils.isNotBlank(keyword), UserApproveEntity::getGovName, keyword)
+                            .or()
+                            .like(StringUtils.isNotBlank(keyword), UserApproveEntity::getCompanyName, keyword);
+        });
         return baseMapper.selectPage(new Page(page, size), wrapper);
     }
 
@@ -64,8 +67,9 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
 
     @Override
     public void approveSuccess(UserApproveRequest user) {
+        UserApproveEntity userApproveEntity = baseMapper.selectById(user.getUserId());
         boolean updateResult = this.lambdaUpdate()
-                .eq(Objects.nonNull(user.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())
+                .eq(Objects.nonNull(userApproveEntity.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())
                 .eq(UserApproveEntity::getUserId, user.getUserId())
                 .set(UserApproveEntity::getStatus, UserStatusEnum.SUCCESS.getStatus())
                 .set(UserApproveEntity::getNote, "实名认证已完成")
@@ -80,8 +84,9 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
 
     @Override
     public void approveFail(UserApproveRequest user) {
+        UserApproveEntity userApproveEntity = baseMapper.selectById(user.getUserId());
         boolean updateResult = this.lambdaUpdate()
-                .eq(Objects.nonNull(user.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())
+                .eq(Objects.nonNull(userApproveEntity.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())
                 .eq(UserApproveEntity::getUserId, user.getUserId())
                 .set(UserApproveEntity::getStatus, UserStatusEnum.FAIL.getStatus())
                 .set(UserApproveEntity::getNote, user.getNote())

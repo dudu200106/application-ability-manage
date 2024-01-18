@@ -46,7 +46,7 @@ import static com.dsj.csp.manage.util.RandomNumberGenerator.generateNumber;
 @RequiredArgsConstructor
 @RequestMapping("/magapplication")
 public class ManageApplicationController {
-//    @Resource
+    //    @Resource
 //    private ManageApplicationService manageApplicationService;
     private final ManageApplicationService manageApplicationService;
 
@@ -69,15 +69,18 @@ public class ManageApplicationController {
     @Operation(summary = "分页查询")
     @GetMapping("/selectPage")
     public Result<Page<ManageApplictionVo>> selectPage(@Parameter(description = "用户id") String appUserId, @Parameter(description = "查询关键字 Id或名称") String keyword, @Parameter(description = "开始时间") Date startTime, @Parameter(description = "结束时间") Date endTime, @Parameter int size, @Parameter int pages) {
-            Page<ManageApplictionVo> userApproveEntityPage = userApproveMapper.selectJoinPage(new Page<>(pages, size), ManageApplictionVo.class,
-                    new MPJLambdaWrapper<UserApproveEntity>()
-                            .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), ManageApplication::getAppCreatetime, startTime, endTime)
-                            .like(!StringUtils.isEmpty(keyword),ManageApplication::getAppName, keyword)
-                            .or().like(!StringUtils.isEmpty(keyword),ManageApplication::getAppCode, keyword)
-                            .selectAll(UserApproveEntity.class)
-                            .selectAll(ManageApplication.class)
-                            .leftJoin(ManageApplication.class, ManageApplication::getAppUserId, UserApproveEntity::getUserId));
-            return Result.success(userApproveEntityPage);
+        Page<ManageApplictionVo> userApproveEntityPage = userApproveMapper.selectJoinPage(new Page<>(pages, size), ManageApplictionVo.class,
+                        new MPJLambdaWrapper<UserApproveEntity>()
+                                .eq(!StringUtils.isEmpty(appUserId),ManageApplication::getAppUserId, appUserId)
+                                .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), ManageApplication::getAppCreatetime, startTime, endTime)
+                                .like(!StringUtils.isEmpty(keyword), ManageApplication::getAppName, keyword)
+                                .or().like(!StringUtils.isEmpty(keyword), ManageApplication::getAppCode, keyword)
+                                .selectAll(UserApproveEntity.class)
+                                .selectAll(ManageApplication.class)
+                                .leftJoin(ManageApplication.class, ManageApplication::getAppUserId, UserApproveEntity::getUserId)
+                                );
+
+        return Result.success(userApproveEntityPage);
 
     }
 
@@ -90,10 +93,8 @@ public class ManageApplicationController {
     public Result<?> add(@Parameter(description = "应用图片路径") String appIconpath, @Parameter(description = "应用名字") String appName, @Parameter(description = "应用简介") String appSynopsis, @Parameter(description = "用户Id") String userId) {
         ManageApplication manageApplication = new ManageApplication();
         manageApplication.setAppName(appName);
-
         manageApplication.setAppUserId(userId);
         manageApplication.setAppSynopsis(appSynopsis);
-
         manageApplication.setAppCode(generateNumber(8));//生成appid
         manageApplication.setAppIconpath(appIconpath);//应用路径
 //            状态

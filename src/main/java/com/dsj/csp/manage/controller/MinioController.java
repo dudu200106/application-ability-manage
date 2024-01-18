@@ -24,7 +24,7 @@ import java.util.Date;
  * Created by macro on 2024/1/15.
  * FBL
  */
-@Tag(name = "文件上传")
+@Tag(name = "文件上传管理")
 @Controller
 @RequestMapping("/minio")
 public class MinioController {

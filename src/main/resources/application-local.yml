@@ -40,6 +40,7 @@ spring:
     multipart:
       location: D:/picture
 
+
 springdoc:
   api-docs:
     path: /api-docs

@@ -66,12 +66,6 @@ public class AbilityController {
         return Result.success(abilityService.getById(abilityId));
     }
 
-    @Operation(summary = "查询全部注册能力列表", description = "获取能力列表")
-    @GetMapping("/query-all-list")
-    public Result<?> queryAbilityList() {
-        return Result.success(abilityService.getAllAbilityList());
-
-    }
 
     @Operation(summary = "分页查询注册能力列表", description = "分页查询注册能力列表")
     @PostMapping ("/page-login")
@@ -125,9 +119,9 @@ public class AbilityController {
 
     @Operation(summary = "审核能力使用申请", description = "审核能力使用申请")
     @PostMapping("/audit-apply")
-    public Result<?> auditAbilityApply(@RequestBody AbilityAuditVO auditVO){
+    public Result<?> auditAbilityApply(@RequestBody AbilityApplyAuditVO auditVO){
 
-        abilityService.auditApply(auditVO);
+        abilityApplyService.auditApply(auditVO);
         return Result.success("审核完成!");
     }
 

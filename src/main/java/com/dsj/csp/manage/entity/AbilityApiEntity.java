@@ -57,4 +57,10 @@ public class AbilityApiEntity extends BaseEntity implements Serializable {
 
     @TableField(value = "GXSJ")
     private Timestamp updateTime;
+
+    @TableField(value = "GY")
+    private String publicKey;
+
+    @TableField(value = "SY")
+    private String secretKey;
 }

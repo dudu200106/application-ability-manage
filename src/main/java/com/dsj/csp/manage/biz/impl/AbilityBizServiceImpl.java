@@ -33,10 +33,15 @@ public class AbilityBizServiceImpl implements AbilityBizService {
         abilityService.save(ability);
         Long abilityId = ability.getAbilityId();
 
+        for (AbilityApiEntity api : abilityLoginVO.getApiList()){
+            api.setAbilityId(abilityId);
+            abilityApiService.save(api);
+        }
+        return true;
 
-        List<AbilityApiEntity> abilityApiEntityList = abilityLoginVO.getApiList()
-                .stream().peek(abilityApi -> abilityApi.setAbilityId(abilityId)).toList();
-        return abilityApiService.saveBatch(abilityApiEntityList);
+//        List<AbilityApiEntity> abilityApiEntityList = abilityLoginVO.getApiList()
+//                .stream().peek(abilityApi -> abilityApi.setAbilityId(abilityId)).toList();
+//        return abilityApiService.saveBatch(abilityApiEntityList);
     }
 
 

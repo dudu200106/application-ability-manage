@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Data
-@TableName("MANAGE_ABILITY_API")
+@TableName("GXYYZC_NLJK")
 public class AbilityApiEntity extends BaseEntity implements Serializable {
     @TableId("NLJK_XH")
     private Long apiId;

@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.sql.Date;
 
 @Data
-@TableName("MANAGE_ABILITY_APPLY")
+@TableName("GXYYZC_NLSQ")
 public class AbilityApplyEntity extends BaseEntity implements Serializable {
     @TableId(value = "NLSQ_XH", type = IdType.AUTO)
     private Long abilityApplyId;

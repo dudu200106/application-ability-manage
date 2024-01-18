@@ -5,10 +5,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
 import com.dsj.csp.manage.entity.AbilityApplyEntity;
-import com.dsj.csp.manage.entity.ManageApplication;
+import com.dsj.csp.manage.entity.ManageApplicationEntity;
 import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.AbilityApplyService;
-import com.dsj.csp.manage.service.impl.ManageApplicationServiceImpl;
+import com.dsj.csp.manage.service.ManageApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,15 +23,15 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
 
     @Autowired
-    private ManageApplicationServiceImpl manageApplicationService;
+    private ManageApplicationService manageApplicationService;
     private final AbilityApplyService abilityApplyService;
     private final AbilityApiService abilityApiService;
 
 
     @Override
     public List<String> getApiList(String appCode) {
-        LambdaQueryWrapper<ManageApplication> appQW = Wrappers.lambdaQuery();
-        appQW.eq(ManageApplication::getAppCode, appCode);
+        LambdaQueryWrapper<ManageApplicationEntity> appQW = Wrappers.lambdaQuery();
+        appQW.eq(ManageApplicationEntity::getAppCode, appCode);
         Long appId = manageApplicationService.getOne(appQW).getAppId();
         // 查出应用关联的所有能力
         LambdaQueryWrapper<AbilityApplyEntity> applyQW = Wrappers.lambdaQuery();

@@ -14,7 +14,7 @@ import java.sql.Timestamp;
  * @date 2024/01/10
  */
 @Data
-@TableName("MANAGE_ABILITY")
+@TableName("GXYYZC_NL")
 public class AbilityEntity extends BaseEntity implements Serializable {
     @TableId(value = "NL_XH", type = IdType.AUTO)
     private Long abilityId;

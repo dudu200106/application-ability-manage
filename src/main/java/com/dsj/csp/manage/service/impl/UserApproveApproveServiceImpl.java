@@ -51,9 +51,12 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         wrapper.lambda()
                 .eq(Objects.nonNull(status), UserApproveEntity::getStatus, status)
                 .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), UserApproveEntity::getCreateTime, startTime, endTime)
-                .like(StringUtils.isNotBlank(keyword), UserApproveEntity::getGovName, keyword)
-                .or()
-                .like(StringUtils.isNotBlank(keyword), UserApproveEntity::getCompanyName, keyword);
+                .and(StringUtils.isNotBlank(keyword),lambdaQuery->{
+                    lambdaQuery
+                            .like(StringUtils.isNotBlank(keyword), UserApproveEntity::getGovName, keyword)
+                            .or()
+                            .like(StringUtils.isNotBlank(keyword), UserApproveEntity::getCompanyName, keyword);
+        });
         return baseMapper.selectPage(new Page(page, size), wrapper);
     }
 

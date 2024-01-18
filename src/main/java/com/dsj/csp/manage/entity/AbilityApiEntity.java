@@ -52,15 +52,23 @@ public class AbilityApiEntity extends BaseEntity implements Serializable {
 //    @TableLogic
 //    private Integer isDelete;
 
-    @TableField(value = "CJSJ" )
+    @TableField(value = "NLJK_CJSJ" )
     private Timestamp createTime;
 
-    @TableField(value = "GXSJ")
+    @TableField(value = "NLJK_GXSJ")
     private Timestamp updateTime;
 
-    @TableField(value = "GY")
+    @TableField(value = "WG_GY")
     private String publicKey;
 
-    @TableField(value = "SY")
+    @TableField(value = "WG_SY")
     private String secretKey;
+
+    @TableField(value = "WG_QQMWGZ")
+    private String reqCryptRule;
+
+    @TableField(value = "WG_XYMWGZ")
+    private String respCryptRule;
+
+
 }

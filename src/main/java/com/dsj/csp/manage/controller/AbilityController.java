@@ -6,21 +6,19 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.common.dto.Result;
+import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.biz.AbilityBizService;
 import com.dsj.csp.manage.dto.AbilityApplyVO;
 import com.dsj.csp.manage.dto.AbilityLoginVO;
-import com.dsj.csp.manage.dto.PageQueryForm;
 import com.dsj.csp.manage.dto.*;
 import com.dsj.csp.manage.entity.*;
 
-import com.dsj.csp.manage.mapper.AbilityApplyMapper;
 import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.AbilityApplyService;
 import com.dsj.csp.manage.service.AbilityService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +49,8 @@ public class AbilityController {
     private AbilityApplyService abilityApplyService;
 
     private final AbilityBizService abilityBizService;
+
+    private final AbilityApiBizService abilityApiBizService;
 
     @Operation(summary = "能力注册", description = "注册一个新的能力")
     @PostMapping("/add-login")
@@ -162,6 +162,21 @@ public class AbilityController {
     public Result<?> countApi(){
         return Result.success(abilityService.count());
 
+    }
+
+    /**
+     * 根据 app-code 获取 可访问路径
+     *
+     * @return 可访问路径
+     */
+    @GetMapping("/get-auth-api")
+    public Result<List<String>> getAuthApi(String appCode) {
+        // 返回可访问路径
+        // 最终返回的路径看你并不支持通配符，而是每一个路径都需要在管理端授权
+
+        System.out.println("收到请求，appcode：" + appCode);
+
+        return Result.success(abilityApiBizService.getApiList( appCode));
     }
 
 }

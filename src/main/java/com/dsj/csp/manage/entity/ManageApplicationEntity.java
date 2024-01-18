@@ -13,7 +13,7 @@ import lombok.Data;
  *
  * @TableName MANAGE_APPLICATION
  */
-@TableName(value = "MANAGE_APPLICATION")
+@TableName(value = "GXYYZC_YYB")
 @Data
 public class ManageApplicationEntity implements Serializable {
     /**

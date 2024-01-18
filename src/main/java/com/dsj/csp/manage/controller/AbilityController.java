@@ -50,9 +50,6 @@ public class AbilityController {
     @Autowired
     private AbilityApplyService abilityApplyService;
 
-    @Autowired
-    private AbilityApplyMapper abilityApplyMapper;
-
     private final AbilityBizService abilityBizService;
 
     @Operation(summary = "能力注册", description = "注册一个新的能力")
@@ -69,16 +66,10 @@ public class AbilityController {
         return Result.success(abilityService.getById(abilityId));
     }
 
-    @Operation(summary = "查询全部注册能力列表", description = "获取能力列表")
-    @GetMapping("/query-all-list")
-    public Result<?> queryAbilityList() {
-        return Result.success(abilityService.getAllAbilityList());
-
-    }
 
     @Operation(summary = "分页查询注册能力列表", description = "分页查询注册能力列表")
     @PostMapping ("/page-login")
-    public Result<?> pageAnother(
+    public Result<?> queryLoginPage(
             @Valid @RequestBody AbilityQueryDTO abilityQuery) {
         return Result.success(abilityService.page(abilityQuery.toPage(), abilityQuery.getQueryWrapper()));
     }
@@ -128,9 +119,9 @@ public class AbilityController {
 
     @Operation(summary = "审核能力使用申请", description = "审核能力使用申请")
     @PostMapping("/audit-apply")
-    public Result<?> auditAbilityApply(@RequestBody AbilityAuditVO auditVO){
+    public Result<?> auditAbilityApply(@RequestBody AbilityApplyAuditVO auditVO){
 
-        abilityService.auditApply(auditVO);
+        abilityApplyService.auditApply(auditVO);
         return Result.success("审核完成!");
     }
 
@@ -145,7 +136,7 @@ public class AbilityController {
     @PostMapping("/edit-apply")
     public Result<?> editAbilityApply(@RequestBody AbilityApplyEntity abilityApply){
         UpdateWrapper<AbilityApplyEntity> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("ability_apply_id", abilityApply.getAbilityApplyId());
+        updateWrapper.lambda().eq(AbilityApplyEntity::getAbilityApplyId, abilityApply.getAbilityApplyId());
         return Result.success(abilityApplyService.update(abilityApply, updateWrapper));
     }
 
@@ -161,7 +152,7 @@ public class AbilityController {
     public Result<?> countAbility(@Parameter(description = "能力状态") @RequestParam Integer status){
         QueryWrapper<AbilityEntity> abilityQW = new QueryWrapper<>();
         // 4:已发布能力
-        abilityQW.eq("Status", status);
+        abilityQW.lambda().eq(AbilityEntity::getStatus, status);
         return Result.success(abilityService.count(abilityQW));
 
     }

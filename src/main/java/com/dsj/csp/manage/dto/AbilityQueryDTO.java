@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.PageQuery;
 import com.dsj.csp.manage.entity.AbilityEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -17,8 +18,10 @@ public class AbilityQueryDTO extends PageQuery<AbilityEntity> implements Seriali
 
     private AbilityEntity entity;
 
-    private  Date startTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    private Date startTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date endTime;
 
     private String keyword;
@@ -39,12 +42,12 @@ public class AbilityQueryDTO extends PageQuery<AbilityEntity> implements Seriali
                 .eq(entity.getUpdateTime() != null, AbilityEntity::getUpdateTime, entity.getUpdateTime())
                 .eq(entity.getRecallLimit() != null, AbilityEntity::getRecallLimit, entity.getRecallLimit())
                 .eq(entity.getQps() != null, AbilityEntity::getQps, entity.getQps());
-        qw
-                .ge(Objects.nonNull(startTime), "CREATE_TIME", startTime)
-                .le(Objects.nonNull(endTime), "CREATE_TIME", endTime)
+        qw.lambda()
+                .ge(Objects.nonNull(startTime), AbilityEntity::getCreateTime, startTime)
+                .le(Objects.nonNull(endTime), AbilityEntity::getCreateTime, endTime)
                 .and(keyword!=null && !"".equals(keyword),
-                        i -> i.like("ABILITY_NAME", keyword)
-                                .or().like("ABILITY_PROVIDER", keyword)
+                        i -> i.like(AbilityEntity::getAbilityName, keyword)
+                                .or().like(AbilityEntity::getAbilityProvider, keyword)
                 );
         return qw;
     }

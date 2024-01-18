@@ -8,6 +8,7 @@ import com.dsj.csp.manage.dto.MinioUploadDto;
 import io.minio.*;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +24,7 @@ import java.util.Date;
  * Created by macro on 2024/1/15.
  * FBL
  */
+@Tag(name = "文件上传")
 @Controller
 @RequestMapping("/minio")
 public class MinioController {

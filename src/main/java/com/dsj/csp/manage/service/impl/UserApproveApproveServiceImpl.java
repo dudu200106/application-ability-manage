@@ -1,5 +1,4 @@
 package com.dsj.csp.manage.service.impl;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -13,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -46,7 +46,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
      * 管理员实名认证审核模块
      */
     @Override
-    public Page<UserApproveEntity> select(String status, String keyword, Date startTime, Date endTime, int page, int size) {
+    public Page<UserApproveEntity> select(String status,String keyword, Date startTime, Date endTime, int page, int size) {
         QueryWrapper<UserApproveEntity> wrapper = new QueryWrapper();
         wrapper.lambda()
                 .eq(Objects.nonNull(status), UserApproveEntity::getStatus, status)

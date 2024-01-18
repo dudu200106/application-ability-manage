@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dsj.csp.manage.dto.AbilityApplyAuditVO;
 import com.dsj.csp.manage.dto.AbilityApplyVO;
 import com.dsj.csp.manage.entity.AbilityApplyEntity;
-import com.dsj.csp.manage.entity.ManageApplication;
+import com.dsj.csp.manage.entity.ManageApplicationEntity;
 import com.dsj.csp.manage.mapper.AbilityApplyMapper;
 import com.dsj.csp.manage.service.AbilityApplyService;
 import com.dsj.csp.manage.service.ManageApplicationService;
@@ -46,7 +46,7 @@ public class AbilityApplyServiceImpl extends ServiceImpl<AbilityApplyMapper, Abi
         abilityApplyMapper.update(updateWrapper);
 
         // 判断是否生成APP Key 和 Secret Key
-        ManageApplication app = manageApplicationService.getById(auditVO.getAppId());
+        ManageApplicationEntity app = manageApplicationService.getById(auditVO.getAppId());
         if (app == null){
             return;
         }
@@ -59,12 +59,12 @@ public class AbilityApplyServiceImpl extends ServiceImpl<AbilityApplyMapper, Abi
         }
         String appKey = Sm4.sm();
         String secretKey = Sm4.sm();
-        LambdaUpdateWrapper<ManageApplication> appUpdateWrapper = Wrappers.lambdaUpdate();
+        LambdaUpdateWrapper<ManageApplicationEntity> appUpdateWrapper = Wrappers.lambdaUpdate();
         // 设置更新条件，这里假设要更新 id 为 1 的记录
-        appUpdateWrapper.eq(ManageApplication::getAppId, auditVO.getAppId());
+        appUpdateWrapper.eq(ManageApplicationEntity::getAppId, auditVO.getAppId());
         // 设置要更新的字段和值
-        appUpdateWrapper.set(ManageApplication::getAppKey, appKey);
-        appUpdateWrapper.set(ManageApplication::getAppSecret, secretKey);
+        appUpdateWrapper.set(ManageApplicationEntity::getAppKey, appKey);
+        appUpdateWrapper.set(ManageApplicationEntity::getAppSecret, secretKey);
         manageApplicationService.update(appUpdateWrapper);
     }
 

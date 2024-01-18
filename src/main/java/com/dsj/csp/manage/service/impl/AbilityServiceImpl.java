@@ -11,7 +11,6 @@ import com.dsj.csp.manage.dto.AbilityLoginVO;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
 import com.dsj.csp.manage.entity.AbilityApplyEntity;
 import com.dsj.csp.manage.entity.AbilityEntity;
-import com.dsj.csp.manage.entity.ManageApplication;
 import com.dsj.csp.manage.mapper.AbilityApiMapper;
 import com.dsj.csp.manage.mapper.AbilityApplyMapper;
 import com.dsj.csp.manage.mapper.AbilityMapper;

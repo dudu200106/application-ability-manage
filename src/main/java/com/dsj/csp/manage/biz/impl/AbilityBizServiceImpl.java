@@ -12,11 +12,14 @@ import com.dsj.csp.manage.util.Sm2;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.KeyPair;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 功能说明：
@@ -26,6 +29,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Service
+@Transactional(propagation = Propagation.REQUIRED)
 public class AbilityBizServiceImpl implements AbilityBizService {
 
     private final AbilityService abilityService;
@@ -39,19 +43,23 @@ public class AbilityBizServiceImpl implements AbilityBizService {
         abilityService.save(ability);
         Long abilityId = ability.getAbilityId();
 
-        for (AbilityApiEntity api : abilityLoginVO.getApiList()){
-            api.setAbilityId(abilityId);
-            // 生成公钥和私钥
+        abilityLoginVO.getApiList().forEach(e->{
+            e.setAbilityId(abilityId);
             Map<String,String> SM2Key = Sm2.sm2Test();
-            api.setSecretKey(SM2Key.get("privateEncode"));
-            api.setPublicKey(SM2Key.get("publicEncode"));
-            abilityApiService.save(api);
-        }
-        return true;
+            e.setSecretKey(SM2Key.get("privateEncode"));
+            e.setPublicKey(SM2Key.get("publicEncode"));
+            abilityApiService.save(e);
+        });
 
 //        List<AbilityApiEntity> abilityApiEntityList = abilityLoginVO.getApiList()
-//                .stream().peek(abilityApi -> abilityApi.setAbilityId(abilityId)).toList();
-//        return abilityApiService.saveBatch(abilityApiEntityList);
+//                .stream().peek((abilityApi) -> {
+//                    abilityApi.setAbilityId(abilityId);
+//                    Map<String,String> SM2Key = Sm2.sm2Test();
+//                    abilityApi.setSecretKey(SM2Key.get("privateEncode"));
+//                    abilityApi.setPublicKey(SM2Key.get("publicEncode"));
+//                }).toList();
+//         abilityApiService.saveBatch(abilityLoginVO.getApiList());
+        return true;
     }
 
 

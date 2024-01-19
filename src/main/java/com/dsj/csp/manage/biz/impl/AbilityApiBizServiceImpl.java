@@ -12,13 +12,15 @@ import com.dsj.csp.manage.service.ManageApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@Transactional(propagation = Propagation.REQUIRED)
 public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
 
@@ -39,18 +41,18 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         List<AbilityApplyEntity> applyList = abilityApplyService.list(applyQW);
 
         // 查出所有能力关联的api的Id列表
-        List<String> apiIdList= new ArrayList<>();
-        for (AbilityApplyEntity applyEntity: applyList){
-            String apiIds = applyEntity.getApiIds();
-            String[] apiIdArr =  apiIds.split(",");
-            apiIdList.addAll(Arrays.asList(apiIds.split(",")));
-        }
+        List<String> apiIdList = applyList.stream()
+                .map(AbilityApplyEntity::getApiIds).collect(Collectors.toList());
+        Set<String> apiSet = new HashSet<>();
+        apiIdList.forEach(e->
+            apiSet.addAll(Arrays.asList(e.split(",")))
+        );
         // 最后查出所有api对应的path
-        List<String> apiPaths = new ArrayList<>();
-        for (String apiId : apiIdList){
-            AbilityApiEntity api = abilityApiService.getById(Long.parseLong(apiId));
-            apiPaths.add(api.getApiUrl());
-        }
+        LambdaQueryWrapper<AbilityApiEntity> apiQW =
+                Wrappers.lambdaQuery(AbilityApiEntity.class).in(AbilityApiEntity::getApiId, apiSet);
+        List<String> apiPaths = abilityApiService
+                .getBaseMapper().selectList(apiQW)
+                .stream().map(i->i.getApiUrl()).toList();
 
         return apiPaths;
     }

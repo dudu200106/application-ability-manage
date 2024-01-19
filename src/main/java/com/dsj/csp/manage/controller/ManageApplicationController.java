@@ -5,8 +5,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.common.enums.StatusEnum;
 import com.dsj.csp.manage.dto.ManageApplictionVo;
+import com.dsj.csp.manage.entity.AbilityApiEntity;
+import com.dsj.csp.manage.entity.AbilityApplyEntity;
 import com.dsj.csp.manage.entity.ManageApplicationEntity;
 import com.dsj.csp.manage.entity.UserApproveEntity;
+import com.dsj.csp.manage.mapper.AbilityApiMapper;
+import com.dsj.csp.manage.mapper.AbilityApplyMapper;
+import com.dsj.csp.manage.mapper.ManageApplicationMapper;
 import com.dsj.csp.manage.mapper.UserApproveMapper;
 import com.dsj.csp.manage.service.ManageApplicationService;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
@@ -43,6 +48,16 @@ public class ManageApplicationController {
     @Resource
     private UserApproveMapper userApproveMapper;
 
+    @Resource
+    private AbilityApplyMapper abilityApplyMapper;
+
+    @Resource
+    private AbilityApiMapper abilityApiMapper;
+
+    @Resource
+    private ManageApplicationMapper manageApplicationMapper;
+
+
     /**
      * 分页查询
      */
@@ -58,21 +73,20 @@ public class ManageApplicationController {
     @Operation(summary = "分页查询")
     @GetMapping("/selectPage")
     public Result<Page<ManageApplictionVo>> selectPage(@Parameter(description = "用户id") String appUserId, @Parameter(description = "查询关键字 Id或名称") String keyword, @Parameter(description = "开始时间") Date startTime, @Parameter(description = "结束时间") Date endTime, @Parameter int size, @Parameter int pages) {
-        Page<ManageApplictionVo> userApproveEntityPage = userApproveMapper.selectJoinPage(new Page<>(pages, size), ManageApplictionVo.class,
-                        new MPJLambdaWrapper<UserApproveEntity>()
+        Page<ManageApplictionVo> userApproveEntityPage = manageApplicationMapper.selectJoinPage(new Page<>(pages, size), ManageApplictionVo.class,
+                        new MPJLambdaWrapper<ManageApplicationEntity>()
                                 .eq(!StringUtils.isEmpty(appUserId), ManageApplicationEntity::getAppUserId, appUserId)
                                 .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), ManageApplicationEntity::getAppCreatetime, startTime, endTime)
                                 .like(!StringUtils.isEmpty(keyword), ManageApplicationEntity::getAppName, keyword)
                                 .or().like(!StringUtils.isEmpty(keyword), ManageApplicationEntity::getAppCode, keyword)
                                 .selectAll(UserApproveEntity.class)
                                 .selectAll(ManageApplicationEntity.class)
-                                .leftJoin(ManageApplicationEntity.class, ManageApplicationEntity::getAppUserId, UserApproveEntity::getUserId)
+                                .leftJoin(UserApproveEntity.class, UserApproveEntity::getUserId,ManageApplicationEntity::getAppUserId )
                                 );
 
         return Result.success(userApproveEntityPage);
 
     }
-
 
     /**
      * 新增应用

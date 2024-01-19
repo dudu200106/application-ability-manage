@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsj.csp.manage.mapper.ContextMapper">
+
+    <resultMap id="BaseResultMap" type="com.dsj.csp.manage.entity.ContextEntity">
+            <id property="id" column="YYCJ_XH" jdbcType="INTEGER"/>
+            <result property="title" column="YYCJ_BT" jdbcType="VARCHAR"/>
+            <result property="url" column="YYCJ_TPLJ" jdbcType="VARCHAR"/>
+            <result property="describe" column="YYCJ_MS" jdbcType="VARCHAR"/>
+            <result property="isUsable" column="YYCJ_QD" jdbcType="TINYINT"/>
+            <result property="createTime" column="YYCJ_CJSJ" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="YYCJ_GXSJ" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="YYCJ_SC" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        YYCJ_XH,YYCJ_BT,YYCJ_TPLJ,
+        YYCJ_MS,YYCJ_QD,YYCJ_CJSJ,
+        YYCJ_GXSJ,YYCJ_SC
+    </sql>
+</mapper>

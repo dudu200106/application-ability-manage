@@ -35,11 +35,19 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     public void approve(UserApproveEntity user) {
         UserApproveEntity userApproveEntity = baseMapper.selectById(user);
         Integer status = userApproveEntity.getStatus();
-        if (status.equals(0) || status.equals(3)) {
+        if (status.equals(UserStatusEnum.NOAPPROVE) || status.equals(UserStatusEnum.FAIL)) {
             user.setStatus(UserStatusEnum.WAIT.getStatus());
+            user.setNote(null);
             user.setCreateTime(new Date());
             baseMapper.updateById(user);
         }
+//        this.lambdaUpdate()
+//                .eq(UserApproveEntity::getStatus,UserStatusEnum.NOAPPROVE)
+//                .or()
+//                .eq(UserApproveEntity::getStatus,UserStatusEnum.FAIL)
+//                .set(UserApproveEntity::getStatus,UserStatusEnum.WAIT)
+//                .set(UserApproveEntity::getNote,null)
+//                .update();
     }
 
     /**
@@ -53,9 +61,9 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
                 .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), UserApproveEntity::getCreateTime, startTime, endTime)
                 .and(StringUtils.isNotBlank(keyword),lambdaQuery->{
                     lambdaQuery
-                            .like(StringUtils.isNotBlank(keyword), UserApproveEntity::getGovName, keyword)
+                            .like(UserApproveEntity::getGovName, keyword)
                             .or()
-                            .like(StringUtils.isNotBlank(keyword), UserApproveEntity::getCompanyName, keyword);
+                            .like(UserApproveEntity::getCompanyName, keyword);
         });
         return baseMapper.selectPage(new Page(page, size), wrapper);
     }

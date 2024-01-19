@@ -49,10 +49,5 @@ public class AbilityEntity extends BaseEntity implements Serializable {
     @TableField(value = "GXSJ")
     private Date updateTime;
 
-    @TableField("DYLXZ")
-    private Integer recallLimit;
-
-    @TableField("BFSXZ")
-    private Integer qps;
 
 }

@@ -40,9 +40,6 @@ public class AbilityApiEntity extends BaseEntity implements Serializable {
     @TableField("NLJK_ZJDZ")
     private String apiHost;
 
-    @TableField("NLJK_JCLJ")
-    private String basePath;
-
     @TableField("NLJK_URL")
     private String apiUrl;
 
@@ -69,6 +66,24 @@ public class AbilityApiEntity extends BaseEntity implements Serializable {
 
     @TableField(value = "WG_XYMWGZ")
     private String respCryptRule;
+
+    @TableField(value = "NLJK_QQFF")
+    private String reqMethod;
+
+    @TableField(value = "NLJK_QQSJGS")
+    private String  reqFormat;
+
+    @TableField(value = "NLJK_XYSJGS")
+    private String respFormat;
+
+    @TableField(value = "NLJK_QQSL")
+    private String reqDemo;
+
+    @TableField(value = "NLJK_XYSL")
+    private String respDemo;
+
+    @TableField(value = "NLJK_XYZTM")
+    private String respStatusCode;
 
 
 }

@@ -39,9 +39,7 @@ public class AbilityQueryDTO extends PageQuery<AbilityEntity> implements Seriali
                 .eq(entity.getStatus() != null, AbilityEntity::getStatus, entity.getStatus())
                 .eq(entity.getNote() != null, AbilityEntity::getNote, entity.getNote())
                 .eq(entity.getCreateTime() != null, AbilityEntity::getCreateTime, entity.getCreateTime())
-                .eq(entity.getUpdateTime() != null, AbilityEntity::getUpdateTime, entity.getUpdateTime())
-                .eq(entity.getRecallLimit() != null, AbilityEntity::getRecallLimit, entity.getRecallLimit())
-                .eq(entity.getQps() != null, AbilityEntity::getQps, entity.getQps());
+                .eq(entity.getUpdateTime() != null, AbilityEntity::getUpdateTime, entity.getUpdateTime());
         qw.lambda()
                 .ge(Objects.nonNull(startTime), AbilityEntity::getCreateTime, startTime)
                 .le(Objects.nonNull(endTime), AbilityEntity::getCreateTime, endTime)

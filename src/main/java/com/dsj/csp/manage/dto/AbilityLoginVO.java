@@ -53,12 +53,6 @@ public class AbilityLoginVO implements Serializable {
     @Schema(description = "更新时间", requiredMode = Schema.RequiredMode.AUTO)
     private Date updateTime;
 
-    @Schema(description = "调用数量限制")
-    private Integer recallLimit;
-
-    @Schema(description = "并发请求量限制")
-    private Integer qps;
-
     @Schema(description = "API列表")
     private List<AbilityApiEntity> apiList;
 }

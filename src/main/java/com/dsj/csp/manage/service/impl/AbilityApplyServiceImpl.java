@@ -11,6 +11,7 @@ import com.dsj.csp.manage.entity.ManageApplicationEntity;
 import com.dsj.csp.manage.mapper.AbilityApplyMapper;
 import com.dsj.csp.manage.service.AbilityApplyService;
 import com.dsj.csp.manage.service.ManageApplicationService;
+import com.dsj.csp.manage.util.Sm2;
 import com.dsj.csp.manage.util.Sm4;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -18,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -59,8 +62,10 @@ public class AbilityApplyServiceImpl extends ServiceImpl<AbilityApplyMapper, Abi
                 || (appAppKey!=null && !"".equals(appAppKey))){
             return;
         }
-        String appKey = Sm4.sm();
-        String secretKey = Sm4.sm();
+
+        Map<String,String> SM2Key = Sm2.sm2Test();
+        String appKey = SM2Key.get("publicEncode");
+        String secretKey = SM2Key.get("privateEncode");
         LambdaUpdateWrapper<ManageApplicationEntity> appUpdateWrapper = Wrappers.lambdaUpdate();
         // 设置更新条件，这里假设要更新 id 为 1 的记录
         appUpdateWrapper.eq(ManageApplicationEntity::getAppId, auditVO.getAppId());

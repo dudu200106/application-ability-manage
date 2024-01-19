@@ -1,6 +1,8 @@
 package com.dsj.csp.manage.controller;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
+import com.dsj.csp.manage.entity.UserApproveEntity;
 import com.dsj.csp.manage.service.UserApproveService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,7 +29,7 @@ public class AdminApproveController {
      */
     @Operation(summary = "按条件分页查询实名认证申请")
     @GetMapping("/select")
-    public Result<?> select(@Parameter(description = "实名状态（可为空）")String status,@Parameter(description = "名称关键字（可为空）")String keyword, @Parameter(description = "开始时间（可为空）") Date startTime, @Parameter(description = "最后时间（可为空）")Date endTime, int page, int size){
+    public Result<Page<UserApproveEntity>> select(@Parameter(description = "实名状态（可为空）")String status, @Parameter(description = "名称关键字（可为空）")String keyword, @Parameter(description = "开始时间（可为空）") Date startTime, @Parameter(description = "最后时间（可为空）")Date endTime, int page, int size){
         return Result.success(userApproveService.select(status,keyword, startTime, endTime,page,size));
     }
 
@@ -38,7 +40,7 @@ public class AdminApproveController {
      */
     @Operation(summary = "查看实名申请详情")
     @GetMapping("/find")
-    public Result<?> find(@Parameter(description = "用户ID")String userId){
+    public Result<UserApproveEntity> find(@Parameter(description = "用户ID")String userId){
         return Result.success(userApproveService.find(userId));
     }
 
@@ -49,7 +51,7 @@ public class AdminApproveController {
      */
     @Operation(summary = "实名认证审核通过")
     @PostMapping("/approveSuccess")
-    public Result<?> approveSuccess(@RequestBody UserApproveRequest user){
+    public Result<String> approveSuccess(@RequestBody UserApproveRequest user){
         userApproveService.approveSuccess(user);
 
         return Result.success("审核通过");

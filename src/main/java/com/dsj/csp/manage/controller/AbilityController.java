@@ -40,13 +40,9 @@ import java.util.List;
 @Tag(name = "能力管理", description = "用于管理能力的API")
 public class AbilityController {
 
-    @Autowired
-    private AbilityService abilityService;
-    @Autowired
-    private AbilityApiService abilityApiService;
-    @Autowired
-    private AbilityApplyService abilityApplyService;
-
+    private final AbilityService abilityService;
+    private final AbilityApiService abilityApiService;
+    private final AbilityApplyService abilityApplyService;
     private final AbilityBizService abilityBizService;
     private final AbilityApiBizService abilityApiBizService;
     private final AbilityApplyBizService abilityApplyBizService;

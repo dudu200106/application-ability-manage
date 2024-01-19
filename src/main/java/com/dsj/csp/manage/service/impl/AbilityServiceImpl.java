@@ -18,6 +18,7 @@ import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.AbilityService;
 import com.dsj.csp.manage.service.ManageApplicationService;
 import com.dsj.csp.manage.util.Sm4;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
  * @date 2024/01/10
  */
 @Service
+@RequiredArgsConstructor
 @Transactional(propagation = Propagation.REQUIRED)
 public class AbilityServiceImpl extends ServiceImpl<AbilityMapper, AbilityEntity>
         implements AbilityService  {

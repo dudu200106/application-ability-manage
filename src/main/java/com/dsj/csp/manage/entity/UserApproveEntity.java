@@ -22,7 +22,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserApproveEntity implements Serializable {
+public class
+UserApproveEntity implements Serializable {
     /**
      * 用户ID
      */

@@ -52,5 +52,6 @@ public class ManageApplictionVo {
 
     private String nljkUrl;
 
+    private  String appIconpath;
 
 }

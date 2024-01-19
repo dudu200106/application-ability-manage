@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
+import com.dsj.csp.manage.biz.AbilityApplyBizService;
 import com.dsj.csp.manage.biz.AbilityBizService;
 import com.dsj.csp.manage.dto.AbilityApplyVO;
 import com.dsj.csp.manage.dto.AbilityLoginVO;
@@ -39,18 +40,12 @@ import java.util.List;
 @Tag(name = "能力管理", description = "用于管理能力的API")
 public class AbilityController {
 
-    @Autowired
-    private AbilityService abilityService;
-
-    @Autowired
-    private AbilityApiService abilityApiService;
-
-    @Autowired
-    private AbilityApplyService abilityApplyService;
-
+    private final AbilityService abilityService;
+    private final AbilityApiService abilityApiService;
+    private final AbilityApplyService abilityApplyService;
     private final AbilityBizService abilityBizService;
-
     private final AbilityApiBizService abilityApiBizService;
+    private final AbilityApplyBizService abilityApplyBizService;
 
     @Operation(summary = "能力注册", description = "注册一个新的能力")
     @PostMapping("/add-login")
@@ -105,7 +100,7 @@ public class AbilityController {
     @PostMapping("/add-apply")
     public Result<?> applyAbility(@RequestBody List<AbilityApplyVO> applyVOs) {
         for (AbilityApplyVO applyVO : applyVOs) {
-            abilityApplyService.saveAbilityApply(applyVO);
+            abilityApplyBizService.saveAbilityApply(applyVO);
         }
         return Result.success("能力申请完毕！请等待审核...");
     }

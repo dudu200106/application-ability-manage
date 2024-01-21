@@ -6,7 +6,6 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.sql.Date;
-import java.sql.Timestamp;
 
 /**
  * @author Sean Du
@@ -39,9 +38,6 @@ public class AbilityEntity extends BaseEntity implements Serializable {
 
     @TableField("BZ")
     private String note;
-
-//    @TableField("SFSC")
-//    private Integer isDelete;
 
     @TableField(value = "CJSJ")
     private Date createTime;

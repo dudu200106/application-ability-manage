@@ -10,7 +10,4 @@ public interface AbilityApplyService extends IService<AbilityApplyEntity> {
     // 保存能力使用申请
     void saveAbilityApply(AbilityApplyVO applyVO);
 
-    // 审核能力申请
-    void auditApply(AbilityApplyAuditVO auditVO);
-
 }

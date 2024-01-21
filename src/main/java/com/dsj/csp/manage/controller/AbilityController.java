@@ -116,7 +116,7 @@ public class AbilityController {
     @PostMapping("/audit-apply")
     public Result<?> auditAbilityApply(@RequestBody AbilityApplyAuditVO auditVO){
 
-        abilityApplyService.auditApply(auditVO);
+        abilityApplyBizService.auditApply(auditVO);
         return Result.success("审核完成!");
     }
 

@@ -17,6 +17,4 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AbilityApiServiceImpl extends ServiceImpl<AbilityApiMapper, AbilityApiEntity> implements AbilityApiService  {
 
-
-
 }

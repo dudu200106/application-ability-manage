@@ -36,43 +36,8 @@ public class AbilityApplyServiceImpl extends ServiceImpl<AbilityApplyMapper, Abi
     public void saveAbilityApply(AbilityApplyVO applyVO) {
         AbilityApplyEntity applyEntity = new AbilityApplyEntity();
         BeanUtils.copyProperties(applyVO, applyEntity);
-        abilityApplyMapper.insert(applyEntity);
+        this.getBaseMapper().insert(applyEntity);
 
-    }
-
-    @Override
-    public void auditApply(AbilityApplyAuditVO auditVO) {
-        // 创建更新条件构造器
-        LambdaUpdateWrapper<AbilityApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
-        updateWrapper.eq(AbilityApplyEntity::getAbilityApplyId, auditVO.getAbilityApplyId());
-        updateWrapper.set(AbilityApplyEntity::getStatus, auditVO.getFlag());
-        updateWrapper.set(AbilityApplyEntity::getNote, auditVO.getNote());
-        updateWrapper.set(AbilityApplyEntity::getUpdateTime, DateTime.now());
-        abilityApplyMapper.update(updateWrapper);
-
-        // 判断是否生成APP Key 和 Secret Key
-        ManageApplicationEntity app = manageApplicationService.getById(auditVO.getAppId());
-        if (app == null){
-            return;
-        }
-        String appSecretKey =  app.getAppSecret();
-        String appAppKey =  app.getAppSecret();
-        if (auditVO.getFlag() != 1
-                || (appSecretKey!=null && !"".equals(appSecretKey))
-                || (appAppKey!=null && !"".equals(appAppKey))){
-            return;
-        }
-
-        Map<String,String> SM2Key = Sm2.sm2Test();
-        String appKey = SM2Key.get("publicEncode");
-        String secretKey = SM2Key.get("privateEncode");
-        LambdaUpdateWrapper<ManageApplicationEntity> appUpdateWrapper = Wrappers.lambdaUpdate();
-        // 设置更新条件，这里假设要更新 id 为 1 的记录
-        appUpdateWrapper.eq(ManageApplicationEntity::getAppId, auditVO.getAppId());
-        // 设置要更新的字段和值
-        appUpdateWrapper.set(ManageApplicationEntity::getAppKey, appKey);
-        appUpdateWrapper.set(ManageApplicationEntity::getAppSecret, secretKey);
-        manageApplicationService.update(appUpdateWrapper);
     }
 
 }

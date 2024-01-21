@@ -10,11 +10,6 @@ import com.dsj.csp.manage.entity.AbilityEntity;
  * @date 2024/01/10
  */
 public interface AbilityService extends IService<AbilityEntity> {
-
-    void saveAbility(AbilityLoginVO abilityLoginVO);
-
-    void updateAbilityLogin(AbilityLoginVO abilityLogin);
-
     // 统计不同能力数量
     long countAbility(Integer status);
 

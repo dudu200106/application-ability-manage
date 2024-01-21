@@ -1,7 +1,6 @@
 package com.dsj.csp.manage.biz.impl;
 
 import cn.hutool.core.date.DateTime;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.csp.manage.biz.AbilityApplyBizService;
@@ -16,7 +15,6 @@ import com.dsj.csp.manage.service.AbilityService;
 import com.dsj.csp.manage.service.ManageApplicationService;
 import com.dsj.csp.manage.service.UserApproveService;
 import com.dsj.csp.manage.util.Sm2;
-import com.dsj.csp.manage.util.Sm4;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -47,6 +45,7 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
 
         // 2.通过用户ID获取政府名称
         UserApproveEntity userApproveEntity = userApproveService.getById(app.getAppUserId());
+        applyEntity.setCompanyName(userApproveEntity.getCompanyName());
         applyEntity.setGovName(userApproveEntity.getGovName());
 
         // 3.通过能力ID获取能力名称和能力类型
@@ -67,11 +66,7 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
         abilityApplyService.update(updateWrapper);
 
         // 判断是否要生成一对密钥
-        LambdaQueryWrapper<AbilityApplyEntity> applyQW
-                = Wrappers.lambdaQuery(AbilityApplyEntity.class)
-                .select(AbilityApplyEntity::getAppId)
-                .eq(AbilityApplyEntity::getAbilityApplyId, auditVO.getAbilityApplyId());
-        Long appId = abilityApplyService.getOne(applyQW).getAppId();
+        Long appId = abilityApplyService.getById(auditVO.getAbilityApplyId()).getAppId();
         ManageApplicationEntity app = manageApplicationService.getById(appId);
         // 如果申请的appId不存在
         if (app == null){

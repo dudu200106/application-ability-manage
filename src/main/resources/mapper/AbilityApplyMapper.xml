@@ -19,7 +19,6 @@
         <result column="EXPLAIN" property="explain" />
         <result column="NOTE" property="note" />
         <result column="APPROVE_TIME" property="approveTime" />
-        <result column="IS_DELETE" property="isDelete" />
         <result column="CREATE_TIME" property="createTime" />
         <result column="UPDATE_TIME" property="updateTime" />
     </resultMap>

@@ -10,7 +10,6 @@ import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.AbilityApplyService;
 import com.dsj.csp.manage.service.ManageApplicationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,15 +22,14 @@ import java.util.stream.Collectors;
 @Transactional(propagation = Propagation.REQUIRED)
 public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
-
-    @Autowired
-    private ManageApplicationService manageApplicationService;
+    private final ManageApplicationService manageApplicationService;
     private final AbilityApplyService abilityApplyService;
     private final AbilityApiService abilityApiService;
 
-
     @Override
     public List<String> getApiList(String appCode) {
+
+
         LambdaQueryWrapper<ManageApplicationEntity> appQW = Wrappers.lambdaQuery();
         appQW.eq(ManageApplicationEntity::getAppCode, appCode);
         Long appId = manageApplicationService.getOne(appQW).getAppId();
@@ -53,7 +51,6 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         List<String> apiPaths = abilityApiService
                 .getBaseMapper().selectList(apiQW)
                 .stream().map(i->i.getApiUrl()).toList();
-
         return apiPaths;
     }
 }

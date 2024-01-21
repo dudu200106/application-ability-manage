@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -33,21 +32,12 @@ public class AbilityBizServiceImpl implements AbilityBizService {
 
 
     public Boolean saveAbility(AbilityLoginVO abilityLoginVO) {
-        // 1.插入能力基本信息
+        // 插入能力基本信息
         AbilityEntity ability = new AbilityEntity();
         BeanUtils.copyProperties(abilityLoginVO, ability);
         abilityService.save(ability);
         Long abilityId = ability.getAbilityId();
-
-//        abilityLoginVO.getApiList().forEach(e->{
-//            e.setAbilityId(abilityId);
-//            Map<String,String> SM2Key = Sm2.sm2Test();
-//            e.setSecretKey(SM2Key.get("privateEncode"));
-//            e.setPublicKey(SM2Key.get("publicEncode"));
-//            abilityApiService.save(e);
-//        });
-//        return true;
-
+        // 插入能力下的接口
         List<AbilityApiEntity> abilityApiEntityList = abilityLoginVO.getApiList()
                 .stream()
                 .peek((abilityApi) -> {
@@ -61,5 +51,15 @@ public class AbilityBizServiceImpl implements AbilityBizService {
     }
 
 
+    @Override
+    public void updateAbilityLogin(AbilityLoginVO abilityLogin) {
+
+        AbilityEntity ability = new AbilityEntity();
+        BeanUtils.copyProperties(abilityLogin, ability);
+        abilityService.updateById(ability);
+        // 根据是否存在主键ID进行新增或者修改操作
+        abilityApiService.saveOrUpdateBatch(abilityLogin.getApiList());
+
+    }
 
 }

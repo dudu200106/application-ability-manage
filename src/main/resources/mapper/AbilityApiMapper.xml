@@ -18,7 +18,6 @@
         <result column="BASE_PATH" property="basePath" />
         <result column="API_URL" property="apiUrl" />
         <result column="API_VERSION" property="apiVersion" />
-        <result column="IS_DELETE" property="isDelete" />
         <result column="CREATE_TIME" property="createTime" />
         <result column="UPDATE_TIME" property="updateTime" />
     </resultMap>
@@ -28,25 +27,5 @@
         REQUEST_PARAM, RESPONSE_PARAM, PROTOCOL, API_HOST, BASE_PATH, API_URL,
         API_VERSION, IS_DELETE, CREATE_TIME, UPDATE_TIME
     </sql>
-
-    <select id="getApiIdList" parameterType="Long" resultType="String">
-        select
-            api.NLJK_URL
-        from
-            CSP_MANAGER.MANAGE_ABILITY ability
-                join MANAGE_ABILITY_API api
-                     on ability.NL_XH = api.NL_XH
-        where
-            ability.NL_XH = #{abilityId};
-    </select>
-
-<!--    <select id="getAbilityIdsByAppCode" parameterType="Long" resultType="String">-->
-<!--        select-->
-<!--            ability.NL_XH-->
-<!--        from-->
-<!--            CSP_MANAGER.GXYYZC_YYB app left -->
-<!--        where-->
-<!--            ability.YY = #{appId};-->
-<!--    </select>-->
 
 </mapper>

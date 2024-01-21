@@ -85,7 +85,7 @@ public class AbilityController {
     @Operation(summary = "编辑注册的能力")
     @PostMapping("edit-login")
     public Result<?> updateAbilityLogin(@RequestBody AbilityLoginVO abilityLogin){
-        abilityService.updateAbilityLogin(abilityLogin);
+        abilityBizService.updateAbilityLogin(abilityLogin);
         return Result.success("编辑注册能力成功!");
     }
 

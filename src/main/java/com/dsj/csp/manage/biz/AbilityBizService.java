@@ -9,6 +9,7 @@ import com.dsj.csp.manage.dto.AbilityLoginVO;
  * 2024/1/17
  */
 public interface AbilityBizService {
-
     Boolean saveAbility(AbilityLoginVO abilityLoginVO);
+
+    void updateAbilityLogin(AbilityLoginVO abilityLogin);
 }

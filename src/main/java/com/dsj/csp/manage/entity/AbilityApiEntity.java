@@ -28,11 +28,8 @@ public class AbilityApiEntity extends BaseEntity implements Serializable {
     @TableField("BFSXZ")
     private Integer qps;
 
-    @TableField("NLJK_QQCS")
-    private String requestParam;
-
-    @TableField("NLJK_XYCS")
-    private String responseParam;
+    @TableField("NLJK_XYGS")
+    private String respFormat;
 
     @TableField("NLJK_XY")
     private String protocol;
@@ -46,9 +43,6 @@ public class AbilityApiEntity extends BaseEntity implements Serializable {
     @TableField("NLJK_BBH")
     private String apiVersion;
 
-    @TableField("SFSC")
-    private Integer isDelete;
-
     @TableField(value = "NLJK_CJSJ" )
     private Timestamp createTime;
 
@@ -61,16 +55,8 @@ public class AbilityApiEntity extends BaseEntity implements Serializable {
     @TableField(value = "WG_SY")
     private String secretKey;
 
-
-
     @TableField(value = "NLJK_QQFF")
     private String reqMethod;
-
-    @TableField(value = "NLJK_QQSJGS")
-    private String  reqFormat;
-
-    @TableField(value = "NLJK_XYSJGS")
-    private String respFormat;
 
     @TableField(value = "NLJK_QQSL")
     private String reqDemo;

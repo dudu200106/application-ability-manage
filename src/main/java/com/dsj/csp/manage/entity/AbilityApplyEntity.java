@@ -31,7 +31,7 @@ public class AbilityApplyEntity extends BaseEntity implements Serializable {
     @TableField("YY_MC")
     private String appName;
 
-    @TableField("SQJKLB")
+    @TableField("NLSQ_SQJKLB")
     private String apiIds;
 
     @TableField("QY_MC")
@@ -43,22 +43,22 @@ public class AbilityApplyEntity extends BaseEntity implements Serializable {
     @TableField("zt")
     private Integer status;
 
-    @TableField("SQSM")
+    @TableField("NLSQ_SQSM")
     private String illustrate;
 
     @TableField("BZ")
     private String note;
 
-    @TableField("SPSJ")
+    @TableField("NLSQ_SPSJ")
     private Date approveTime;
 
-    @TableField(value = "CJSJ")
+    @TableField(value = "NLSQ_CJSJ")
     private Date createTime;
 
-    @TableField(value = "GXSJ")
+    @TableField(value = "NLSQ_GXSJ")
     private Date updateTime;
 
-    @TableField("SFTYXY")
+    @TableField("NLSQ_SFTYXY")
     private Integer isAgreeProtocols;
 
     @TableField("DYLXZ")
@@ -66,4 +66,10 @@ public class AbilityApplyEntity extends BaseEntity implements Serializable {
 
     @TableField("BFSXZ")
     private Integer qps;
+
+    @TableField(value = "WG_QQMWGZ")
+    private String reqCryptRule;
+
+    @TableField(value = "WG_XYMWGZ")
+    private String respCryptRule;
 }

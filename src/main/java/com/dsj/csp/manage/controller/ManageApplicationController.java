@@ -98,7 +98,7 @@ public class ManageApplicationController {
         manageApplicationEntity.setAppName(appName);
         manageApplicationEntity.setAppUserId(userId);
         manageApplicationEntity.setAppSynopsis(appSynopsis);
-        manageApplicationEntity.setAppCode(generateNumber(8));//生成appid
+//        manageApplicationEntity.setAppCode(generateNumber(8));//生成appid
         manageApplicationEntity.setAppIconpath(appIconpath);//应用路径
 //            状态
         manageApplicationEntity.setAppStatus(StatusEnum.NORMAL.getStatus());

@@ -22,7 +22,7 @@ public class ManageApplictionVo {
     /**
      * 企业名称
      */
-    private  String userName;
+    private String userName;
 
     private String companyName;
 
@@ -39,6 +39,8 @@ public class ManageApplictionVo {
     private String appKey;
 
     private String appCode;
+    //    appid
+    private String appId;
 
     /**
      * 密令
@@ -52,6 +54,6 @@ public class ManageApplictionVo {
 
     private String nljkUrl;
 
-    private  String appIconpath;
+    private String appIconpath;
 
 }

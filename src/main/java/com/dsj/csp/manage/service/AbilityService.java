@@ -1,7 +1,6 @@
 package com.dsj.csp.manage.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.dsj.csp.manage.dto.AbilityLoginVO;
 import com.dsj.csp.manage.entity.AbilityEntity;
 
 /**

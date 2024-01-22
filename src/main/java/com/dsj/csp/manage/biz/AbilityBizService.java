@@ -1,7 +1,5 @@
 package com.dsj.csp.manage.biz;
 
-import com.dsj.csp.manage.dto.AbilityLoginVO;
-
 /**
  * 功能说明：
  *
@@ -9,7 +7,4 @@ import com.dsj.csp.manage.dto.AbilityLoginVO;
  * 2024/1/17
  */
 public interface AbilityBizService {
-    Boolean saveAbility(AbilityLoginVO abilityLoginVO);
-
-    void updateAbilityLogin(AbilityLoginVO abilityLogin);
 }

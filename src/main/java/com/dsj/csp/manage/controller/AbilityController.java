@@ -89,7 +89,6 @@ public class AbilityController {
         return Result.success("编辑注册能力成功!");
     }
 
-
     @Operation(summary = "查询接口信息", description = "查询特定接口的信息")
     @GetMapping("/query-api-info")
     public Result<?> queryApiInfo(@Parameter(description = "接口ID") @RequestParam Long apiId) {

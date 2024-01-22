@@ -10,7 +10,7 @@ import java.sql.Date;
 @Data
 @TableName("GXYYZC_NLSQ")
 public class AbilityApplyEntity extends BaseEntity implements Serializable {
-    @TableId(value = "NLSQ_XH", type = IdType.AUTO)
+    @TableId(value = "NLSQ_XH", type = IdType.NONE)
     private Long abilityApplyId;
 
     @TableField("NL_XH")

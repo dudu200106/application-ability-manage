@@ -1,5 +1,6 @@
 package com.dsj.csp.manage.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -17,12 +18,15 @@ import java.io.Serializable;
 public class AbilityApplyVO implements Serializable {
 
     @Schema(description = "能力ID", requiredMode = Schema.RequiredMode.REQUIRED)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long abilityId;
 
     @Schema(description = "应用ID", requiredMode = Schema.RequiredMode.REQUIRED)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long appId;
 
     @Schema(description = "用户ID")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long userId;
 
     @Schema(description = "能力名称", requiredMode = Schema.RequiredMode.REQUIRED)

@@ -2,6 +2,7 @@ package com.dsj.csp.manage.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.dsj.csp.common.entity.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,6 +17,7 @@ import java.sql.Date;
 @TableName("GXYYZC_NL")
 public class AbilityEntity extends BaseEntity implements Serializable {
     @TableId(value = "NL_XH", type = IdType.NONE)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long abilityId;
 
     @TableField("NL_LX")

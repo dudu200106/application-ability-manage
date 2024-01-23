@@ -103,9 +103,11 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     public AbilityApiVO getApiInfo(Long apiId) {
         AbilityApiVO res = new AbilityApiVO();
         AbilityApiEntity apiEntity = abilityApiService.getById(apiId);
+
         LambdaQueryWrapper<AbilityApiResp> respQW =
                 Wrappers.lambdaQuery(AbilityApiResp.class).eq(AbilityApiResp::getApiId, apiId);
         List<AbilityApiResp> resps = abilityApiRespService.getBaseMapper().selectList(respQW);
+
         LambdaQueryWrapper<AbilityApiReq> reqQW =
                 Wrappers.lambdaQuery(AbilityApiReq.class).eq(AbilityApiReq::getApiId, apiId);
         List<AbilityApiReq> reqs = abilityApiReqService.getBaseMapper().selectList(reqQW);

@@ -38,7 +38,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         MediaType type = MediaType.parseMediaType("application/json;charset=UTF-8");
         headers.setContentType(type);
         headers.add("Accept", MediaType.APPLICATION_JSON.toString());
-        String url = serverURL + "/auth/userInfo?accessToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkc2oiLCJpZCI6IjU2NDE1MDgyNTMzIiwibmFtZSI6IuiigeeQpuW9piIsInVzZXJuYW1lIjoiMTg3MjU0NjcyMDgiLCJpYXQiOjE3MDYwMDkwMzAsImV4cCI6MTcwNjAxNjIzMH0.dbqxviw1wOZIwrKr3TZ_7RcTeR-kGgCE2lcS9T2Bv1s&refreshToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkc2oiLCJpZCI6IjU2NDE1MDgyNTMzIiwiaWF0IjoxNzA2MDA5MDMwLCJleHAiOjE3MDYwMzA2MzB9.YXG38AlsQ1kqSgoAukIKA4KwwIDXhZ-bBQMvUQy-NRo";
+        String url = serverURL + "/auth/userInfo?accessToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkc2oiLCJpZCI6IjU2NDE1MDgyNTMzIiwibmFtZSI6IuiigeeQpuW9piIsInVzZXJuYW1lIjoiMTg3MjU0NjcyMDgiLCJpYXQiOjE3MDYwMTA3NTMsImV4cCI6MTcwNjAxNzk1M30.fjGLFtcEu-NYAu-O5I5hvHQQUIHLCjaewu7yvjRr9w8&refreshToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkc2oiLCJpZCI6IjU2NDE1MDgyNTMzIiwiaWF0IjoxNzA2MDEwNzUzLCJleHAiOjE3MDYwMzIzNTN9.U56zu6x78HS1lTsfNKI_eUJR7zyGZaGoYjTQzVxAuxk";
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
         String responseBody = response.getBody();
         JSONObject responseJson = JSON.parseObject(responseBody);

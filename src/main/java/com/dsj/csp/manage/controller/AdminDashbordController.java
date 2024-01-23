@@ -2,6 +2,8 @@
 package com.dsj.csp.manage.controller;
 
 import com.dsj.common.dto.Result;
+import com.dsj.csp.manage.biz.AbilityApiBizService;
+import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.AbilityService;
 import com.dsj.csp.manage.service.ManageApplicationService;
 import com.dsj.csp.manage.service.UserApproveService;
@@ -31,6 +33,8 @@ public class AdminDashbordController {
     private UserApproveService userApproveServicel;
     @Autowired
     private AbilityService abilityService;
+    @Autowired
+    private AbilityApiService abilityApiService;
 
 
     @Operation(summary = "后端首页统计应用")
@@ -42,6 +46,21 @@ public class AdminDashbordController {
         Map<String, Integer> data = new HashMap<>();
         data.put("appTotal", appTotal);
         data.put("userTotal",userTotal);
+        data.put("abilityTotal",abilityTotal);
+        return Result.success(data);
+    }
+
+
+
+    @Operation(summary = "控制台首页统计")
+    @GetMapping("/getKztTotal")
+    public Object kzinfo() {
+        int appTotal = (int) manageApplicationService.count();
+        int apiTotal= (int) abilityApiService.count();
+        int abilityTotal= (int) abilityService.count();
+        Map<String, Integer> data = new HashMap<>();
+        data.put("appTotal", appTotal);
+        data.put("apiTotal",apiTotal);
         data.put("abilityTotal",abilityTotal);
         return Result.success(data);
     }

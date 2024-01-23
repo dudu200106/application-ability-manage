@@ -119,8 +119,11 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                 .in(AbilityEntity::getAbilityId, abilityIds)
                 .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName);
         List<AbilityEntity> abilitys = abilityService.getBaseMapper().selectList(abilityQW);
-        Map<Long, String> abilityMap = abilitys.stream().collect(Collectors.toMap(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName));
-        // 构造返回的分页
+        Map<Long, String> abilityMap = abilitys
+                .stream()
+                .collect(Collectors
+                .toMap(ability -> ability.getAbilityId(), ability -> ability.getAbilityName()));
+        // 构造返回的分页res
         List<AbilityApiVO> newRecords = records.stream().map(api->{
             AbilityApiVO apiVO = new AbilityApiVO();
             BeanUtil.copyProperties(api, apiVO, true);

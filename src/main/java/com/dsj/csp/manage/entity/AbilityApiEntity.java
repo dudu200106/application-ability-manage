@@ -55,7 +55,7 @@ public class AbilityApiEntity extends BaseEntity implements Serializable {
     private String apiUrl;
 
     @TableField("NLJK_BBH")
-    @Schema(description = "接口ID")
+    @Schema(description = "接口版本")
     private String apiVersion;
 
     @TableField(value = "NLJK_CJSJ" )

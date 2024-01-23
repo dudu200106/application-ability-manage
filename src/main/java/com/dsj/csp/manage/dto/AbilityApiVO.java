@@ -22,6 +22,9 @@ public class AbilityApiVO implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long abilityId;
 
+    @Schema(description = "能力名称")
+    private String abilityName;
+
     @Schema(description="接口名称", requiredMode = Schema.RequiredMode.REQUIRED)
     private String apiName;
 

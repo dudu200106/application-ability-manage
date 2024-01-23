@@ -7,4 +7,5 @@ package com.dsj.csp.manage.biz;
  * 2024/1/17
  */
 public interface AbilityBizService {
+
 }

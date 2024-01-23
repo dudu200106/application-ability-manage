@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.biz.AbilityApplyBizService;
@@ -102,7 +103,8 @@ public class AbilityController {
     @PostMapping("/page-api")
     public Result<?> pageApi(
             @Valid @RequestBody AbilityApiQueryVO apiQueryVO ){
-        return Result.success(abilityApiService.page(apiQueryVO.toPage(), apiQueryVO.getQueryWrapper()));
+        return Result.success(abilityApiBizService.pageApi(apiQueryVO));
+//        return Result.success(abilityApiService.page(apiQueryVO.toPage(), apiQueryVO.getQueryWrapper()));
     }
 
 

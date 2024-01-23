@@ -56,6 +56,9 @@ public class AbilityQueryVO extends PageQuery<AbilityEntity> implements Serializ
                         i -> i.like(AbilityEntity::getAbilityName, keyword)
                                 .or().like(AbilityEntity::getAbilityProvider, keyword)
                 );
+        qw.lambda()
+                .orderByAsc(AbilityEntity::getStatus)
+                .orderByDesc(AbilityEntity::getCreateTime);
         return qw;
     }
 

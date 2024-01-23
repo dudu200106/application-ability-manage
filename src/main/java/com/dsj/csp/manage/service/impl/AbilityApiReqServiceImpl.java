@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Transactional(propagation = Propagation.REQUIRED)
 @Service
@@ -17,4 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class AbilityApiReqServiceImpl extends ServiceImpl<AbilityApiReqMapper, AbilityApiReq>
         implements AbilityApiReqService {
 
+    @Override
+    public Boolean saveReqList(List<AbilityApiReq> reqs, Long apiId) {
+        reqs.stream().peek(req -> {
+            req.setApiId(apiId);
+        }).toList();
+        return this.saveBatch(reqs);
+    }
 }

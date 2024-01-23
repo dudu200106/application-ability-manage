@@ -10,7 +10,6 @@ import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.biz.AbilityApplyBizService;
 import com.dsj.csp.manage.biz.AbilityBizService;
 import com.dsj.csp.manage.dto.AbilityApplyVO;
-import com.dsj.csp.manage.dto.AbilityLoginVO;
 import com.dsj.csp.manage.dto.*;
 import com.dsj.csp.manage.entity.*;
 
@@ -23,7 +22,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -49,8 +47,8 @@ public class AbilityController {
 
     @Operation(summary = "能力注册", description = "注册一个新的能力")
     @PostMapping("/add-login")
-    public Result<?> addAbility(@RequestBody AbilityLoginVO ability) {
-        Boolean saveAbility = abilityBizService.saveAbility(ability);
+    public Result<?> addAbility(@RequestBody AbilityEntity ability) {
+        Boolean saveAbility = abilityService.save(ability);
         return Result.success("能力注册申请成功！等待审核...", saveAbility);
     }
 
@@ -61,11 +59,10 @@ public class AbilityController {
         return Result.success(abilityService.getById(abilityId));
     }
 
-
     @Operation(summary = "分页查询注册能力列表", description = "分页查询注册能力列表")
     @PostMapping ("/page-login")
     public Result<?> queryLoginPage(
-            @Valid @RequestBody AbilityQueryDTO abilityQuery) {
+            @Valid @RequestBody AbilityQueryVO abilityQuery) {
         return Result.success(abilityService.page(abilityQuery.toPage(), abilityQuery.getQueryWrapper()));
     }
 
@@ -81,19 +78,41 @@ public class AbilityController {
         return Result.success("审核完成！");
     }
 
-
     @Operation(summary = "编辑注册的能力")
     @PostMapping("edit-login")
-    public Result<?> updateAbilityLogin(@RequestBody AbilityLoginVO abilityLogin){
-        abilityBizService.updateAbilityLogin(abilityLogin);
-        return Result.success("编辑注册能力成功!");
+    public Result<?> updateAbilityLogin(@RequestBody AbilityEntity ability){
+        Boolean editFlag = abilityService.updateById(ability);
+        return Result.success("编辑注册能力成功!", editFlag);
+    }
+
+    @Operation(summary = "新增接口")
+    @PostMapping("add-api")
+    public Result<?> addApiA(@RequestBody AbilityApiVO apiVO){
+        abilityApiBizService.saveApi(apiVO);
+        return Result.success("添加接口成功!");
     }
 
     @Operation(summary = "查询接口信息", description = "查询特定接口的信息")
     @GetMapping("/query-api-info")
     public Result<?> queryApiInfo(@Parameter(description = "接口ID") @RequestParam Long apiId) {
-        return Result.success(abilityApiService.getById(apiId));
+        return Result.success(abilityApiBizService.getApiInfo(apiId));
     }
+
+    @Operation(summary = "分页查询接口列表", description = "查询接口分页列表")
+    @PostMapping("/page-api")
+    public Result<?> pageApi(
+            @Valid @RequestBody AbilityApiQueryVO apiQueryVO ){
+        return Result.success(abilityApiService.page(apiQueryVO.toPage(), apiQueryVO.getQueryWrapper()));
+    }
+
+
+    @Operation(summary = "更新接口")
+    @PostMapping("edit-api")
+    public Result<?> editApi(@RequestBody AbilityApiVO apiVO){
+        Boolean editApiflag = abilityApiBizService.updateApi(apiVO);
+        return Result.success("已修改接口完毕! ", editApiflag);
+    }
+
 
     @Operation(summary = "新增能力使用申请", description = "申请使用能力")
     @PostMapping("/add-apply")

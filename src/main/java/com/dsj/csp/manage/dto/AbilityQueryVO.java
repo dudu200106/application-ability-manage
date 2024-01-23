@@ -1,7 +1,5 @@
 package com.dsj.csp.manage.dto;
 
-import cn.hutool.json.JSON;
-import cn.hutool.json.JSONString;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.PageQuery;
@@ -14,7 +12,7 @@ import java.sql.Date;
 import java.util.Objects;
 
 @Data
-public class AbilityQueryDTO extends PageQuery<AbilityEntity> implements Serializable {
+public class AbilityQueryVO extends PageQuery<AbilityEntity> implements Serializable {
 
     private AbilityEntity entity;
 

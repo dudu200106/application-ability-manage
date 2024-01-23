@@ -72,6 +72,18 @@ public class ManageApplicationEntity implements Serializable {
     @Schema(description = "密令")
     private String appSecret;
 
+
+    @TableField(value = "YY_WGKEY")
+    @Schema(description = "网关秘钥")
+    private String appWgKey;
+
+    /**
+     * 密令
+     */
+    @TableField(value = "YY_WGSECRET")
+    @Schema(description = "网关密令")
+    private String appWgSecret;
+
     /**
      * 状态（认证） 0不启用 1启用
      */

@@ -83,11 +83,16 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
         Map<String, String> sm2Map = Sm2.sm2Test();
         String appKey = sm2Map.get("publicEncode");
         String secretKey = sm2Map.get("privateEncode");
+        Map<String, String> sm2Map2 = Sm2.sm2Test();
+        String wgKey = sm2Map2.get("publicEncode");
+        String wgSecre = sm2Map2.get("privateEncode");
         LambdaUpdateWrapper<ManageApplicationEntity> appUpdateWrapper
                 = Wrappers.lambdaUpdate(ManageApplicationEntity.class)
                 .eq(ManageApplicationEntity::getAppId, appId)
                 .set(ManageApplicationEntity::getAppKey, appKey)
-                .set(ManageApplicationEntity::getAppSecret, secretKey);
+                .set(ManageApplicationEntity::getAppSecret, secretKey)
+                .set(ManageApplicationEntity::getAppWgKey, wgKey)
+                .set(ManageApplicationEntity::getAppWgSecret, wgSecre);
         manageApplicationService.update(appUpdateWrapper);
     }
 }

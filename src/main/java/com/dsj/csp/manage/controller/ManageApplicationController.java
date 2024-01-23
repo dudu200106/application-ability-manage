@@ -78,7 +78,7 @@ public class ManageApplicationController {
                                 .eq(!StringUtils.isEmpty(appUserId), ManageApplicationEntity::getAppUserId, appUserId)
                                 .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), ManageApplicationEntity::getAppCreatetime, startTime, endTime)
                                 .like(!StringUtils.isEmpty(keyword), ManageApplicationEntity::getAppName, keyword)
-                                .or().like(!StringUtils.isEmpty(keyword), ManageApplicationEntity::getAppCode, keyword)
+                                .or().like(!StringUtils.isEmpty(keyword), ManageApplicationEntity::getAppName, keyword)
                                 .selectAll(UserApproveEntity.class)
                                 .selectAll(ManageApplicationEntity.class)
                                 .leftJoin(UserApproveEntity.class, UserApproveEntity::getUserId,ManageApplicationEntity::getAppUserId )
@@ -98,7 +98,7 @@ public class ManageApplicationController {
         manageApplicationEntity.setAppName(appName);
         manageApplicationEntity.setAppUserId(userId);
         manageApplicationEntity.setAppSynopsis(appSynopsis);
-//        manageApplicationEntity.setAppCode(generateNumber(8));//生成appid
+        manageApplicationEntity.setAppCode(generateNumber(8));//生成appid
         manageApplicationEntity.setAppIconpath(appIconpath);//应用路径
 //            状态
         manageApplicationEntity.setAppStatus(StatusEnum.NORMAL.getStatus());

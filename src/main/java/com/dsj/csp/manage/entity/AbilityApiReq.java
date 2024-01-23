@@ -13,11 +13,11 @@ import java.io.Serializable;
 @TableName("GXYYZC_NLJK_QQCS")
 public class AbilityApiReq implements Serializable {
 
-    @TableId(value = "QQCS_XH_ID", type = IdType.NONE)
+    @TableId(value = "QQCS_ID", type = IdType.NONE)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long reqId;
 
-    @TableField("NLJK_XH_ID")
+    @TableField("NLJK_ID")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long apiId;
 

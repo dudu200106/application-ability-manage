@@ -66,26 +66,16 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
         // 插入接口的出参入参
         Long apiId = api.getApiId();
-//        apiVO.getReqList().forEach(e->{
-//            e.setApiId(apiId);
-//            abilityApiReqService.save(e);
-//        });
-//        apiVO.getRespList().forEach(e->{
-//            e.setApiId(apiId);
-//            abilityApiRespService.save(e);
-//        });
         List<AbilityApiReq> apiReqList = apiVO.getReqList()
                 .stream()
                 .peek(req -> {
                     req.setApiId(apiId);
                 }).toList();
-
         List<AbilityApiResp> apiRespList = apiVO.getRespList()
                 .stream()
                 .peek(resp -> {
                     resp.setApiId(apiId);
                 }).toList();
-
         abilityApiReqService.saveBatch(apiReqList);
         abilityApiRespService.saveBatch(apiRespList);
     }
@@ -94,9 +84,26 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     public boolean updateApi(AbilityApiVO apiVO) {
         AbilityApiEntity api = new AbilityApiEntity();
         BeanUtils.copyProperties(apiVO, api);
+        // 覆盖参数列表
+        LambdaQueryWrapper reqQW = Wrappers.lambdaQuery(AbilityApiReq.class).eq(AbilityApiReq::getApiId, apiVO.getApiId());
+        abilityApiReqService.remove(reqQW);
+        LambdaQueryWrapper respQW = Wrappers.lambdaQuery(AbilityApiResp.class).eq(AbilityApiResp::getApiId, apiVO.getApiId());
+        abilityApiRespService.remove(respQW);
+
+        Long apiId = apiVO.getApiId();
+        List<AbilityApiReq> apiReqList = apiVO.getReqList()
+                .stream()
+                .peek(req -> {
+                    req.setApiId(apiId);
+                }).toList();
+        List<AbilityApiResp> apiRespList = apiVO.getRespList()
+                .stream()
+                .peek(resp -> {
+                    resp.setApiId(apiId);
+                }).toList();
         return abilityApiService.updateById(api) &&
-        abilityApiReqService.saveOrUpdateBatch(apiVO.getReqList()) &&
-        abilityApiRespService.saveOrUpdateBatch(apiVO.getRespList());
+        abilityApiReqService.saveBatch(apiVO.getReqList()) &&
+        abilityApiRespService.saveBatch(apiVO.getRespList());
     }
 
     @Override

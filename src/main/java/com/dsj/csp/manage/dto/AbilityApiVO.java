@@ -14,67 +14,73 @@ import java.util.List;
 
 @Data
 public class AbilityApiVO implements Serializable {
-    @Schema(description="NLJK_XH")
+    @Schema(description = "接口ID", requiredMode = Schema.RequiredMode.AUTO)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long apiId;
 
-    @Schema(description="NL_XH")
+    @Schema(description="能力ID", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long abilityId;
 
-    @Schema(description="NLJK_MC")
+    @Schema(description="接口名称", requiredMode = Schema.RequiredMode.REQUIRED)
     private String apiName;
 
-    @Schema(description="NLJK_MS")
+    @Schema(description="接口描述")
     private String description;
 
-    @Schema(description="DYLXZ")
+    @Schema(description="调用量限制")
     private Integer recallLimit;
 
-    @Schema(description="BFSXZ")
+    @Schema(description="并发数限制")
     private Integer qps;
 
-    @Schema(description="NLJK_XYGS")
+    @Schema(description="响应格式")
     private String respFormat;
 
-    @Schema(description="NLJK_XY")
+    @Schema(description="协议")
     private String protocol;
 
-    @Schema(description="NLJK_ZJDZ")
+    @Schema(description="主机地址")
     private String apiHost;
 
-    @Schema(description="NLJK_URL")
+    @Schema(description="接口URL", requiredMode = Schema.RequiredMode.REQUIRED)
     private String apiUrl;
 
-    @Schema(description="NLJK_BBH")
+    @Schema(description="接口版本")
     private String apiVersion;
 
-    @Schema(description="NLJK_CJSJ" )
+    @Schema(description="创建时间" )
     private Timestamp createTime;
 
-    @Schema(description = "NLJK_GXSJ")
+    @Schema(description = "更新时间")
     private Timestamp updateTime;
 
-    @Schema(description = "WG_GY")
+    @Schema(description = "网关公钥")
     private String publicKey;
 
-    @Schema(description = "WG_SY")
+    @Schema(description = "网关私钥")
     private String secretKey;
 
-    @Schema(description = "NLJK_QQFF")
+    @Schema(description = "请求方法", requiredMode = Schema.RequiredMode.REQUIRED)
     private String reqMethod;
 
-    @Schema(description = "NLJK_QQSL")
+    @Schema(description = "请求示例")
     private String reqDemo;
 
-    @Schema(description = "NLJK_XYSL")
+    @Schema(description = "响应示例")
     private String respDemo;
 
-    @Schema(description = "NLJK_XYZTM")
+    @Schema(description = "响应状态码")
     private String respStatusCode;
 
+    /**
+     * 请求参数列表
+     */
     private List<AbilityApiReq> reqList;
 
+    /**
+     * 相应参数列表
+     */
     private List<AbilityApiResp> respList;
 
 }

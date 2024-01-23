@@ -13,6 +13,8 @@
         <result property="appAuthentication" column="APP_AUTHENTICATION" jdbcType="TINYINT"/>
         <result property="appKey" column="APP_KEY" jdbcType="VARCHAR"/>
         <result property="appSecret" column="APP_SECRET" jdbcType="VARCHAR"/>
+        <result property="appWgKey" column="APP_WGKEY" jdbcType="VARCHAR"/>
+        <result property="appWgSecret" column="APP_WGSECRET" jdbcType="VARCHAR"/>
         <result property="appStatus" column="APP_STATUS" jdbcType="TINYINT"/>
         <result property="appIsdelete" column="APP_ISDELETE" jdbcType="TINYINT"/>
         <result property="appCreatetime" column="APP_CREATETIME" jdbcType="TIMESTAMP"/>
@@ -24,6 +26,7 @@
         <result property="appExamine" column="APP_EXAMINE" jdbcType="TINYINT"/>
         <result property="appIconpath" column="APP_ICONPATH" jdbcType="VARCHAR"/>
         <result property="appUserId" column="APP_USER_ID" jdbcType="VARCHAR"/>
+
     </resultMap>
 
     <sql id="Base_Column_List">

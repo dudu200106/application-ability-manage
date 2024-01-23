@@ -34,6 +34,12 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
         return baseMapper.selectappID(appId, appUserId);
     }
 
+    /**
+     *
+     * @author Du Shun Chang
+     * @date 2024/1/23 14:51
+     * @return 统计应用总数
+     */
     @Override
     public int contAll() {
         return baseMapper.contAll();
@@ -51,51 +57,31 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
 //        String appSecret = Sm4.sm();
 //        return baseMapper.updateSecret(appId, appKey, appSecret);
 //    }
+    /**
+     *
+     * @author Du Shun Chang
+     * @date 2024/1/23 14:51
+     * @return 更新应用
+     */
 
     @Override
     public boolean upadataAppList(Long appId, String appName, String appSynopsis, String appIconpath, String appUserId) {
         return baseMapper.upadataAppList(appId, appName, appSynopsis, appIconpath, appUserId);
     }
-
+/**
+ *
+ * @author Du Shun Chang
+ * @date 2024/1/23 14:52
+ * @param appId
+ * @param appUserId
+ * @return 逻辑删除
+ */
     @Override
     public boolean updateIsdetele(Long appId, String appUserId) {
         return baseMapper.updateIsdetele(appId, appUserId);
     }
 
-//    @Override
-//    public IPage<ManageApplication> selectJoinPage(Page<Object> objectPage, Class<ManageApplication> manageApplicationClass, MPJLambdaWrapper<Object> eq) {
-//      return   manageApplicationMapper.selectJoinPage(new Page<>(page, size), ManageApplication.class,
-//                new MPJLambdaWrapper<>()
-//                        .selectAll(ManageApplication.class)
-//                        .selectAll(UserApproveEntity.class)
-//                        .leftJoin(ManageApplication.class, ManageApplication::getAppUserId, UserApproveEntity::getUserId)
-//                        .eq(ManageApplication::getAppUserId, appUserId));
-//    }
 
-    //    @Override
-//    public Page<ManageApplication> selectPage(String appUserId, String keyword, Date startTime, Date endTime, int page, int size) {
-//
-//    manageApplicationMapper.selectJoinPage(new Page<>(page, size), ManageApplication.class,
-//                new MPJLambdaWrapper<>()
-//                        .selectAll(ManageApplication.class)
-//                        .selectAll(UserApproveEntity.class)
-//                        .leftJoin(ManageApplication.class, ManageApplication::getAppUserId, UserApproveEntity::getUserId)
-//                        .eq(ManageApplication::getAppUserId, appUserId));
-////        System.out.println(keyword);
-////        if (!StringUtils.isEmpty(keyword)) {
-////            wrapper
-////                    .or().like(ManageApplication::getAppName, keyword)
-////                    .or().like(ManageApplication::getAppCode, keyword)
-////                    .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), ManageApplication::getAppCreatetime, startTime, endTime);
-////        } else {
-////            wrapper.between(Objects.nonNull(startTime) && Objects.nonNull(endTime), ManageApplication::getAppCreatetime, startTime, endTime)
-////                    .inSql(ManageApplication ::getAppUserId, "");
-////        }
-//
-//
-////        return manageApplicationMapper.selectPages(new Page(page,size),null);
-//        return manageApplicationMapper.selectPages(appUserId, keyword, startTime, endTime, page, size);
-//    }
 
 
 }

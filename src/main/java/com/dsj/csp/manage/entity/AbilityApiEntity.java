@@ -11,11 +11,11 @@ import java.sql.Timestamp;
 @Data
 @TableName("GXYYZC_NLJK")
 public class AbilityApiEntity extends BaseEntity implements Serializable {
-    @TableId("NLJK_XH")
+    @TableId("NLJK_ID")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long apiId;
 
-    @TableField("NL_XH")
+    @TableField("NL_ID")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long abilityId;
 

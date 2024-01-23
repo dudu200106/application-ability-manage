@@ -11,19 +11,19 @@ import java.sql.Date;
 @Data
 @TableName("GXYYZC_NLSQ")
 public class AbilityApplyEntity extends BaseEntity implements Serializable {
-    @TableId(value = "NLSQ_XH", type = IdType.NONE)
+    @TableId(value = "NLSQ_ID", type = IdType.NONE)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long abilityApplyId;
 
-    @TableField("NL_XH")
+    @TableField("NL_ID")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long abilityId;
 
-    @TableField("YY_XH")
+    @TableField("YY_ID")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long appId;
 
-    @TableField("YH_XH")
+    @TableField("YH_ID")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long userId;
 

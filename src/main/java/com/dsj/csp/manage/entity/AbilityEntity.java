@@ -16,7 +16,7 @@ import java.sql.Date;
 @Data
 @TableName("GXYYZC_NL")
 public class AbilityEntity extends BaseEntity implements Serializable {
-    @TableId(value = "NL_XH", type = IdType.NONE)
+    @TableId(value = "NL_ID", type = IdType.NONE)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long abilityId;
 

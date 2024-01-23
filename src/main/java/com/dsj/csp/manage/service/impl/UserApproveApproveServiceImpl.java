@@ -1,4 +1,6 @@
 package com.dsj.csp.manage.service.impl;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -8,11 +10,16 @@ import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.UserApproveEntity;
 import com.dsj.csp.manage.mapper.UserApproveMapper;
 import com.dsj.csp.manage.service.UserApproveService;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -21,33 +28,52 @@ import java.util.Objects;
  * @createDate 2024-01-09 14:16:26
  */
 @Service
+@RequiredArgsConstructor
 public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper, UserApproveEntity> implements UserApproveService {
+    //根据token识别用户
+    public String identify(){
+        RestTemplate restTemplate = new RestTemplate();
+        String serverURL = "http://106.227.94.62:8001";
+        HttpHeaders headers = new HttpHeaders();
+        MediaType type = MediaType.parseMediaType("application/json;charset=UTF-8");
+        headers.setContentType(type);
+        headers.add("Accept", MediaType.APPLICATION_JSON.toString());
+        String url = serverURL + "/auth/userInfo?accessToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkc2oiLCJpZCI6IjU2NDE1MDgyNTMzIiwibmFtZSI6IuiigeeQpuW9piIsInVzZXJuYW1lIjoiMTg3MjU0NjcyMDgiLCJpYXQiOjE3MDYwMDkwMzAsImV4cCI6MTcwNjAxNjIzMH0.dbqxviw1wOZIwrKr3TZ_7RcTeR-kGgCE2lcS9T2Bv1s&refreshToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkc2oiLCJpZCI6IjU2NDE1MDgyNTMzIiwiaWF0IjoxNzA2MDA5MDMwLCJleHAiOjE3MDYwMzA2MzB9.YXG38AlsQ1kqSgoAukIKA4KwwIDXhZ-bBQMvUQy-NRo";
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
+        String responseBody = response.getBody();
+        JSONObject responseJson = JSON.parseObject(responseBody);
+        JSONObject dataJson = JSON.parseObject(responseJson.getString("data"));
+        String userId = dataJson.getString("id");
+        return userId;
+    }
 
+    //远程调用接口
+    @Override
+    public String callRemoteService() {
+        String userId = identify();
+        UserApproveEntity userApproveEntity = baseMapper.selectById(userId);
+        if(userApproveEntity==null){
+            UserApproveEntity userApproveEntity2=new UserApproveEntity();
+            userApproveEntity2.setUserId(userId);
+            baseMapper.insert(userApproveEntity2);
+            return "新用户注册成功";
+        }
+        return "欢迎回来";
+    }
     /**
      * 用户实名认证申请模块
      */
     @Override
-    public UserApproveEntity personCenter(String userId) {
-        return baseMapper.selectById(userId);
-    }
-
-    @Override
     public void approve(UserApproveEntity user) {
+        user.setUserId(identify());
         UserApproveEntity userApproveEntity = baseMapper.selectById(user);
         Integer status = userApproveEntity.getStatus();
-        if (status.equals(UserStatusEnum.NOAPPROVE) || status.equals(UserStatusEnum.FAIL)) {
+        if (status.equals(UserStatusEnum.NOAPPROVE.getStatus()) || status.equals(UserStatusEnum.FAIL.getStatus())) {
             user.setStatus(UserStatusEnum.WAIT.getStatus());
             user.setNote(null);
             user.setCreateTime(new Date());
             baseMapper.updateById(user);
         }
-//        this.lambdaUpdate()
-//                .eq(UserApproveEntity::getStatus,UserStatusEnum.NOAPPROVE)
-//                .or()
-//                .eq(UserApproveEntity::getStatus,UserStatusEnum.FAIL)
-//                .set(UserApproveEntity::getStatus,UserStatusEnum.WAIT)
-//                .set(UserApproveEntity::getNote,null)
-//                .update();
     }
 
     /**

@@ -16,10 +16,12 @@ public interface UserApproveService extends IService<UserApproveEntity> {
     /**
      * 用户模块
      */
-    //根据id查看个人中心
-    UserApproveEntity personCenter(String userId);
     //用户申请实名认证
     void approve(UserApproveEntity user);
+    //根据token识别用户
+    String callRemoteService();
+
+    String identify();
 
     /**
      * 管理员实名认证审核模块

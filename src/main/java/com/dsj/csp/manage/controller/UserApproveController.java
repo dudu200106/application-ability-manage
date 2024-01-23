@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.*;
 public class UserApproveController {
     private final UserApproveService userApproveService;
 
-    @Operation(summary = "个人中心‘待完善’")
+    @Operation(summary = "个人中心")
     @GetMapping("/personCenter")
-    public Result<?> personCenter(@Parameter(description = "用户ID")String userId){
-        return Result.success(userApproveService.personCenter(userId));
+    public Result<?> personCenter(){
+        return Result.success(userApproveService.callRemoteService());
     }
     /**
      * 实名认证申请

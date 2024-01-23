@@ -20,10 +20,12 @@ public class ManageApplictionVo {
      */
     private String userId;
     /**
-     * 企业名称
+     * 用户名称
      */
     private String userName;
-
+    /**
+     * 企业名称
+     */
     private String companyName;
 
 
@@ -51,9 +53,7 @@ public class ManageApplictionVo {
     //创建时间
     private Date appCreatetime;
 
-
-    private String nljkUrl;
-
+//应用图标
     private String appIconpath;
 
 }

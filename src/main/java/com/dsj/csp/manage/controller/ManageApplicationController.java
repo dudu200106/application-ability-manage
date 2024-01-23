@@ -74,15 +74,16 @@ public class ManageApplicationController {
     @GetMapping("/selectPage")
     public Result<Page<ManageApplictionVo>> selectPage(@Parameter(description = "用户id") String appUserId, @Parameter(description = "查询关键字 Id或名称") String keyword, @Parameter(description = "开始时间") Date startTime, @Parameter(description = "结束时间") Date endTime, @Parameter int size, @Parameter int pages) {
         Page<ManageApplictionVo> userApproveEntityPage = manageApplicationMapper.selectJoinPage(new Page<>(pages, size), ManageApplictionVo.class,
-                        new MPJLambdaWrapper<ManageApplicationEntity>()
-                                .eq(!StringUtils.isEmpty(appUserId), ManageApplicationEntity::getAppUserId, appUserId)
-                                .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), ManageApplicationEntity::getAppCreatetime, startTime, endTime)
-                                .like(!StringUtils.isEmpty(keyword), ManageApplicationEntity::getAppName, keyword)
-                                .or().like(!StringUtils.isEmpty(keyword), ManageApplicationEntity::getAppName, keyword)
-                                .selectAll(UserApproveEntity.class)
-                                .selectAll(ManageApplicationEntity.class)
-                                .leftJoin(UserApproveEntity.class, UserApproveEntity::getUserId,ManageApplicationEntity::getAppUserId )
-                                );
+                new MPJLambdaWrapper<ManageApplicationEntity>()
+                        .eq(!StringUtils.isEmpty(appUserId), ManageApplicationEntity::getAppUserId, appUserId)
+                        .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), ManageApplicationEntity::getAppCreatetime, startTime, endTime)
+                        .like(!StringUtils.isEmpty(keyword), ManageApplicationEntity::getAppName, keyword)
+                        .or().like(!StringUtils.isEmpty(keyword), ManageApplicationEntity::getAppName, keyword)
+                        .selectAll(UserApproveEntity.class)
+                        .selectAll(ManageApplicationEntity.class)
+                        .leftJoin(UserApproveEntity.class, UserApproveEntity::getUserId, ManageApplicationEntity::getAppUserId)
+                        .orderByDesc(ManageApplicationEntity::getAppCreatetime)
+        );
 
         return Result.success(userApproveEntityPage);
 

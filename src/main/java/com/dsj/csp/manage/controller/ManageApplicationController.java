@@ -144,5 +144,4 @@ public class ManageApplicationController {
         return Result.success(manageApplicationService.upadataAppList(appId, appName, appSynopsis, appIconpath, appUserId));
     }
 
-
 }

@@ -1,7 +1,10 @@
 package com.dsj.csp.manage.dto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.dsj.csp.manage.entity.AbilityApiReq;
 import com.dsj.csp.manage.entity.AbilityApiResp;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -11,41 +14,42 @@ import java.util.List;
 
 @Data
 public class AbilityApiVO implements Serializable {
-
-    @Schema(description = "NLJK_XH")
+    @Schema(description="NLJK_XH")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long apiId;
 
-    @Schema(description = "NL_XH")
+    @Schema(description="NL_XH")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long abilityId;
 
-    @Schema(description = "NLJK_MC")
+    @Schema(description="NLJK_MC")
     private String apiName;
 
-    @Schema(description = "NLJK_MS")
+    @Schema(description="NLJK_MS")
     private String description;
 
-    @Schema(description = "DYLXZ")
+    @Schema(description="DYLXZ")
     private Integer recallLimit;
 
-    @Schema(description = "BFSXZ")
+    @Schema(description="BFSXZ")
     private Integer qps;
 
-    @Schema(description = "NLJK_XYGS")
+    @Schema(description="NLJK_XYGS")
     private String respFormat;
 
-    @Schema(description = "NLJK_XY")
+    @Schema(description="NLJK_XY")
     private String protocol;
 
-    @Schema(description = "NLJK_ZJDZ")
+    @Schema(description="NLJK_ZJDZ")
     private String apiHost;
 
-    @Schema(description = "NLJK_URL")
+    @Schema(description="NLJK_URL")
     private String apiUrl;
 
-    @Schema(description = "NLJK_BBH")
+    @Schema(description="NLJK_BBH")
     private String apiVersion;
 
-    @Schema(description = "NLJK_CJSJ" )
+    @Schema(description="NLJK_CJSJ" )
     private Timestamp createTime;
 
     @Schema(description = "NLJK_GXSJ")

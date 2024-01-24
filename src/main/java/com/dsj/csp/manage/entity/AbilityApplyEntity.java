@@ -69,7 +69,7 @@ public class AbilityApplyEntity extends BaseEntity implements Serializable {
     private Date approveTime;
 
     @TableField(value = "NLSQ_CJSJ")
-    @Schema(description="修改时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
     @TableField(value = "NLSQ_GXSJ")

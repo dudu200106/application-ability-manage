@@ -1,9 +1,14 @@
 package com.dsj.csp.manage.controller;
 
+import cn.hutool.json.JSONObject;
 import com.alibaba.druid.util.StringUtils;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.common.enums.StatusEnum;
+import com.dsj.csp.manage.dto.ManageApplictionDto;
 import com.dsj.csp.manage.dto.ManageApplictionVo;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
 import com.dsj.csp.manage.entity.AbilityApplyEntity;
@@ -14,11 +19,13 @@ import com.dsj.csp.manage.mapper.AbilityApplyMapper;
 import com.dsj.csp.manage.mapper.ManageApplicationMapper;
 import com.dsj.csp.manage.mapper.UserApproveMapper;
 import com.dsj.csp.manage.service.ManageApplicationService;
+import com.dsj.csp.manage.util.TimeTolong;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -84,6 +91,11 @@ public class ManageApplicationController {
                         .leftJoin(UserApproveEntity.class, UserApproveEntity::getUserId, ManageApplicationEntity::getAppUserId)
                         .orderByDesc(ManageApplicationEntity::getAppCreatetime)
         );
+        userApproveEntityPage.getRecords().forEach(data-> {
+//            long time = data.getAppCreatetime().getTime();
+//            data.setApptime(time);
+            data.setApptime(TimeTolong.timetolong(data.getAppCreatetime()));
+        });
 
         return Result.success(userApproveEntityPage);
 
@@ -94,24 +106,31 @@ public class ManageApplicationController {
      */
     @Operation(summary = "添加应用")
     @PostMapping("/addInfo")
-    public Result<?> add(@Parameter(description = "应用图片路径") String appIconpath, @Parameter(description = "应用名字") String appName, @Parameter(description = "应用简介") String appSynopsis, @Parameter(description = "用户Id") String userId) {
-        ManageApplicationEntity manageApplicationEntity = new ManageApplicationEntity();
-        manageApplicationEntity.setAppName(appName);
-        manageApplicationEntity.setAppUserId(userId);
-        manageApplicationEntity.setAppSynopsis(appSynopsis);
-        manageApplicationEntity.setAppCode(generateNumber(8));//生成appid
-        manageApplicationEntity.setAppIconpath(appIconpath);//应用路径
-//            状态
-        manageApplicationEntity.setAppStatus(StatusEnum.NORMAL.getStatus());
-//            逻辑删除
-        manageApplicationEntity.setAppIsdelete(0);
-        manageApplicationEntity.setAppCreatetime(new Date());
-        manageApplicationEntity.setAppUpdatetime(new Date());
-        return Result.success(manageApplicationService.save(manageApplicationEntity));
+    public Result<?> add(@RequestBody ManageApplicationEntity manageApplication) {
+
+//        lambdaUpdateWrapper()
+//        System.out.println(userId);
+//        ManageApplicationEntity manageApplicationEntity = new ManageApplicationEntity();
+//        manageApplicationEntity.setAppName(appName);
+//        manageApplicationEntity.setAppUserId(userId);
+//        manageApplicationEntity.setAppSynopsis(appSynopsis);
+//        manageApplicationEntity.setAppCode(generateNumber(8));//生成appid
+//        manageApplicationEntity.setAppIconpath(appIconpath);//应用路径
+////            状态
+//        manageApplicationEntity.setAppStatus(StatusEnum.NORMAL.getStatus());
+////            逻辑删除
+//        manageApplicationEntity.setAppIsdelete(0);
+//        manageApplicationEntity.setAppCreatetime(new Date());
+//        manageApplicationEntity.setAppUpdatetime(new Date());
+        manageApplication.setAppCreatetime(new Date());
+        manageApplication.setAppUpdatetime(new Date());
+        manageApplication.setAppIsdelete(0);
+        manageApplicationService.save(manageApplication);
+        return Result.success();
     }
 
     @Operation(summary = "删除应用")
-    @PostMapping("/delete")
+    @PostMapping("/deleteApp")
     public Result<?> delete(@Parameter(description = "appID") String appId, @Parameter(description = "用户Id") String appUserId) {
         System.out.println(appId);
         return Result.success(manageApplicationService.updateIsdetele(appId, appUserId));
@@ -119,9 +138,16 @@ public class ManageApplicationController {
 
     //查询appid和name
     @Operation(summary = "查询应用")
-    @PostMapping("/selectappID")
-    public Result selectappID(@Parameter(description = "appID") Long appId, @Parameter(description = "用户Id") String appUserId) {
-        return Result.success(manageApplicationService.selectappID(appId, appUserId));
+    @GetMapping("/selectappID")
+    public Result selectappID(@Parameter(description = "appID") String appId, @Parameter(description = "用户Id") String appUserId) {
+
+        QueryWrapper<ManageApplicationEntity> wrapper = new QueryWrapper();
+        wrapper.lambda()
+                .eq(Objects.nonNull(appId), ManageApplicationEntity::getAppId, appId)
+                .eq(Objects.nonNull(appUserId), ManageApplicationEntity::getAppUserId, appUserId);
+
+
+        return Result.success(manageApplicationMapper.selectList(wrapper));
     }
 
     //统计应用次数
@@ -141,8 +167,17 @@ public class ManageApplicationController {
     //修改应用信息
     @Operation(summary = "修改应用")
     @PostMapping("/upadataAppInfo")
-    public Result<?> upadataAppList(@Parameter(description = "应用图片路径") String appIconpath, @Parameter(description = "id") Long appId, @Parameter(description = "名称") String appName, @Parameter(description = "简介") String appSynopsis, @Parameter(description = "用户id") String appUserId) throws IOException {
-        return Result.success(manageApplicationService.upadataAppList(appId, appName, appSynopsis, appIconpath, appUserId));
+    public Result<?> upadataAppList(@RequestBody ManageApplicationEntity manageApplication){
+        LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppId, manageApplication.getAppId());
+        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, manageApplication.getAppUserId());
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppUpdatetime, new Date());
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppIsdelete, 0);
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppName, manageApplication.getAppName());
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppSynopsis, manageApplication.getAppSynopsis());
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppUserId, manageApplication.getAppUserId());
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppIconpath, manageApplication.getAppIconpath());
+        return Result.success(manageApplicationMapper.update(lambdaUpdateWrapper));
     }
 
 }

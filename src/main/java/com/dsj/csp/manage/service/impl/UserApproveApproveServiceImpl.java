@@ -1,4 +1,5 @@
 package com.dsj.csp.manage.service.impl;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -30,49 +31,48 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper, UserApproveEntity> implements UserApproveService {
-    //根据token识别用户
-    public String identify(){
+    //远程调用用户接口，根据token识别用户
+    @Override
+    public UserApproveEntity identify(String accessToken) {
         RestTemplate restTemplate = new RestTemplate();
         String serverURL = "http://106.227.94.62:8001";
         HttpHeaders headers = new HttpHeaders();
         MediaType type = MediaType.parseMediaType("application/json;charset=UTF-8");
         headers.setContentType(type);
         headers.add("Accept", MediaType.APPLICATION_JSON.toString());
-        String url = serverURL + "/auth/userInfo?accessToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkc2oiLCJpZCI6IjU2NDE1MDgyNTMzIiwibmFtZSI6IuiigeeQpuW9piIsInVzZXJuYW1lIjoiMTg3MjU0NjcyMDgiLCJpYXQiOjE3MDYwMTA3NTMsImV4cCI6MTcwNjAxNzk1M30.fjGLFtcEu-NYAu-O5I5hvHQQUIHLCjaewu7yvjRr9w8&refreshToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkc2oiLCJpZCI6IjU2NDE1MDgyNTMzIiwiaWF0IjoxNzA2MDEwNzUzLCJleHAiOjE3MDYwMzIzNTN9.U56zu6x78HS1lTsfNKI_eUJR7zyGZaGoYjTQzVxAuxk";
+        String url = serverURL + "/auth/userInfo?accessToken=" + accessToken;
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
         String responseBody = response.getBody();
         JSONObject responseJson = JSON.parseObject(responseBody);
         JSONObject dataJson = JSON.parseObject(responseJson.getString("data"));
+        UserApproveEntity userApproveEntity = new UserApproveEntity();
         String userId = dataJson.getString("id");
-        return userId;
+        String status=dataJson.getString("status");
+        userApproveEntity.setUserId(userId);
+        userApproveEntity.setStatus(Integer.valueOf(status));
+        return userApproveEntity;
     }
 
-    //远程调用接口
-    @Override
-    public String callRemoteService() {
-        String userId = identify();
-        UserApproveEntity userApproveEntity = baseMapper.selectById(userId);
-        if(userApproveEntity==null){
-            UserApproveEntity userApproveEntity2=new UserApproveEntity();
-            userApproveEntity2.setUserId(userId);
-            baseMapper.insert(userApproveEntity2);
-            return "新用户注册成功";
-        }
-        return "欢迎回来";
-    }
     /**
      * 用户实名认证申请模块
      */
     @Override
-    public void approve(UserApproveEntity user) {
-        user.setUserId(identify());
+    public void approve(UserApproveEntity user,String accessToken) {
+        UserApproveEntity user2 = identify(accessToken);
+        user.setUserId(user2.getUserId());
         UserApproveEntity userApproveEntity = baseMapper.selectById(user);
-        Integer status = userApproveEntity.getStatus();
-        if (status.equals(UserStatusEnum.NOAPPROVE.getStatus()) || status.equals(UserStatusEnum.FAIL.getStatus())) {
+        if (userApproveEntity != null) {
+            Integer status = user2.getStatus();
+            if (status.equals(UserStatusEnum.NOAPPROVE.getStatus()) || status.equals(UserStatusEnum.FAIL.getStatus())) {
+                user.setStatus(UserStatusEnum.WAIT.getStatus());
+                user.setNote(null);
+                user.setCreateTime(new Date());
+                baseMapper.updateById(user);
+            }
+            user.setUserId(user.getUserId());
             user.setStatus(UserStatusEnum.WAIT.getStatus());
-            user.setNote(null);
             user.setCreateTime(new Date());
-            baseMapper.updateById(user);
+            baseMapper.insert(user);
         }
     }
 
@@ -80,17 +80,17 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
      * 管理员实名认证审核模块
      */
     @Override
-    public Page<UserApproveEntity> select(String status,String keyword, Date startTime, Date endTime, int page, int size) {
+    public Page<UserApproveEntity> select(String status, String keyword, Date startTime, Date endTime, int page, int size) {
         QueryWrapper<UserApproveEntity> wrapper = new QueryWrapper();
         wrapper.lambda()
                 .eq(Objects.nonNull(status), UserApproveEntity::getStatus, status)
                 .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), UserApproveEntity::getCreateTime, startTime, endTime)
-                .and(StringUtils.isNotBlank(keyword),lambdaQuery->{
+                .and(StringUtils.isNotBlank(keyword), lambdaQuery -> {
                     lambdaQuery
                             .like(UserApproveEntity::getGovName, keyword)
                             .or()
                             .like(UserApproveEntity::getCompanyName, keyword);
-        });
+                });
         return baseMapper.selectPage(new Page(page, size), wrapper);
     }
 

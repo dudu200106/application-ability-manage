@@ -45,7 +45,8 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         UserApproveRequest userApproveRequest = new UserApproveRequest();
         userApproveRequest.setUserId(dataJson.getString("id"));
         userApproveRequest.setUserName(dataJson.getString("name"));
-        userApproveRequest.setStatus(Integer.valueOf(dataJson.getString("status")));
+        userApproveRequest.setStatus(Integer.valueOf(dataJson.getString("smzt")));
+        userApproveRequest.setPhone(dataJson.getString("phone"));
         return userApproveRequest;
     }
 

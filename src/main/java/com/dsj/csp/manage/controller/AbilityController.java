@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -192,6 +193,33 @@ public class AbilityController {
         System.out.println("收到请求，appcode：" + appCode);
 
         return Result.success(abilityApiBizService.getApiList( appCode));
+    }
+
+    @Operation(summary = "删除能力")
+    @PostMapping("/delete-ability")
+    public Result<?> removeAbility(@Parameter(description = "能力id列表") @RequestBody AbilityDeleteDTO deleteDTO){
+        String abilityIds = deleteDTO.getAbilityIds();
+        List<Long> ids = Arrays.asList(abilityIds.split(",")).stream().map(id -> Long.parseLong(id.trim())).toList();
+        Boolean delFlag = abilityService.removeBatchByIds(ids);
+        return Result.success("删除能力完成! ", delFlag);
+    }
+
+    @Operation(summary = "删除能力")
+    @PostMapping("/delete-apply")
+    public Result<?> removeApply(@RequestBody AbilityDeleteDTO deleteDTO){
+        String applyIds = deleteDTO.getApplyIds();
+        List<Long> ids = Arrays.asList(applyIds.split(",")).stream().map(id -> Long.parseLong(id)).toList();
+        Boolean delFlag = abilityApplyService.removeBatchByIds(ids);
+        return Result.success("删除能力申请完成! ", delFlag);
+    }
+
+    @Operation(summary = "删除能力")
+    @PostMapping("/delete-api")
+    public Result<?> removeApi(@RequestBody AbilityDeleteDTO deleteDTO){
+        String apiIds = deleteDTO.getApiIds();
+        List<Long> ids = Arrays.asList(apiIds.split(",")).stream().map(id -> Long.parseLong(id)).toList();
+        Boolean delFlag = abilityApiService.removeBatchByIds(ids);
+        return Result.success("删除能力完成! ", delFlag);
     }
 
 }

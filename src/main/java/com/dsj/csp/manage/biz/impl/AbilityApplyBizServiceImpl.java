@@ -110,43 +110,28 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
 
         // 1.用户表 过userId查出企业/政府名称
         Set<Long> userIds = records.stream().map(e->e.getUserId()).collect(Collectors.toSet());
-        LambdaQueryWrapper userQW = Wrappers.lambdaQuery(UserApproveEntity.class)
-                .select(UserApproveEntity::getUserId,
-                        UserApproveEntity::getCompanyName,
-                        UserApproveEntity::getGovName
-                )
-                .in(UserApproveEntity::getUserId, userIds);
-        List<UserApproveEntity> users = userApproveService.list(userQW);
+        List<UserApproveEntity> users = userApproveService.list(
+                Wrappers.lambdaQuery(UserApproveEntity.class)
+                        .select(UserApproveEntity::getUserId, UserApproveEntity::getCompanyName, UserApproveEntity::getGovName)
+                        .in(UserApproveEntity::getUserId, userIds)
+        );
         // 将ID映射到数据上, 方便查找使用
-        Map<String, UserApproveEntity> userMap =
-                users.stream().collect(Collectors
-                                .toMap(user -> user.getUserId(), user -> user));
-
+        Map<String, UserApproveEntity> userMap = users.stream().collect(Collectors.toMap(user -> user.getUserId(), user -> user));
         // 2.应用表 通过appId查出应用名称
         Set<Long> appIds = records.stream().map(e  -> e.getAppId()).collect(Collectors.toSet());
-        LambdaQueryWrapper appQW = Wrappers.lambdaQuery(ManageApplicationEntity.class)
-                .select(ManageApplicationEntity::getAppId,
-                        ManageApplicationEntity::getAppName
-                )
-                .in(ManageApplicationEntity::getAppId, appIds);
-        List<ManageApplicationEntity> apps = manageApplicationService.list(appQW);
-        // 将ID映射到数据上, 方便查找使用\
-        Map<String, String> appMap =
-                apps.stream().collect(Collectors
-                                .toMap(app -> app.getAppId(), app ->app.getAppName()));
-
+        List<ManageApplicationEntity> apps = manageApplicationService.list(
+                Wrappers.lambdaQuery(ManageApplicationEntity.class)
+                        .select(ManageApplicationEntity::getAppId, ManageApplicationEntity::getAppName)
+                        .in(ManageApplicationEntity::getAppId, appIds)
+        );
+        Map<String, String> appMap = apps.stream().collect(Collectors.toMap(app -> app.getAppId(), app ->app.getAppName()));
         // 3.能力表 abilityId查出能力名称和类型
         Set<Long> abilityIds = records.stream().map(e  -> e.getAbilityId()).collect(Collectors.toSet());
         LambdaQueryWrapper abilityQW = Wrappers.lambdaQuery(AbilityEntity.class)
-                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName,
-                        AbilityEntity::getAbilityType
-                )
+                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName, AbilityEntity::getAbilityType)
                 .in(AbilityEntity::getAbilityId, abilityIds);
         List<AbilityEntity> abilitys = abilityService.list(abilityQW);
-        // 将ID映射到数据上, 方便查找使用
-        Map<Long, AbilityEntity> abilityMap =
-                abilitys.stream().collect(Collectors
-                                .toMap(ability -> ability.getAbilityId(), ability -> ability));
+        Map<Long, AbilityEntity> abilityMap = abilitys.stream().collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability));
 
         // 返回的分页res
         Page newPage = new Page<>(prePage.getCurrent(),  prePage.getSize(), prePage.getTotal());
@@ -155,7 +140,7 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
             BeanUtil.copyProperties(apply, applyVO, true);
             applyVO.setAbilityName(abilityMap.get(apply.getAbilityId()).getAbilityName());
             applyVO.setAbilityType(abilityMap.get(apply.getAbilityId()).getAbilityType());
-            applyVO.setAppName(appMap.get(apply.getAppId()));
+            applyVO.setAppName(appMap.get(apply.getAppId() + ""));
             applyVO.setCompanyName(userMap.get(apply.getUserId() + "").getCompanyName());
             applyVO.setGovName(userMap.get(apply.getUserId() + "").getGovName());
             return applyVO;

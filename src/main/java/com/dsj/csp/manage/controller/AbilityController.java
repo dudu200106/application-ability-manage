@@ -141,13 +141,12 @@ public class AbilityController {
     public Result<?> getApplyInfoById(@Parameter(
             description = "能力申请ID") @RequestParam Long abilityApplyId) {
         return Result.success(abilityApplyService.getById(abilityApplyId));
-//        return Result.success(abilityBizService.getApplyInfo(abilityApplyId));
+//        return Result.success(abilityApplyBizService.getApplyInfo(abilityApplyId));
     }
 
     @Operation(summary = "审核能力使用申请", description = "审核能力使用申请")
     @PostMapping("/audit-apply")
     public Result<?> auditAbilityApply(@RequestBody AbilityApplyAuditVO auditVO){
-
         abilityApplyBizService.auditApply(auditVO);
         return Result.success("审核完成!");
     }
@@ -156,7 +155,6 @@ public class AbilityController {
     @PostMapping("/page-apply")
     public Result<?> queryApplyPage(
             @Valid @RequestBody AbilityApplyQueryVO abilityApplyQueryVO) {
-        abilityApplyBizService.pageApply(abilityApplyQueryVO);
         return Result.success(abilityApplyService.page(abilityApplyQueryVO.toPage(), abilityApplyQueryVO.getQueryWrapper()));
     }
 

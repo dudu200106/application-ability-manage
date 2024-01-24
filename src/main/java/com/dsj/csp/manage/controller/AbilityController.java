@@ -156,6 +156,7 @@ public class AbilityController {
     @PostMapping("/page-apply")
     public Result<?> queryApplyPage(
             @Valid @RequestBody AbilityApplyQueryVO abilityApplyQueryVO) {
+        abilityApplyBizService.pageApply(abilityApplyQueryVO);
         return Result.success(abilityApplyService.page(abilityApplyQueryVO.toPage(), abilityApplyQueryVO.getQueryWrapper()));
     }
 

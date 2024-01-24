@@ -119,12 +119,12 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     }
 
     @Override
-    public void approveSuccess(String userId,String accessToken) {
-        updateStatus(userId,UserStatusEnum.SUCCESS.getStatus(),accessToken);
-        UserApproveEntity userApproveEntity = baseMapper.selectById(userId);
+    public void approveSuccess(UserApproveRequest user,String accessToken) {
+        updateStatus(user.getUserId(),UserStatusEnum.SUCCESS.getStatus(),accessToken);
+        UserApproveEntity userApproveEntity = baseMapper.selectById(user.getUserId());
         boolean updateResult = this.lambdaUpdate()
                 .eq(Objects.nonNull(userApproveEntity.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())
-                .eq(UserApproveEntity::getUserId, userId)
+                .eq(UserApproveEntity::getUserId, user.getUserId())
                 .set(UserApproveEntity::getStatus, UserStatusEnum.SUCCESS.getStatus())
                 .set(UserApproveEntity::getNote, "实名认证已完成")
                 .update();

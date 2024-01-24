@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.UserApproveEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Date;
 
@@ -31,7 +32,7 @@ public interface UserApproveService extends IService<UserApproveEntity> {
     //查看实名认证申请详情
     UserApproveEntity find(String userId);
     //实名认证审核通过
-    void approveSuccess(String userId,String accessToken);
+    void approveSuccess(UserApproveRequest user, String accessToken);
     //实名认证审核未通过
     void approveFail(UserApproveRequest user,String accessToken);
     //统计用户总数

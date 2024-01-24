@@ -46,13 +46,13 @@ public class AdminApproveController {
 
     /**
      * 实名认证审核通过
-     * @param userId
+     * @param user
      * @return
      */
     @Operation(summary = "实名认证审核通过")
     @PostMapping("/approveSuccess")
-    public Result<String> approveSuccess(String userId,@RequestHeader String accessToken){
-        userApproveService.approveSuccess(userId,accessToken);
+    public Result<String> approveSuccess(@RequestBody UserApproveRequest user,@RequestHeader String accessToken){
+        userApproveService.approveSuccess(user,accessToken);
 
         return Result.success("审核通过");
     }

@@ -150,12 +150,12 @@ public class ManageApplicationController {
         return Result.success(manageApplicationMapper.selectList(wrapper));
     }
 
-    //统计应用次数
-    @Operation(summary = "统计应用总数")
-    @GetMapping("/allTotal")
-    public Result countAll() {
-        return Result.success(manageApplicationService.count());
-    }
+//    //统计应用次数
+//    @Operation(summary = "统计应用总数")
+//    @GetMapping("/allTotal")
+//    public Result countAll() {
+//        return Result.success(manageApplicationService.count());
+//    }
 
     //用户关联应用查询
 //    @Operation(summary = "用户下的应用")

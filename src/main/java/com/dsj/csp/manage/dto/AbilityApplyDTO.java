@@ -71,5 +71,8 @@ public class AbilityApplyDTO {
     @Schema(description="更新时间")
     private Date updateTime;
 
+    @Schema(description="创建时间")
+    private Date createTime;
+
 
 }

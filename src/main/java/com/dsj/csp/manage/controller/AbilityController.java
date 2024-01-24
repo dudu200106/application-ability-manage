@@ -100,6 +100,18 @@ public class AbilityController {
         return Result.success(abilityApiBizService.getApiInfo(apiId));
     }
 
+    @Operation(summary = "查询申请的接口列表", description = "查询申请的接口列表")
+    @GetMapping("/query-apply-api")
+    public Result<?> queryApplyApiList(@Parameter(description = "能力申请ID") @RequestParam Long abilityApplyId) {
+        return Result.success(abilityApiBizService.getApplyApiList(abilityApplyId));
+    }
+
+    @Operation(summary = "查询能力的接口列表", description = "查询能力的接口列表")
+    @GetMapping("/query-api-list")
+    public Result<?> queryApiList(@Parameter(description = "能力ID") @RequestParam Long abilityId) {
+        return Result.success(abilityApiBizService.getAbilityApiList(abilityId));
+    }
+
     @Operation(summary = "分页查询接口列表", description = "查询接口分页列表")
     @PostMapping("/page-api")
     public Result<?> pageApi(
@@ -119,10 +131,8 @@ public class AbilityController {
 
     @Operation(summary = "新增能力使用申请", description = "申请使用能力")
     @PostMapping("/add-apply")
-    public Result<?> applyAbility(@RequestBody List<AbilityApplyVO> applyVOs) {
-        for (AbilityApplyVO applyVO : applyVOs) {
-            abilityApplyBizService.saveAbilityApply(applyVO);
-        }
+    public Result<?> applyAbility(@RequestBody AbilityApplyVO applyVO) {
+        abilityApplyBizService.saveAbilityApply(applyVO);
         return Result.success("能力申请完毕！请等待审核...");
     }
 
@@ -131,6 +141,7 @@ public class AbilityController {
     public Result<?> getApplyInfoById(@Parameter(
             description = "能力申请ID") @RequestParam Long abilityApplyId) {
         return Result.success(abilityApplyService.getById(abilityApplyId));
+//        return Result.success(abilityBizService.getApplyInfo(abilityApplyId));
     }
 
     @Operation(summary = "审核能力使用申请", description = "审核能力使用申请")

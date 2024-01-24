@@ -109,7 +109,6 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     public Page pageApi(AbilityApiQueryVO apiQueryVO){
-
         Page<AbilityApiEntity> p = abilityApiService.page(apiQueryVO.toPage(), apiQueryVO.getQueryWrapper());
         Page<AbilityApiVO> apiVOPage = new Page<>(p.getCurrent(), p.getSize(), p.getTotal());
         // 查出能力ID和能力名称的映射
@@ -132,5 +131,21 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         }).toList();
         apiVOPage.setRecords(newRecords);
         return apiVOPage;
+    }
+
+    @Override
+    public List<AbilityApiEntity> getApplyApiList(Long abilityApplyId) {
+        String apiIds = abilityApplyService.getById(abilityApplyId).getApiIds();
+        List<Long> idList = Arrays.asList(apiIds.split(",")).stream().map(e->Long.parseLong(e)).toList();
+        List<AbilityApiEntity> apis = abilityApiService.listByIds(idList);
+        return apis;
+    }
+
+    @Override
+    public List<AbilityApiEntity> getAbilityApiList(Long abilityId) {
+        List<AbilityApiEntity> apis = abilityApiService.list(
+                Wrappers.lambdaQuery(AbilityApiEntity.class).eq(AbilityApiEntity::getAbilityId, abilityId)
+        );
+        return apis;
     }
 }

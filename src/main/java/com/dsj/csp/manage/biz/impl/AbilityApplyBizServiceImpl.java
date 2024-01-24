@@ -8,22 +8,18 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.csp.manage.biz.AbilityApplyBizService;
 import com.dsj.csp.manage.dto.AbilityApplyAuditVO;
+import com.dsj.csp.manage.dto.AbilityApplyDTO;
 import com.dsj.csp.manage.dto.AbilityApplyQueryVO;
 import com.dsj.csp.manage.dto.AbilityApplyVO;
-import com.dsj.csp.manage.entity.AbilityApplyEntity;
-import com.dsj.csp.manage.entity.AbilityEntity;
-import com.dsj.csp.manage.entity.ManageApplicationEntity;
-import com.dsj.csp.manage.entity.UserApproveEntity;
-import com.dsj.csp.manage.service.AbilityApplyService;
-import com.dsj.csp.manage.service.AbilityService;
-import com.dsj.csp.manage.service.ManageApplicationService;
-import com.dsj.csp.manage.service.UserApproveService;
+import com.dsj.csp.manage.entity.*;
+import com.dsj.csp.manage.service.*;
 import com.dsj.csp.manage.util.Sm2;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,6 +35,7 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
     private final UserApproveService userApproveService;
     private final AbilityService abilityService;
     private final AbilityApplyService abilityApplyService;
+    private final AbilityApiService abilityApiService;
 
     @Override
     public void saveAbilityApply(AbilityApplyVO applyVO) {
@@ -62,6 +59,18 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
     }
 
 
+    @Override
+    public AbilityApplyDTO getApplyInfo(Long abilityApplyId) {
+        AbilityApplyEntity apply = abilityApplyService.getById(abilityApplyId);
+        AbilityApplyDTO resApply = new AbilityApplyDTO();
+        BeanUtil.copyProperties(apply, resApply);
+        String apiIds = abilityApplyService.getById(abilityApplyId).getApiIds();
+        List<Long> idList = Arrays.asList(apiIds.split(",")).stream().map(e->Long.parseLong(e)).toList();
+        List<AbilityApiEntity> apis = abilityApiService.listByIds(idList);
+        resApply.setApiList(apis);
+        return resApply;
+    }
+
     public void auditApply(AbilityApplyAuditVO auditVO) {
         // 创建更新条件构造器
         LambdaUpdateWrapper<AbilityApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
@@ -69,6 +78,7 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
         updateWrapper.set(AbilityApplyEntity::getStatus, auditVO.getFlag());
         updateWrapper.set(AbilityApplyEntity::getNote, auditVO.getNote());
         updateWrapper.set(AbilityApplyEntity::getUpdateTime, DateTime.now());
+        updateWrapper.set(AbilityApplyEntity::getApproveTime, DateTime.now());
         abilityApplyService.update(updateWrapper);
 
         // 判断是否要生成一对密钥
@@ -135,15 +145,15 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
 
         // 返回的分页res
         Page newPage = new Page<>(prePage.getCurrent(),  prePage.getSize(), prePage.getTotal());
-        List<AbilityApplyVO> resRecords = records.stream().map(apply ->{
-            AbilityApplyVO applyVO = new AbilityApplyVO();
-            BeanUtil.copyProperties(apply, applyVO, true);
-            applyVO.setAbilityName(abilityMap.get(apply.getAbilityId()).getAbilityName());
-            applyVO.setAbilityType(abilityMap.get(apply.getAbilityId()).getAbilityType());
-            applyVO.setAppName(appMap.get(apply.getAppId() + ""));
-            applyVO.setCompanyName(userMap.get(apply.getUserId() + "").getCompanyName());
-            applyVO.setGovName(userMap.get(apply.getUserId() + "").getGovName());
-            return applyVO;
+        List<AbilityApplyDTO> resRecords = records.stream().map(apply ->{
+            AbilityApplyDTO applyDTO = new AbilityApplyDTO();
+            BeanUtil.copyProperties(apply, applyDTO, true);
+            applyDTO.setAbilityName(abilityMap.get(apply.getAbilityId()).getAbilityName());
+            applyDTO.setAbilityType(abilityMap.get(apply.getAbilityId()).getAbilityType());
+            applyDTO.setAppName(appMap.get(apply.getAppId() + ""));
+            applyDTO.setCompanyName(userMap.get(apply.getUserId() + "").getCompanyName());
+            applyDTO.setGovName(userMap.get(apply.getUserId() + "").getGovName());
+            return applyDTO;
         }).toList();
         newPage.setRecords(resRecords);
         return newPage;

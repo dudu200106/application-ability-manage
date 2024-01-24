@@ -13,10 +13,7 @@ import com.dsj.csp.manage.mapper.UserApproveMapper;
 import com.dsj.csp.manage.service.UserApproveService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -32,7 +29,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper, UserApproveEntity> implements UserApproveService {
     //远程调用用户接口，根据token识别用户
-    @Override
     public UserApproveEntity identify(String accessToken) {
         RestTemplate restTemplate = new RestTemplate();
         String serverURL = "http://106.227.94.62:8001";
@@ -53,27 +49,45 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         return userApproveEntity;
     }
 
+    //远程调用用户实名状态更新接口
+    public void updateStatus(String userId,Integer status,String token) {
+        RestTemplate restTemplate = new RestTemplate();
+        String serverURL = "http://106.227.94.62:8001";
+        HttpHeaders headers = new HttpHeaders();
+        String requestBody="{\"id\": " + userId + ", \"smzt\": " + status + "}";
+        HttpEntity requestEntity = new HttpEntity(requestBody,headers);
+        MediaType type = MediaType.parseMediaType("application/json;charset=UTF-8");
+        headers.setContentType(type);
+        headers.add("Accept", MediaType.APPLICATION_JSON.toString());
+        headers.add("accessToken", token);
+        String url = serverURL + "/user-server/rpc/user/updateSmztById";
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+        System.out.println(response);
+    }
+
     /**
      * 用户实名认证申请模块
      */
     @Override
-    public void approve(UserApproveEntity user,String accessToken) {
+    public String approve(UserApproveEntity user,String accessToken) {
         UserApproveEntity user2 = identify(accessToken);
         user.setUserId(user2.getUserId());
         UserApproveEntity userApproveEntity = baseMapper.selectById(user);
         if (userApproveEntity != null) {
             Integer status = user2.getStatus();
-            if (status.equals(UserStatusEnum.NOAPPROVE.getStatus()) || status.equals(UserStatusEnum.FAIL.getStatus())) {
-                user.setStatus(UserStatusEnum.WAIT.getStatus());
+            if (status.equals(UserStatusEnum.WAIT.getStatus()) || status.equals(UserStatusEnum.FAIL.getStatus())) {
+                updateStatus(user2.getUserId(),UserStatusEnum.WAIT.getStatus(),accessToken);
                 user.setNote(null);
                 user.setCreateTime(new Date());
                 baseMapper.updateById(user);
+                return "实名认证申请已提交";
+
             }
-            user.setUserId(user.getUserId());
-            user.setStatus(UserStatusEnum.WAIT.getStatus());
-            user.setCreateTime(new Date());
-            baseMapper.insert(user);
         }
+        updateStatus(user2.getUserId(),UserStatusEnum.WAIT.getStatus(),accessToken);
+        user.setCreateTime(new Date());
+        baseMapper.insert(user);
+        return "实名认证申请已提交";
     }
 
     /**

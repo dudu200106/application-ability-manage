@@ -17,9 +17,11 @@ public interface UserApproveService extends IService<UserApproveEntity> {
      * 用户模块
      */
     //用户申请实名认证
-    void approve(UserApproveEntity user,String accessToken);
-
-    UserApproveEntity identify(String accessToken);
+    String approve(UserApproveEntity user,String accessToken);
+    //远程调用用户接口，根据token识别用户
+//    UserApproveEntity identify(String accessToken);
+    //远程调用用户实名状态更新接口
+//    void updateStatus(String userId,Integer status);
 
     /**
      * 管理员实名认证审核模块
@@ -37,3 +39,4 @@ public interface UserApproveService extends IService<UserApproveEntity> {
     Long userCount();
 
 }
+

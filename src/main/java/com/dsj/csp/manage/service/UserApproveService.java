@@ -31,9 +31,9 @@ public interface UserApproveService extends IService<UserApproveEntity> {
     //查看实名认证申请详情
     UserApproveEntity find(String userId);
     //实名认证审核通过
-    void approveSuccess(UserApproveRequest user,String accessToken);
+    void approveSuccess(String userId,String accessToken);
     //实名认证审核未通过
-    void approveFail(UserApproveRequest user);
+    void approveFail(UserApproveRequest user,String accessToken);
     //统计用户总数
 
     Long userCount();

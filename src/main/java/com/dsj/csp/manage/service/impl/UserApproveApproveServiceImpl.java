@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
@@ -41,12 +42,10 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         String responseBody = response.getBody();
         JSONObject responseJson = JSON.parseObject(responseBody);
         JSONObject dataJson = JSON.parseObject(responseJson.getString("data"));
-//        UserApproveEntity userApproveEntity = new UserApproveEntity();
         UserApproveRequest userApproveRequest = new UserApproveRequest();
-        String userId = dataJson.getString("id");
-        String status=dataJson.getString("status");
-        userApproveRequest.setUserId(userId);
-        userApproveRequest.setStatus(Integer.valueOf(status));
+        userApproveRequest.setUserId(dataJson.getString("id"));
+        userApproveRequest.setUserName(dataJson.getString("name"));
+        userApproveRequest.setStatus(Integer.valueOf(dataJson.getString("status")));
         return userApproveRequest;
     }
 
@@ -63,7 +62,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         headers.add("accessToken", token);
         String url = serverURL + "/user-server/rpc/user/updateSmztById";
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
-        System.out.println(response);
+//        System.out.println(response);
     }
 
     //远程调用根据ID查询接口
@@ -75,6 +74,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     public String approve(UserApproveEntity user,String accessToken) {
         UserApproveRequest user2 = identify(accessToken);
         user.setUserId(user2.getUserId());
+        user.setUserName(user2.getUserName());
         UserApproveEntity userApproveEntity = baseMapper.selectById(user);
         if (userApproveEntity != null) {
             Integer status = user2.getStatus();
@@ -119,11 +119,12 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     }
 
     @Override
-    public void approveSuccess(UserApproveRequest user,String accessToken) {
-        UserApproveEntity userApproveEntity = baseMapper.selectById(user.getUserId());
+    public void approveSuccess(String userId,String accessToken) {
+        updateStatus(userId,UserStatusEnum.SUCCESS.getStatus(),accessToken);
+        UserApproveEntity userApproveEntity = baseMapper.selectById(userId);
         boolean updateResult = this.lambdaUpdate()
                 .eq(Objects.nonNull(userApproveEntity.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())
-                .eq(UserApproveEntity::getUserId, user.getUserId())
+                .eq(UserApproveEntity::getUserId, userId)
                 .set(UserApproveEntity::getStatus, UserStatusEnum.SUCCESS.getStatus())
                 .set(UserApproveEntity::getNote, "实名认证已完成")
                 .update();
@@ -133,10 +134,13 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         }
 //          FIXME  return updateResult; 在controller做判断并进行不同的响应
         // TODO 为每一次的sql结果负责
+//        int i=1/0;
+//        updateStatus(userId,UserStatusEnum.SUCCESS.getStatus(),accessToken);
     }
 
     @Override
-    public void approveFail(UserApproveRequest user) {
+    public void approveFail(UserApproveRequest user,String accessToken) {
+        updateStatus(user.getUserId(),UserStatusEnum.FAIL.getStatus(),accessToken);
         UserApproveEntity userApproveEntity = baseMapper.selectById(user.getUserId());
         boolean updateResult = this.lambdaUpdate()
                 .eq(Objects.nonNull(userApproveEntity.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())

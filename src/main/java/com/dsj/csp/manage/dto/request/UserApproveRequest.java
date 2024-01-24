@@ -6,5 +6,6 @@ import lombok.Data;
 public class UserApproveRequest {
     private String userId;
     private Integer status;
+    private String userName;
     private String note;
 }

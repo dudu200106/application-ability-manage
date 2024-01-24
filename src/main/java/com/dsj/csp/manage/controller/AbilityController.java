@@ -156,7 +156,7 @@ public class AbilityController {
     @PostMapping("/page-apply")
     public Result<?> queryApplyPage(
             @Valid @RequestBody AbilityApplyQueryVO abilityApplyQueryVO) {
-        return Result.success(abilityApplyBizService.pageApply(abilityApplyQueryVO));
+        return Result.success(abilityApplyService.page(abilityApplyQueryVO.toPage(), abilityApplyQueryVO.getQueryWrapper()));
     }
 
     @Operation(summary = "编辑能力使用申请", description = "编辑能力使用申请")

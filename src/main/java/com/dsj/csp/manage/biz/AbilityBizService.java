@@ -1,5 +1,7 @@
 package com.dsj.csp.manage.biz;
 
+import com.dsj.csp.manage.dto.AbilityApplyDTO;
+
 /**
  * 功能说明：
  *
@@ -8,4 +10,5 @@ package com.dsj.csp.manage.biz;
  */
 public interface AbilityBizService {
 
+    AbilityApplyDTO getAbilityInfo(Long abilityApplyId);
 }

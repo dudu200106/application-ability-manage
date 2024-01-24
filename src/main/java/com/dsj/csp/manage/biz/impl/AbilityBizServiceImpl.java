@@ -1,8 +1,10 @@
 package com.dsj.csp.manage.biz.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.csp.manage.biz.AbilityBizService;
 import com.dsj.csp.manage.dto.AbilityApplyDTO;
+import com.dsj.csp.manage.dto.AbilityDTO;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
 import com.dsj.csp.manage.entity.AbilityApplyEntity;
 import com.dsj.csp.manage.entity.AbilityEntity;
@@ -29,16 +31,19 @@ import java.util.List;
 public class AbilityBizServiceImpl implements AbilityBizService {
 
     private final AbilityService abilityService;
+    private final AbilityApiService abilityApiService;
+
+
 
     @Override
-    public AbilityApplyDTO getAbilityInfo(Long abilityId) {
-//        AbilityEntity apply = abilityService.getById(abilityId);
-//        AbilityApplyDTO resApply = new AbilityApplyDTO();
-//        BeanUtil.copyProperties(apply, resApply);
-//        String apiIds = abilityApplyService.getById(abilityId).getApiIds();
-//        List<Long> idList = Arrays.asList(apiIds.split(",")).stream().map(e->Long.parseLong(e)).toList();
-//        List<AbilityApiEntity> apis = abilityApiService.listByIds(idList);
-//        resApply.setApiList(apis);
-        return null;
+    public AbilityDTO getAbilityInfo(Long abilityId) {
+        AbilityEntity ability = abilityService.getById(abilityId);
+        AbilityDTO abilityDTO = new AbilityDTO();
+        BeanUtil.copyProperties(ability, abilityDTO, true);
+        List<AbilityApiEntity> apis = abilityApiService.list(
+                Wrappers.lambdaQuery(AbilityApiEntity.class).eq(AbilityApiEntity::getAbilityId, abilityId)
+        );
+        abilityDTO.setApiList(apis);
+        return abilityDTO;
     }
 }

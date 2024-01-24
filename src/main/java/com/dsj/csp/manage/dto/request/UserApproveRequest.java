@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class UserApproveRequest {
     private String userId;
-    private String status;
+    private Integer status;
     private String note;
 }

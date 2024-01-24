@@ -29,7 +29,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper, UserApproveEntity> implements UserApproveService {
     //远程调用用户接口，根据token识别用户
-    public UserApproveEntity identify(String accessToken) {
+    public UserApproveRequest identify(String accessToken) {
         RestTemplate restTemplate = new RestTemplate();
         String serverURL = "http://106.227.94.62:8001";
         HttpHeaders headers = new HttpHeaders();
@@ -41,12 +41,13 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         String responseBody = response.getBody();
         JSONObject responseJson = JSON.parseObject(responseBody);
         JSONObject dataJson = JSON.parseObject(responseJson.getString("data"));
-        UserApproveEntity userApproveEntity = new UserApproveEntity();
+//        UserApproveEntity userApproveEntity = new UserApproveEntity();
+        UserApproveRequest userApproveRequest = new UserApproveRequest();
         String userId = dataJson.getString("id");
         String status=dataJson.getString("status");
-        userApproveEntity.setUserId(userId);
-        userApproveEntity.setStatus(Integer.valueOf(status));
-        return userApproveEntity;
+        userApproveRequest.setUserId(userId);
+        userApproveRequest.setStatus(Integer.valueOf(status));
+        return userApproveRequest;
     }
 
     //远程调用用户实名状态更新接口
@@ -65,18 +66,21 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         System.out.println(response);
     }
 
+    //远程调用根据ID查询接口
+
     /**
      * 用户实名认证申请模块
      */
     @Override
     public String approve(UserApproveEntity user,String accessToken) {
-        UserApproveEntity user2 = identify(accessToken);
+        UserApproveRequest user2 = identify(accessToken);
         user.setUserId(user2.getUserId());
         UserApproveEntity userApproveEntity = baseMapper.selectById(user);
         if (userApproveEntity != null) {
             Integer status = user2.getStatus();
             if (status.equals(UserStatusEnum.WAIT.getStatus()) || status.equals(UserStatusEnum.FAIL.getStatus())) {
                 updateStatus(user2.getUserId(),UserStatusEnum.WAIT.getStatus(),accessToken);
+                user.setStatus(UserStatusEnum.WAIT.getStatus());
                 user.setNote(null);
                 user.setCreateTime(new Date());
                 baseMapper.updateById(user);
@@ -85,6 +89,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
             }
         }
         updateStatus(user2.getUserId(),UserStatusEnum.WAIT.getStatus(),accessToken);
+        user.setStatus(UserStatusEnum.WAIT.getStatus());
         user.setCreateTime(new Date());
         baseMapper.insert(user);
         return "实名认证申请已提交";
@@ -114,7 +119,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     }
 
     @Override
-    public void approveSuccess(UserApproveRequest user) {
+    public void approveSuccess(UserApproveRequest user,String accessToken) {
         UserApproveEntity userApproveEntity = baseMapper.selectById(user.getUserId());
         boolean updateResult = this.lambdaUpdate()
                 .eq(Objects.nonNull(userApproveEntity.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())

@@ -131,7 +131,7 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
                 .in(ManageApplicationEntity::getAppId, appIds);
         List<ManageApplicationEntity> apps = manageApplicationService.list(appQW);
         // 将ID映射到数据上, 方便查找使用\
-        Map<Long, String> appMap =
+        Map<String, String> appMap =
                 apps.stream().collect(Collectors
                                 .toMap(app -> app.getAppId(), app ->app.getAppName()));
 

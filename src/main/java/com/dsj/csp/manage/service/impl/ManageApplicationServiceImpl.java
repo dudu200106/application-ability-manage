@@ -77,7 +77,7 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
  * @return 逻辑删除
  */
     @Override
-    public boolean updateIsdetele(Long appId, String appUserId) {
+    public boolean updateIsdetele(String appId, String appUserId) {
         return baseMapper.updateIsdetele(appId, appUserId);
     }
 

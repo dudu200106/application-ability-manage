@@ -21,7 +21,7 @@ public interface ManageApplicationService extends IService<ManageApplicationEnti
     int contAll();
 //    boolean updateSecret(Long appId);
     boolean upadataAppList(Long appId,String appName,String appSynopsis,String appIconpath,String appUserId);
-    boolean updateIsdetele(Long appId,String appUserId);
+    boolean updateIsdetele(String appId,String appUserId);
 //    IPage<ManageApplication> selectJoinPage(Page<Object> objectPage, Class<ManageApplication> manageApplicationClass, MPJLambdaWrapper<Object> eq);
 
 //    List<ManageApplication> selectPages(LambdaQueryWrapper<ManageApplication> wrapper, String appUserId, String keyword, Date startTime, Date endTime, int page, int size);

@@ -29,7 +29,7 @@ public interface ManageApplicationMapper extends MPJBaseMapper<ManageApplication
 
     boolean upadataAppList(Long appId, String appName, String appSynopsis, String appIconpath, String appUserId);
 
-    boolean updateIsdetele(Long appId, String appUserId);
+    boolean updateIsdetele(String appId, String appUserId);
 
 
 //    List<ManageApplication> selectPages(LambdaQueryWrapper<ManageApplication> wrapper,String appUserId, String keyword, Date startTime, Date endTime, int page, int size);

@@ -112,7 +112,8 @@ public class ManageApplicationController {
 
     @Operation(summary = "删除应用")
     @PostMapping("/delete")
-    public Result<?> delete(@Parameter(description = "appID") Long appId, @Parameter(description = "用户Id") String appUserId) {
+    public Result<?> delete(@Parameter(description = "appID") String appId, @Parameter(description = "用户Id") String appUserId) {
+        System.out.println(appId);
         return Result.success(manageApplicationService.updateIsdetele(appId, appUserId));
     }
 

@@ -34,7 +34,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     public List<String> getApiList(String appCode) {
         LambdaQueryWrapper<ManageApplicationEntity> appQW = Wrappers.lambdaQuery();
         appQW.eq(ManageApplicationEntity::getAppCode, appCode);
-        Long appId = manageApplicationService.getOne(appQW).getAppId();
+        String appId = manageApplicationService.getOne(appQW).getAppId();
         // 查出应用关联的所有能力
         LambdaQueryWrapper<AbilityApplyEntity> applyQW = Wrappers.lambdaQuery();
         applyQW.eq(AbilityApplyEntity::getAppId, appId);

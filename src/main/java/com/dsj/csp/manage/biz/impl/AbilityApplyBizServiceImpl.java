@@ -140,7 +140,7 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
             BeanUtil.copyProperties(apply, applyVO, true);
             applyVO.setAbilityName(abilityMap.get(apply.getAbilityId()).getAbilityName());
             applyVO.setAbilityType(abilityMap.get(apply.getAbilityId()).getAbilityType());
-            applyVO.setAppName(appMap.get(apply.getAppId()));
+            applyVO.setAppName(appMap.get(apply.getAppId() + ""));
             applyVO.setCompanyName(userMap.get(apply.getUserId() + "").getCompanyName());
             applyVO.setGovName(userMap.get(apply.getUserId() + "").getGovName());
             return applyVO;

@@ -33,7 +33,7 @@
         YY_ID, YY_MC, YY_JC, YY_NLBD, YY_FWXY, YY_SMRZ, YY_KEY, YY_SECRET, YY_ZT, YY_ISDELETE, YY_CREATETIME, YY_UPDATETIME, YY_BZ, YY_CREATENAME, YY_UPDATENAME, YY_CODE, YY_SHZT, YY_TB, YH_XH_ID
     </sql>
 
-    <select id="selectappID" resultType="com.dsj.csp.manage.entity.ManageApplicationEntity">
+    <select id="selectappID" resultType="map">
         select *
         from GXYYZC_YYB
         where YY_ID = #{appId}

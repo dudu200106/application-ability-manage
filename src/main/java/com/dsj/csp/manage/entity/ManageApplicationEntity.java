@@ -22,8 +22,6 @@ public class ManageApplicationEntity implements Serializable {
      * id
      */
     @TableId(value = "YY_ID")
-    @JsonProperty(value = "appId")
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
     @Schema(description = "appID数据库id")
     private String  appId;
 

@@ -20,14 +20,14 @@ import java.util.List;
  */
 public interface ManageApplicationMapper extends MPJBaseMapper<ManageApplicationEntity> {
 
-    List<ManageApplicationEntity> selectappID(Long appId, String appUserId);
+    List<ManageApplicationEntity> selectappID(String appId, String appUserId);
 
     int contAll();
 
     List<ManageApplicationEntity> selectUserApp(String appUserId);
 
 
-    boolean upadataAppList(Long appId, String appName, String appSynopsis, String appIconpath, String appUserId);
+    boolean upadataAppList(String appId, String appName, String appSynopsis, String appIconpath, String appUserId);
 
     boolean updateIsdetele(String appId, String appUserId);
 

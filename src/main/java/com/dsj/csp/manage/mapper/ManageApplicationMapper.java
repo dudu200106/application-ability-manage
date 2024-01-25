@@ -20,16 +20,25 @@ import java.util.List;
  */
 public interface ManageApplicationMapper extends MPJBaseMapper<ManageApplicationEntity> {
 
-    List<ManageApplicationEntity> selectappID(String appId, String appUserId);
+//    List<ManageApplicationEntity> selectappID(String appId, String appUserId);
 
     int contAll();
 
     List<ManageApplicationEntity> selectUserApp(String appUserId);
 
 
-    boolean upadataAppList(String appId, String appName, String appSynopsis, String appIconpath, String appUserId);
+//    boolean upadataAppList(String appId, String appName, String appSynopsis, String appIconpath, String appUserId);
 
     boolean updateIsdetele(String appId, String appUserId);
+
+//    List selectJoinList(MPJLambdaWrapper<ManageApplicationEntity> wrapper);
+
+//    Object upadataAppInfo(ManageApplicationEntity manageApplication);
+
+//    Long countAppUser(String  appUserId);
+
+
+
 
 
 //    List<ManageApplication> selectPages(LambdaQueryWrapper<ManageApplication> wrapper,String appUserId, String keyword, Date startTime, Date endTime, int page, int size);

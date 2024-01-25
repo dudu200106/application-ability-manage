@@ -80,24 +80,24 @@ public class ManageApplicationController {
     @Operation(summary = "分页查询")
     @GetMapping("/selectPage")
     public Result<Page<ManageApplictionVo>> selectPage(@Parameter(description = "用户id") String appUserId, @Parameter(description = "查询关键字 Id或名称") String keyword, @Parameter(description = "开始时间") Date startTime, @Parameter(description = "结束时间") Date endTime, @Parameter int size, @Parameter int pages) {
-        Page<ManageApplictionVo> userApproveEntityPage = manageApplicationMapper.selectJoinPage(new Page<>(pages, size), ManageApplictionVo.class,
-                new MPJLambdaWrapper<ManageApplicationEntity>()
-                        .eq(!StringUtils.isEmpty(appUserId), ManageApplicationEntity::getAppUserId, appUserId)
-                        .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), ManageApplicationEntity::getAppCreatetime, startTime, endTime)
-                        .like(!StringUtils.isEmpty(keyword), ManageApplicationEntity::getAppName, keyword)
-                        .or().like(!StringUtils.isEmpty(keyword), ManageApplicationEntity::getAppName, keyword)
-                        .selectAll(UserApproveEntity.class)
-                        .selectAll(ManageApplicationEntity.class)
-                        .leftJoin(UserApproveEntity.class, UserApproveEntity::getUserId, ManageApplicationEntity::getAppUserId)
-                        .orderByDesc(ManageApplicationEntity::getAppCreatetime)
-        );
-        userApproveEntityPage.getRecords().forEach(data -> {
-//            long time = data.getAppCreatetime().getTime();
-//            data.setApptime(time);
-            data.setApptime(TimeTolong.timetolong(data.getAppCreatetime()));
-        });
+//        Page<ManageApplictionVo> userApproveEntityPage = manageApplicationMapper.selectJoinPage(new Page<>(pages, size), ManageApplictionVo.class,
+//                new MPJLambdaWrapper<ManageApplicationEntity>()
+//                        .eq(!StringUtils.isEmpty(appUserId), ManageApplicationEntity::getAppUserId, appUserId)
+//                        .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), ManageApplicationEntity::getAppCreatetime, startTime, endTime)
+//                        .like(!StringUtils.isEmpty(keyword), ManageApplicationEntity::getAppName, keyword)
+//                        .or().like(!StringUtils.isEmpty(keyword), ManageApplicationEntity::getAppName, keyword)
+//                        .selectAll(UserApproveEntity.class)
+//                        .selectAll(ManageApplicationEntity.class)
+//                        .leftJoin(UserApproveEntity.class, UserApproveEntity::getUserId, ManageApplicationEntity::getAppUserId)
+//                        .orderByDesc(ManageApplicationEntity::getAppCreatetime)
+//        );
+//        userApproveEntityPage.getRecords().forEach(data -> {
+////            long time = data.getAppCreatetime().getTime();
+////            data.setApptime(time);
+//            data.setApptime(TimeTolong.timetolong(data.getAppCreatetime()));
+//        });
 
-        return Result.success(userApproveEntityPage);
+        return Result.success(manageApplicationService.selectPage(appUserId, keyword, startTime,endTime,pages,size));
 
     }
 
@@ -107,56 +107,58 @@ public class ManageApplicationController {
     @Operation(summary = "添加应用")
     @PostMapping("/addInfo")
     public Result<?> add(@RequestBody ManageApplicationEntity manageApplication) {
-        manageApplication.setAppCreatetime(new Date());
-        manageApplication.setAppUpdatetime(new Date());
-        manageApplication.setAppIsdelete(0);
-        manageApplicationService.save(manageApplication);
-        return Result.success();
+//        manageApplication.setAppCreatetime(new Date());
+//        manageApplication.setAppUpdatetime(new Date());
+//        manageApplication.setAppIsdelete(0);
+
+        return Result.success(manageApplicationService.saveApp(manageApplication));
     }
 
     @Operation(summary = "删除应用")
     @PostMapping("/deleteApp")
-    public Result<?> delete(@RequestBody ManageApplicationEntity manageApplication) {
-        LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppId, manageApplication.getAppId());
-        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, manageApplication.getAppUserId());
-        return Result.success(manageApplicationService.remove(lambdaUpdateWrapper));
+    public Result<?> deleteApp(@RequestBody ManageApplicationEntity manageApplication) {
+//        LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+//        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppId, manageApplication.getAppId());
+//        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, manageApplication.getAppUserId());
+        return Result.success(manageApplicationService.deleteApp(manageApplication));
     }
 
     //查询appid和name
     @Operation(summary = "查询应用")
     @GetMapping("/selectappID")
     public Result selectappID(@Parameter(description = "appID") String appId, @Parameter(description = "用户Id") String appUserId) {
-        QueryWrapper<ManageApplicationEntity> wrapper = new QueryWrapper();
-        wrapper.lambda()
-                .eq(Objects.nonNull(appId), ManageApplicationEntity::getAppId, appId)
-                .eq(Objects.nonNull(appUserId), ManageApplicationEntity::getAppUserId, appUserId);
-        return Result.success(manageApplicationMapper.selectList(wrapper));
+//        QueryWrapper<ManageApplicationEntity> wrapper = new QueryWrapper();
+//        wrapper.lambda()
+//                .eq(Objects.nonNull(appId), ManageApplicationEntity::getAppId, appId)
+//                .eq(Objects.nonNull(appUserId), ManageApplicationEntity::getAppUserId, appUserId);
+        return Result.success(manageApplicationService.selectappID(appId,appUserId));
     }
 
 
     //修改应用信息
     @Operation(summary = "修改应用")
     @PostMapping("/upadataAppInfo")
-    public Result<?> upadataAppList(@RequestBody ManageApplicationEntity manageApplication) {
-        LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppId, manageApplication.getAppId());
-        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, manageApplication.getAppUserId());
-        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppUpdatetime, new Date());
-        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppIsdelete, 0);
-        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppName, manageApplication.getAppName());
-        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppSynopsis, manageApplication.getAppSynopsis());
-        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppUserId, manageApplication.getAppUserId());
-        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppIconpath, manageApplication.getAppIconpath());
-        return Result.success(manageApplicationMapper.update(lambdaUpdateWrapper));
+    public Result<?> upadataAppInfo(@RequestBody ManageApplicationEntity manageApplication) {
+//        LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+//        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppId, manageApplication.getAppId());
+//        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, manageApplication.getAppUserId());
+//        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppUpdatetime, new Date());
+//        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppIsdelete, 0);
+//        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppName, manageApplication.getAppName());
+//        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppSynopsis, manageApplication.getAppSynopsis());
+//        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppUserId, manageApplication.getAppUserId());
+//        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppIconpath, manageApplication.getAppIconpath());
+        return Result.success(manageApplicationService.upadataAppInfo(manageApplication));
     }
 
     //统计个人应用总数
     @Operation(summary = "统计个人应用总数")
     @GetMapping("/countAppUser")
     public Result<?> countAppUser(@Parameter String  appUserId) {
-        LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, appUserId);
-        return Result.success(manageApplicationMapper.selectCount(lambdaUpdateWrapper));
+//        LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+//        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, appUserId);
+//        return Result.success(manageApplicationMapper.selectCount(lambdaUpdateWrapper));
+    return  Result.success(manageApplicationService.countAppUser(appUserId));
     }
+
 }

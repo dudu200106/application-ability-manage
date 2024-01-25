@@ -1,15 +1,15 @@
 package com.dsj.csp.manage.service.impl;
 
 import com.alibaba.druid.util.StringUtils;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.dsj.csp.manage.dto.ManageApplictionVo;
 import com.dsj.csp.manage.entity.ManageApplicationEntity;
 import com.dsj.csp.manage.entity.UserApproveEntity;
 import com.dsj.csp.manage.mapper.ManageApplicationMapper;
 import com.dsj.csp.manage.service.ManageApplicationService;
-import com.dsj.csp.manage.util.Sm4;
+import com.dsj.csp.manage.util.TimeTolong;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,24 +26,33 @@ import java.util.Objects;
 @Service
 public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationMapper, ManageApplicationEntity>
         implements ManageApplicationService {
-//    @Autowired
-//    ManageApplicationMapper manageApplicationMapper;
+    @Autowired
+    private ManageApplicationMapper manageApplicationMapper;
 
-    @Override
-    public List<ManageApplicationEntity> selectappID(String appId, String appUserId) {
-        return baseMapper.selectappID(appId, appUserId);
-    }
+//    @Override
+//    public List<ManageApplicationEntity> selectappID(String appId, String appUserId) {
+//        return baseMapper.selectappID(appId, appUserId);
+//    }
 
     /**
-     *
+     * @return 统计应用总数
      * @author Du Shun Chang
      * @date 2024/1/23 14:51
-     * @return 统计应用总数
      */
     @Override
     public int contAll() {
         return baseMapper.contAll();
     }
+
+//    @Override
+//    public boolean upadataAppList(String appId, String appName, String appSynopsis, String appIconpath, String appUserId) {
+//        return false;
+//    }
+
+//    @Override
+//    public boolean upadataAppList(String appId, String appName, String appSynopsis, String appIconpath, String appUserId) {
+//        return false;
+//    }
 
 //    @Override
 //    public List<ManageApplicationEntity> selectUserApp(String appUserId) {
@@ -57,35 +66,107 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
 //        String appSecret = Sm4.sm();
 //        return baseMapper.updateSecret(appId, appKey, appSecret);
 //    }
+
     /**
-     *
+     * @return 更新应用
      * @author Du Shun Chang
      * @date 2024/1/23 14:51
-     * @return 更新应用
      */
 
-    @Override
-    public boolean upadataAppList(String appId, String appName, String appSynopsis, String appIconpath, String appUserId) {
-        return baseMapper.upadataAppList(appId, appName, appSynopsis, appIconpath, appUserId);
-    }
-/**
- *
- * @author Du Shun Chang
- * @date 2024/1/23 14:52
- * @param appId
- * @param appUserId
- * @return 逻辑删除
- */
+//    @Override
+//    public boolean upadataAppList(String appId, String appName, String appSynopsis, String appIconpath, String appUserId) {
+//        return baseMapper.upadataAppList(appId, appName, appSynopsis, appIconpath, appUserId);
+//    }
+
+    /**
+     * @param appId
+     * @param appUserId
+     * @return 逻辑删除
+     * @author Du Shun Chang
+     * @date 2024/1/23 14:52
+     */
     @Override
     public boolean updateIsdetele(String appId, String appUserId) {
         return baseMapper.updateIsdetele(appId, appUserId);
     }
 
+    @Override
+    public Long countAppUser(String appUserId) {
+        LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, appUserId);
+        return baseMapper.selectCount(lambdaUpdateWrapper);
+    }
 
+    @Override
+    public int saveApp(ManageApplicationEntity manageApplication) {
+        manageApplication.setAppCreatetime(new Date());
+        manageApplication.setAppUpdatetime(new Date());
+        manageApplication.setAppIsdelete(0);
+
+        return baseMapper.insert(manageApplication);
+    }
+
+    @Override
+    public int deleteApp(ManageApplicationEntity manageApplication) {
+        LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppId, manageApplication.getAppId());
+        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, manageApplication.getAppUserId());
+        return baseMapper.delete(lambdaUpdateWrapper);
+    }
+
+    @Override
+    public List selectappID(String appId, String appUserId) {
+        MPJLambdaWrapper<ManageApplicationEntity> wrapper = new MPJLambdaWrapper<ManageApplicationEntity>()
+                .selectAll(ManageApplicationEntity.class)//查询user表全部字段
+                .selectAll(UserApproveEntity.class)
+                .leftJoin(UserApproveEntity.class, UserApproveEntity::getUserId, ManageApplicationEntity::getAppUserId);
+//        List<ManageApplictionVo> userList = ;
+//        userList.forEach(System.out::println);
+//     userMapper.selectJoinList(UserDTO.class, wrapper);
+//        ManageApplictionVo userApproveEntityPage =
+//                new MPJLambdaWrapper<ManageApplicationEntity>()
+//                        .selectAll(UserApproveEntity.class)
+//                        .selectAll(ManageApplicationEntity.class)
+//                        .leftJoin(UserApproveEntity.class, UserApproveEntity::getUserId, ManageApplicationEntity::getAppUserId));
+        return baseMapper.selectJoinList(ManageApplictionVo.class, wrapper);
+    }
+
+    @Override
+    public int upadataAppInfo(ManageApplicationEntity manageApplicationEntity) {
+        LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppId, manageApplicationEntity.getAppId());
+        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, manageApplicationEntity.getAppUserId());
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppUpdatetime, new Date());
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppIsdelete, 0);
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppName, manageApplicationEntity.getAppName());
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppSynopsis, manageApplicationEntity.getAppSynopsis());
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppUserId, manageApplicationEntity.getAppUserId());
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppIconpath, manageApplicationEntity.getAppIconpath());
+        return baseMapper.update(lambdaUpdateWrapper);
+
+    }
+
+    @Override
+    public Page<ManageApplictionVo> selectPage(String appUserId, String keyword, Date startTime, Date endTime, int pages, int size) {
+
+        Page<ManageApplictionVo> userApproveEntityPage = manageApplicationMapper.selectJoinPage(new Page<>(pages, size), ManageApplictionVo.class,
+                new MPJLambdaWrapper<ManageApplicationEntity>()
+                        .eq(!StringUtils.isEmpty(appUserId), ManageApplicationEntity::getAppUserId, appUserId)
+                        .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), ManageApplicationEntity::getAppCreatetime, startTime, endTime)
+                        .like(!StringUtils.isEmpty(keyword), ManageApplicationEntity::getAppName, keyword)
+                        .or().like(!StringUtils.isEmpty(keyword), ManageApplicationEntity::getAppName, keyword)
+                        .selectAll(UserApproveEntity.class)
+                        .selectAll(ManageApplicationEntity.class)
+                        .leftJoin(UserApproveEntity.class, UserApproveEntity::getUserId, ManageApplicationEntity::getAppUserId)
+                        .orderByDesc(ManageApplicationEntity::getAppCreatetime)
+        );
+        userApproveEntityPage.getRecords().forEach(data -> {
+//            long time = data.getAppCreatetime().getTime();
+//            data.setApptime(time);
+            data.setApptime(TimeTolong.timetolong(data.getAppCreatetime()));
+        });
+        return userApproveEntityPage;
+    }
 
 
 }
-
-
-
-

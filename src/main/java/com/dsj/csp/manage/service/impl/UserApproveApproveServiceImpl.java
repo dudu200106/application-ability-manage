@@ -1,4 +1,7 @@
 package com.dsj.csp.manage.service.impl;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -8,11 +11,14 @@ import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.UserApproveEntity;
 import com.dsj.csp.manage.mapper.UserApproveMapper;
 import com.dsj.csp.manage.service.UserApproveService;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -21,50 +27,90 @@ import java.util.Objects;
  * @createDate 2024-01-09 14:16:26
  */
 @Service
+@RequiredArgsConstructor
 public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper, UserApproveEntity> implements UserApproveService {
+    //远程调用用户接口，根据token识别用户
+    public UserApproveRequest identify(String accessToken) {
+        RestTemplate restTemplate = new RestTemplate();
+        String serverURL = "http://106.227.94.62:8001";
+        HttpHeaders headers = new HttpHeaders();
+        MediaType type = MediaType.parseMediaType("application/json;charset=UTF-8");
+        headers.setContentType(type);
+        headers.add("Accept", MediaType.APPLICATION_JSON.toString());
+        String url = serverURL + "/auth/userInfo?accessToken=" + accessToken;
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
+        String responseBody = response.getBody();
+        JSONObject responseJson = JSON.parseObject(responseBody);
+        JSONObject dataJson = JSON.parseObject(responseJson.getString("data"));
+        System.out.println(dataJson);
+        UserApproveRequest userApproveRequest = new UserApproveRequest();
+        userApproveRequest.setUserId(dataJson.getString("id"));
+        userApproveRequest.setUserName(dataJson.getString("name"));
+        userApproveRequest.setStatus(Integer.valueOf(dataJson.getString("smzt")));
+        userApproveRequest.setPhone(dataJson.getString("phone"));
+        return userApproveRequest;
+    }
+
+    //远程调用用户实名状态更新接口
+    public void updateStatus(String userId,Integer status,String token) {
+        RestTemplate restTemplate = new RestTemplate();
+        String serverURL = "http://106.227.94.62:8001";
+        HttpHeaders headers = new HttpHeaders();
+        String requestBody="{\"id\": " + userId + ", \"smzt\": " + status + "}";
+        HttpEntity requestEntity = new HttpEntity(requestBody,headers);
+        MediaType type = MediaType.parseMediaType("application/json;charset=UTF-8");
+        headers.setContentType(type);
+        headers.add("Accept", MediaType.APPLICATION_JSON.toString());
+        headers.add("accessToken", token);
+        String url = serverURL + "/user-server/rpc/user/updateSmztById";
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+        System.out.println(response);
+    }
+
+    //远程调用根据ID查询接口
 
     /**
      * 用户实名认证申请模块
      */
     @Override
-    public UserApproveEntity personCenter(String userId) {
-        return baseMapper.selectById(userId);
-    }
-
-    @Override
-    public void approve(UserApproveEntity user) {
+    public String approve(UserApproveEntity user,String accessToken) {
+        UserApproveRequest user2 = identify(accessToken);
+        user.setUserId(user2.getUserId());
+        user.setUserName(user2.getUserName());
         UserApproveEntity userApproveEntity = baseMapper.selectById(user);
-        Integer status = userApproveEntity.getStatus();
-        if (status.equals(UserStatusEnum.NOAPPROVE) || status.equals(UserStatusEnum.FAIL)) {
-            user.setStatus(UserStatusEnum.WAIT.getStatus());
-            user.setNote(null);
-            user.setCreateTime(new Date());
-            baseMapper.updateById(user);
+        if (userApproveEntity != null) {
+            Integer status = user2.getStatus();
+            if (status.equals(UserStatusEnum.WAIT.getStatus()) || status.equals(UserStatusEnum.FAIL.getStatus())) {
+                updateStatus(user2.getUserId(),UserStatusEnum.WAIT.getStatus(),accessToken);
+                user.setStatus(UserStatusEnum.WAIT.getStatus());
+                user.setNote(null);
+                user.setCreateTime(new Date());
+                baseMapper.updateById(user);
+                return "实名认证申请已提交";
+            }
         }
-//        this.lambdaUpdate()
-//                .eq(UserApproveEntity::getStatus,UserStatusEnum.NOAPPROVE)
-//                .or()
-//                .eq(UserApproveEntity::getStatus,UserStatusEnum.FAIL)
-//                .set(UserApproveEntity::getStatus,UserStatusEnum.WAIT)
-//                .set(UserApproveEntity::getNote,null)
-//                .update();
+        updateStatus(user2.getUserId(),UserStatusEnum.WAIT.getStatus(),accessToken);
+        user.setStatus(UserStatusEnum.WAIT.getStatus());
+        user.setCreateTime(new Date());
+        baseMapper.insert(user);
+        return "实名认证申请已提交";
     }
 
     /**
      * 管理员实名认证审核模块
      */
     @Override
-    public Page<UserApproveEntity> select(String status,String keyword, Date startTime, Date endTime, int page, int size) {
+    public Page<UserApproveEntity> select(String status, String keyword, Date startTime, Date endTime, int page, int size) {
         QueryWrapper<UserApproveEntity> wrapper = new QueryWrapper();
         wrapper.lambda()
                 .eq(Objects.nonNull(status), UserApproveEntity::getStatus, status)
                 .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), UserApproveEntity::getCreateTime, startTime, endTime)
-                .and(StringUtils.isNotBlank(keyword),lambdaQuery->{
+                .and(StringUtils.isNotBlank(keyword), lambdaQuery -> {
                     lambdaQuery
                             .like(UserApproveEntity::getGovName, keyword)
                             .or()
                             .like(UserApproveEntity::getCompanyName, keyword);
-        });
+                });
         return baseMapper.selectPage(new Page(page, size), wrapper);
     }
 
@@ -74,7 +120,8 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     }
 
     @Override
-    public void approveSuccess(UserApproveRequest user) {
+    public void approveSuccess(UserApproveRequest user,String accessToken) {
+        updateStatus(user.getUserId(),UserStatusEnum.SUCCESS.getStatus(),accessToken);
         UserApproveEntity userApproveEntity = baseMapper.selectById(user.getUserId());
         boolean updateResult = this.lambdaUpdate()
                 .eq(Objects.nonNull(userApproveEntity.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())
@@ -88,10 +135,13 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         }
 //          FIXME  return updateResult; 在controller做判断并进行不同的响应
         // TODO 为每一次的sql结果负责
+//        int i=1/0;
+//        updateStatus(userId,UserStatusEnum.SUCCESS.getStatus(),accessToken);
     }
 
     @Override
-    public void approveFail(UserApproveRequest user) {
+    public void approveFail(UserApproveRequest user,String accessToken) {
+        updateStatus(user.getUserId(),UserStatusEnum.FAIL.getStatus(),accessToken);
         UserApproveEntity userApproveEntity = baseMapper.selectById(user.getUserId());
         boolean updateResult = this.lambdaUpdate()
                 .eq(Objects.nonNull(userApproveEntity.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())

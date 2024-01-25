@@ -107,21 +107,6 @@ public class ManageApplicationController {
     @Operation(summary = "添加应用")
     @PostMapping("/addInfo")
     public Result<?> add(@RequestBody ManageApplicationEntity manageApplication) {
-
-//        lambdaUpdateWrapper()
-//        System.out.println(userId);
-//        ManageApplicationEntity manageApplicationEntity = new ManageApplicationEntity();
-//        manageApplicationEntity.setAppName(appName);
-//        manageApplicationEntity.setAppUserId(userId);
-//        manageApplicationEntity.setAppSynopsis(appSynopsis);
-//        manageApplicationEntity.setAppCode(generateNumber(8));//生成appid
-//        manageApplicationEntity.setAppIconpath(appIconpath);//应用路径
-////            状态
-//        manageApplicationEntity.setAppStatus(StatusEnum.NORMAL.getStatus());
-////            逻辑删除
-//        manageApplicationEntity.setAppIsdelete(0);
-//        manageApplicationEntity.setAppCreatetime(new Date());
-//        manageApplicationEntity.setAppUpdatetime(new Date());
         manageApplication.setAppCreatetime(new Date());
         manageApplication.setAppUpdatetime(new Date());
         manageApplication.setAppIsdelete(0);
@@ -131,9 +116,11 @@ public class ManageApplicationController {
 
     @Operation(summary = "删除应用")
     @PostMapping("/deleteApp")
-    public Result<?> delete(@Parameter(description = "appID") String appId, @Parameter(description = "用户Id") String appUserId) {
-        System.out.println(appId);
-        return Result.success(manageApplicationService.updateIsdetele(appId, appUserId));
+    public Result<?> delete(@RequestBody ManageApplicationEntity manageApplication) {
+        LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppId, manageApplication.getAppId());
+        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, manageApplication.getAppUserId());
+        return Result.success(manageApplicationService.remove(lambdaUpdateWrapper));
     }
 
     //查询appid和name
@@ -150,19 +137,7 @@ public class ManageApplicationController {
         return Result.success(manageApplicationMapper.selectList(wrapper));
     }
 
-//    //统计应用次数
-//    @Operation(summary = "统计应用总数")
-//    @GetMapping("/allTotal")
-//    public Result countAll() {
-//        return Result.success(manageApplicationService.count());
-//    }
 
-    //用户关联应用查询
-//    @Operation(summary = "用户下的应用")
-//    @PostMapping("/selectUserApp")
-//    public Result selectUserApp(@Parameter(description = "用户Id") String appUserId) {
-//        return Result.success(manageApplicationService.selectUserApp(appUserId));
-//    }
 
     //修改应用信息
     @Operation(summary = "修改应用")
@@ -179,5 +154,8 @@ public class ManageApplicationController {
         lambdaUpdateWrapper.set(ManageApplicationEntity::getAppIconpath, manageApplication.getAppIconpath());
         return Result.success(manageApplicationMapper.update(lambdaUpdateWrapper));
     }
+
+
+
 
 }

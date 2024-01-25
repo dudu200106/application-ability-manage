@@ -15,11 +15,6 @@ import org.springframework.web.bind.annotation.*;
 public class UserApproveController {
     private final UserApproveService userApproveService;
 
-    @Operation(summary = "个人中心‘待完善’")
-    @GetMapping("/personCenter")
-    public Result<?> personCenter(@Parameter(description = "用户ID")String userId){
-        return Result.success(userApproveService.personCenter(userId));
-    }
     /**
      * 实名认证申请
      * @param user
@@ -27,8 +22,8 @@ public class UserApproveController {
      */
     @Operation(summary = "实名认证申请")
     @PostMapping("/approve")
-    public Result<?> approve(@RequestBody UserApproveEntity user){
-        userApproveService.approve(user);
+    public Result<?> approve(@RequestBody UserApproveEntity user,@RequestHeader String accessToken){
+        userApproveService.approve(user,accessToken);
         return Result.success("实名认证审核中");
     }
 }

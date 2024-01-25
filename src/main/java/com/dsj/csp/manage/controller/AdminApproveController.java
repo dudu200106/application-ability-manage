@@ -51,9 +51,8 @@ public class AdminApproveController {
      */
     @Operation(summary = "实名认证审核通过")
     @PostMapping("/approveSuccess")
-    public Result<String> approveSuccess(@RequestBody UserApproveRequest user){
-        userApproveService.approveSuccess(user);
-
+    public Result<String> approveSuccess(@RequestBody UserApproveRequest user,@RequestHeader String accessToken){
+        userApproveService.approveSuccess(user,accessToken);
         return Result.success("审核通过");
     }
 //
@@ -69,8 +68,8 @@ public class AdminApproveController {
      */
     @Operation(summary = "实名认证审核未通过")
     @PostMapping("/approveFail")
-    public Result<?> approveFail(@RequestBody UserApproveRequest user){
-        userApproveService.approveFail(user);
+    public Result<?> approveFail(@RequestBody UserApproveRequest user,@RequestHeader String accessToken){
+        userApproveService.approveFail(user,accessToken);
         return Result.success("审核未通过");
     }
 }

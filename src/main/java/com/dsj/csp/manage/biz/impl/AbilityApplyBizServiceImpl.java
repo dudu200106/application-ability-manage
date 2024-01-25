@@ -59,11 +59,14 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
     @Override
     public AbilityApplyDTO getApplyInfo(Long abilityApplyId) {
         AbilityApplyEntity apply = abilityApplyService.getById(abilityApplyId);
-        AbilityApplyDTO resApply = new AbilityApplyDTO();
-        BeanUtil.copyProperties(apply, resApply);
         String apiIds = abilityApplyService.getById(abilityApplyId).getApiIds();
         List<Long> idList = Arrays.asList(apiIds.split(",")).stream().map(e->Long.parseLong(e)).toList();
         List<AbilityApiEntity> apis = abilityApiService.listByIds(idList);
+        AbilityEntity ability = abilityService.getById(apply.getAbilityId());
+        //构造返回能力申请信息DTO
+        AbilityApplyDTO resApply = new AbilityApplyDTO();
+        BeanUtil.copyProperties(apply, resApply);
+        BeanUtil.copyProperties(ability, resApply);
         resApply.setApiList(apis);
         return resApply;
     }

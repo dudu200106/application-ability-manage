@@ -6,7 +6,7 @@ import lombok.Data;
 public class AbilityDeleteDTO {
     private String abilityIds;
 
-    private String applyIds;
+    private String abilityApplyIds;
 
     private String apiIds;
 

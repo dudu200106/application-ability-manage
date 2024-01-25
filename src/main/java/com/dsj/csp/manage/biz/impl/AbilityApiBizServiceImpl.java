@@ -108,7 +108,6 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
     public Page pageApi(AbilityApiQueryVO apiQueryVO){
         Page<AbilityApiEntity> p = abilityApiService.page(apiQueryVO.toPage(), apiQueryVO.getQueryWrapper());
-        Page<AbilityApiVO> apiVOPage = new Page<>(p.getCurrent(), p.getSize(), p.getTotal());
         // 查出能力ID和能力名称的映射
         List<AbilityApiEntity> records = p.getRecords();
         Set<Long> abilityIds = records.stream().map(e->e.getAbilityId()).collect(Collectors.toSet());
@@ -120,15 +119,16 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                 .stream()
                 .collect(Collectors
                 .toMap(ability -> ability.getAbilityId(), ability -> ability.getAbilityName()));
-        // 构造返回的分页res
+        // 构造返回的分页resPage
         List<AbilityApiVO> newRecords = records.stream().map(api->{
             AbilityApiVO apiVO = new AbilityApiVO();
             BeanUtil.copyProperties(api, apiVO, true);
             apiVO.setAbilityName(abilityMap.get(api.getAbilityId()));
             return apiVO;
         }).toList();
-        apiVOPage.setRecords(newRecords);
-        return apiVOPage;
+        Page<AbilityApiVO> resPage = new Page<>(p.getCurrent(), p.getSize(), p.getTotal());
+        resPage.setRecords(newRecords);
+        return resPage;
     }
 
     @Override

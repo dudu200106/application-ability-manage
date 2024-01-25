@@ -41,6 +41,9 @@ public class AbilityApplyDTO {
     @Schema(description = "能力类型")
     private String abilityType;
 
+    @Schema(description = "能力描述")
+    private String abilityDesc;
+
     @Schema(description = "应用名称")
     private String appName;
 

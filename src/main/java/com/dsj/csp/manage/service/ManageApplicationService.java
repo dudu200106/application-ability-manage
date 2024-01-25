@@ -15,11 +15,6 @@ import java.util.List;
 */
 public interface ManageApplicationService extends IService<ManageApplicationEntity> {
 
-//    List<ManageApplicationEntity> selectappID(String appId , String appUserId );
-    int contAll();
-//    boolean updateSecret(Long appId);
-//    boolean upadataAppList(String appId,String appName,String appSynopsis,String appIconpath,String appUserId);
-    boolean updateIsdetele(String appId,String appUserId);
 
 
 

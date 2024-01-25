@@ -29,67 +29,6 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
     @Autowired
     private ManageApplicationMapper manageApplicationMapper;
 
-//    @Override
-//    public List<ManageApplicationEntity> selectappID(String appId, String appUserId) {
-//        return baseMapper.selectappID(appId, appUserId);
-//    }
-
-    /**
-     * @return 统计应用总数
-     * @author Du Shun Chang
-     * @date 2024/1/23 14:51
-     */
-    @Override
-    public int contAll() {
-        return baseMapper.contAll();
-    }
-
-//    @Override
-//    public boolean upadataAppList(String appId, String appName, String appSynopsis, String appIconpath, String appUserId) {
-//        return false;
-//    }
-
-//    @Override
-//    public boolean upadataAppList(String appId, String appName, String appSynopsis, String appIconpath, String appUserId) {
-//        return false;
-//    }
-
-//    @Override
-//    public List<ManageApplicationEntity> selectUserApp(String appUserId) {
-//        return baseMapper.selectUserApp(appUserId);
-//    }
-
-
-//    @Override
-//    public boolean updateSecret(Long appId) {
-//        String appKey = Sm4.sm();
-//        String appSecret = Sm4.sm();
-//        return baseMapper.updateSecret(appId, appKey, appSecret);
-//    }
-
-    /**
-     * @return 更新应用
-     * @author Du Shun Chang
-     * @date 2024/1/23 14:51
-     */
-
-//    @Override
-//    public boolean upadataAppList(String appId, String appName, String appSynopsis, String appIconpath, String appUserId) {
-//        return baseMapper.upadataAppList(appId, appName, appSynopsis, appIconpath, appUserId);
-//    }
-
-    /**
-     * @param appId
-     * @param appUserId
-     * @return 逻辑删除
-     * @author Du Shun Chang
-     * @date 2024/1/23 14:52
-     */
-    @Override
-    public boolean updateIsdetele(String appId, String appUserId) {
-        return baseMapper.updateIsdetele(appId, appUserId);
-    }
-
     @Override
     public Long countAppUser(String appUserId) {
         LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();

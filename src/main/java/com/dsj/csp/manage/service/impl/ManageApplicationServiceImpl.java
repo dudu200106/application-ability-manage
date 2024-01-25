@@ -119,7 +119,9 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
         MPJLambdaWrapper<ManageApplicationEntity> wrapper = new MPJLambdaWrapper<ManageApplicationEntity>()
                 .selectAll(ManageApplicationEntity.class)//查询user表全部字段
                 .selectAll(UserApproveEntity.class)
-                .leftJoin(UserApproveEntity.class, UserApproveEntity::getUserId, ManageApplicationEntity::getAppUserId);
+                .leftJoin(UserApproveEntity.class, UserApproveEntity::getUserId, ManageApplicationEntity::getAppUserId)
+        .eq(ManageApplicationEntity::getAppId, appId)
+        .eq(ManageApplicationEntity::getAppUserId, appUserId);
 //        List<ManageApplictionVo> userList = ;
 //        userList.forEach(System.out::println);
 //     userMapper.selectJoinList(UserDTO.class, wrapper);

@@ -91,7 +91,7 @@ public class ManageApplicationController {
                         .leftJoin(UserApproveEntity.class, UserApproveEntity::getUserId, ManageApplicationEntity::getAppUserId)
                         .orderByDesc(ManageApplicationEntity::getAppCreatetime)
         );
-        userApproveEntityPage.getRecords().forEach(data-> {
+        userApproveEntityPage.getRecords().forEach(data -> {
 //            long time = data.getAppCreatetime().getTime();
 //            data.setApptime(time);
             data.setApptime(TimeTolong.timetolong(data.getAppCreatetime()));
@@ -127,22 +127,18 @@ public class ManageApplicationController {
     @Operation(summary = "查询应用")
     @GetMapping("/selectappID")
     public Result selectappID(@Parameter(description = "appID") String appId, @Parameter(description = "用户Id") String appUserId) {
-
         QueryWrapper<ManageApplicationEntity> wrapper = new QueryWrapper();
         wrapper.lambda()
                 .eq(Objects.nonNull(appId), ManageApplicationEntity::getAppId, appId)
                 .eq(Objects.nonNull(appUserId), ManageApplicationEntity::getAppUserId, appUserId);
-
-
         return Result.success(manageApplicationMapper.selectList(wrapper));
     }
-
 
 
     //修改应用信息
     @Operation(summary = "修改应用")
     @PostMapping("/upadataAppInfo")
-    public Result<?> upadataAppList(@RequestBody ManageApplicationEntity manageApplication){
+    public Result<?> upadataAppList(@RequestBody ManageApplicationEntity manageApplication) {
         LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppId, manageApplication.getAppId());
         lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, manageApplication.getAppUserId());
@@ -155,7 +151,12 @@ public class ManageApplicationController {
         return Result.success(manageApplicationMapper.update(lambdaUpdateWrapper));
     }
 
-
-
-
+    //统计个人应用总数
+    @Operation(summary = "统计个人应用总数")
+    @PostMapping("/countAppUser")
+    public Result<?> countAppUser(@RequestBody ManageApplicationEntity manageApplication) {
+        LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, manageApplication.getAppUserId());
+        return Result.success(manageApplicationMapper.selectCount(lambdaUpdateWrapper));
+    }
 }

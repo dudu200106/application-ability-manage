@@ -153,10 +153,10 @@ public class ManageApplicationController {
 
     //统计个人应用总数
     @Operation(summary = "统计个人应用总数")
-    @PostMapping("/countAppUser")
-    public Result<?> countAppUser(@RequestBody ManageApplicationEntity manageApplication) {
+    @GetMapping("/countAppUser")
+    public Result<?> countAppUser(@Parameter String  appUserId) {
         LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, manageApplication.getAppUserId());
+        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, appUserId);
         return Result.success(manageApplicationMapper.selectCount(lambdaUpdateWrapper));
     }
 }

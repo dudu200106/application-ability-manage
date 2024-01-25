@@ -1,11 +1,12 @@
 package com.dsj.csp.manage.controller;
 
 import cn.hutool.core.date.DateTime;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.biz.AbilityApplyBizService;
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -66,6 +68,14 @@ public class AbilityController {
     public Result<?> queryLoginPage(
             @Valid @RequestBody AbilityQueryVO abilityQuery) {
         return Result.success(abilityService.page(abilityQuery.toPage(), abilityQuery.getQueryWrapper()));
+    }
+
+    @Operation(summary = "分页查询可调用能力列表", description = "分页查询可调用能力列表")
+    @PostMapping ("/page-available-ability")
+    public Result<?> queryAvailablePage(
+            @Valid @RequestBody AbilityQueryVO abilityQuery) {
+        LambdaQueryWrapper abilityQW = abilityQuery.getQueryWrapper().lambda().in(AbilityEntity::getStatus, 3,4);
+        return Result.success(abilityService.page(abilityQuery.toPage(), abilityQW));
     }
 
     @Operation(summary = "审核能力注册", description = "审核能力注册申请")
@@ -210,20 +220,27 @@ public class AbilityController {
     public Result<?> removeAbility(@Parameter(description = "能力id列表") @RequestBody AbilityDeleteDTO deleteDTO){
         String abilityIds = deleteDTO.getAbilityIds();
         List<Long> ids = Arrays.asList(abilityIds.split(",")).stream().map(id -> Long.parseLong(id.trim())).toList();
+        long countRelateApply = abilityApplyService.count(Wrappers.lambdaUpdate(AbilityApplyEntity.class).
+                in(AbilityApplyEntity::getAbilityId, ids));
+//                .and(apply->apply.eq(AbilityApplyEntity::getIsDelete, 0)));
+        if (countRelateApply>0){
+            throw new BusinessException("删除能力失败:存在能力被使用!");
+        }
         Boolean delFlag = abilityService.removeBatchByIds(ids);
-        return Result.success("删除能力完成! ", delFlag);
+        Boolean apiDelFlag = abilityApiService.remove(Wrappers.lambdaUpdate(AbilityApiEntity.class).in(AbilityApiEntity::getAbilityId, ids));
+        return Result.success("删除能力完成! ", delFlag && apiDelFlag);
     }
 
-    @Operation(summary = "删除能力")
+    @Operation(summary = "删除能力申请")
     @PostMapping("/delete-apply")
     public Result<?> removeApply(@RequestBody AbilityDeleteDTO deleteDTO){
-        String applyIds = deleteDTO.getApplyIds();
+        String applyIds = deleteDTO.getAbilityApplyIds();
         List<Long> ids = Arrays.asList(applyIds.split(",")).stream().map(id -> Long.parseLong(id)).toList();
         Boolean delFlag = abilityApplyService.removeBatchByIds(ids);
         return Result.success("删除能力申请完成! ", delFlag);
     }
 
-    @Operation(summary = "删除能力")
+    @Operation(summary = "删除能力接口")
     @PostMapping("/delete-api")
     public Result<?> removeApi(@RequestBody AbilityDeleteDTO deleteDTO){
         String apiIds = deleteDTO.getApiIds();

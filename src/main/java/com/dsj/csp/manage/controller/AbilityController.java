@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.biz.AbilityApplyBizService;
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -98,11 +100,24 @@ public class AbilityController {
         return Result.success(abilityApiBizService.getApiInfo(apiId));
     }
 
+    @Operation(summary = "查询申请的接口列表", description = "查询申请的接口列表")
+    @GetMapping("/query-apply-api")
+    public Result<?> queryApplyApiList(@Parameter(description = "能力申请ID") @RequestParam Long abilityApplyId) {
+        return Result.success(abilityApiBizService.getApplyApiList(abilityApplyId));
+    }
+
+    @Operation(summary = "查询能力的接口列表", description = "查询能力的接口列表")
+    @GetMapping("/query-api-list")
+    public Result<?> queryApiList(@Parameter(description = "能力ID") @RequestParam Long abilityId) {
+        return Result.success(abilityApiBizService.getAbilityApiList(abilityId));
+    }
+
     @Operation(summary = "分页查询接口列表", description = "查询接口分页列表")
     @PostMapping("/page-api")
     public Result<?> pageApi(
             @Valid @RequestBody AbilityApiQueryVO apiQueryVO ){
-        return Result.success(abilityApiService.page(apiQueryVO.toPage(), apiQueryVO.getQueryWrapper()));
+        return Result.success(abilityApiBizService.pageApi(apiQueryVO));
+//        return Result.success(abilityApiService.page(apiQueryVO.toPage(), apiQueryVO.getQueryWrapper()));
     }
 
 
@@ -116,10 +131,8 @@ public class AbilityController {
 
     @Operation(summary = "新增能力使用申请", description = "申请使用能力")
     @PostMapping("/add-apply")
-    public Result<?> applyAbility(@RequestBody List<AbilityApplyVO> applyVOs) {
-        for (AbilityApplyVO applyVO : applyVOs) {
-            abilityApplyBizService.saveAbilityApply(applyVO);
-        }
+    public Result<?> applyAbility(@RequestBody AbilityApplyVO applyVO) {
+        abilityApplyBizService.saveAbilityApply(applyVO);
         return Result.success("能力申请完毕！请等待审核...");
     }
 
@@ -128,12 +141,12 @@ public class AbilityController {
     public Result<?> getApplyInfoById(@Parameter(
             description = "能力申请ID") @RequestParam Long abilityApplyId) {
         return Result.success(abilityApplyService.getById(abilityApplyId));
+//        return Result.success(abilityApplyBizService.getApplyInfo(abilityApplyId));
     }
 
     @Operation(summary = "审核能力使用申请", description = "审核能力使用申请")
     @PostMapping("/audit-apply")
     public Result<?> auditAbilityApply(@RequestBody AbilityApplyAuditVO auditVO){
-
         abilityApplyBizService.auditApply(auditVO);
         return Result.success("审核完成!");
     }
@@ -190,6 +203,33 @@ public class AbilityController {
         System.out.println("收到请求，appcode：" + appCode);
 
         return Result.success(abilityApiBizService.getApiList( appCode));
+    }
+
+    @Operation(summary = "删除能力")
+    @PostMapping("/delete-ability")
+    public Result<?> removeAbility(@Parameter(description = "能力id列表") @RequestBody AbilityDeleteDTO deleteDTO){
+        String abilityIds = deleteDTO.getAbilityIds();
+        List<Long> ids = Arrays.asList(abilityIds.split(",")).stream().map(id -> Long.parseLong(id.trim())).toList();
+        Boolean delFlag = abilityService.removeBatchByIds(ids);
+        return Result.success("删除能力完成! ", delFlag);
+    }
+
+    @Operation(summary = "删除能力")
+    @PostMapping("/delete-apply")
+    public Result<?> removeApply(@RequestBody AbilityDeleteDTO deleteDTO){
+        String applyIds = deleteDTO.getApplyIds();
+        List<Long> ids = Arrays.asList(applyIds.split(",")).stream().map(id -> Long.parseLong(id)).toList();
+        Boolean delFlag = abilityApplyService.removeBatchByIds(ids);
+        return Result.success("删除能力申请完成! ", delFlag);
+    }
+
+    @Operation(summary = "删除能力")
+    @PostMapping("/delete-api")
+    public Result<?> removeApi(@RequestBody AbilityDeleteDTO deleteDTO){
+        String apiIds = deleteDTO.getApiIds();
+        List<Long> ids = Arrays.asList(apiIds.split(",")).stream().map(id -> Long.parseLong(id)).toList();
+        Boolean delFlag = abilityApiService.removeBatchByIds(ids);
+        return Result.success("删除能力完成! ", delFlag);
     }
 
 }

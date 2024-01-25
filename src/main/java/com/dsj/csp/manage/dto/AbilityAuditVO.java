@@ -6,13 +6,13 @@ import lombok.Data;
 
 @Data
 public class AbilityAuditVO {
-    @Schema(description = "NL_XH")
+    @Schema(description = "能力ID", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long abilityId;
 
-    @Schema(description = "ZT")
+    @Schema(description = "审核状态", requiredMode = Schema.RequiredMode.REQUIRED)
     private int flag;
 
-    @Schema(description = "BZ")
+    @Schema(description = "备注说明")
     private String note;
 }

@@ -1,14 +1,16 @@
 package com.dsj.csp.manage.biz.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
+import com.dsj.csp.manage.dto.AbilityApiQueryVO;
 import com.dsj.csp.manage.dto.AbilityApiVO;
 import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.*;
 import com.dsj.csp.manage.util.Sm2;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,12 +28,13 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     private final AbilityApiService abilityApiService;
     private final AbilityApiReqService abilityApiReqService;
     private final AbilityApiRespService abilityApiRespService;
+    private final AbilityService abilityService;
 
     @Override
     public List<String> getApiList(String appCode) {
         LambdaQueryWrapper<ManageApplicationEntity> appQW = Wrappers.lambdaQuery();
         appQW.eq(ManageApplicationEntity::getAppCode, appCode);
-        Long appId = manageApplicationService.getOne(appQW).getAppId();
+        String appId = manageApplicationService.getOne(appQW).getAppId();
         // 查出应用关联的所有能力
         LambdaQueryWrapper<AbilityApplyEntity> applyQW = Wrappers.lambdaQuery();
         applyQW.eq(AbilityApplyEntity::getAppId, appId);
@@ -58,45 +61,32 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     public void saveApi(AbilityApiVO apiVO) {
         // 插入能力基本信息
         AbilityApiEntity api = new AbilityApiEntity();
-        BeanUtils.copyProperties(apiVO, api);
+        BeanUtil.copyProperties(apiVO, api, true);
         Map<String, String> sm2Map = Sm2.sm2Test();
         api.setPublicKey(sm2Map.get("publicEncode"));
         api.setSecretKey(sm2Map.get("privateEncode"));
         abilityApiService.save(api);
 
         // 插入接口的出参入参
-        Long apiId = api.getApiId();
-//        apiVO.getReqList().forEach(e->{
-//            e.setApiId(apiId);
-//            abilityApiReqService.save(e);
-//        });
-//        apiVO.getRespList().forEach(e->{
-//            e.setApiId(apiId);
-//            abilityApiRespService.save(e);
-//        });
-        List<AbilityApiReq> apiReqList = apiVO.getReqList()
-                .stream()
-                .peek(req -> {
-                    req.setApiId(apiId);
-                }).toList();
-
-        List<AbilityApiResp> apiRespList = apiVO.getRespList()
-                .stream()
-                .peek(resp -> {
-                    resp.setApiId(apiId);
-                }).toList();
-
-        abilityApiReqService.saveBatch(apiReqList);
-        abilityApiRespService.saveBatch(apiRespList);
+        abilityApiReqService.saveReqList(apiVO.getReqList(), api.getApiId());
+        abilityApiRespService.saveRespList(apiVO.getRespList(), api.getApiId());
     }
 
     @Override
     public boolean updateApi(AbilityApiVO apiVO) {
         AbilityApiEntity api = new AbilityApiEntity();
-        BeanUtils.copyProperties(apiVO, api);
+        BeanUtil.copyProperties(apiVO, api, true);
+
+        // 覆盖参数列表
+        LambdaQueryWrapper reqQW = Wrappers.lambdaQuery(AbilityApiReq.class).eq(AbilityApiReq::getApiId, apiVO.getApiId());
+        abilityApiReqService.remove(reqQW);
+        LambdaQueryWrapper respQW = Wrappers.lambdaQuery(AbilityApiResp.class).eq(AbilityApiResp::getApiId, apiVO.getApiId());
+        abilityApiRespService.remove(respQW);
+
+        Long apiId = apiVO.getApiId();
         return abilityApiService.updateById(api) &&
-        abilityApiReqService.saveOrUpdateBatch(apiVO.getReqList()) &&
-        abilityApiRespService.saveOrUpdateBatch(apiVO.getRespList());
+                abilityApiReqService.saveReqList(apiVO.getReqList(), apiId) &&
+                abilityApiRespService.saveRespList(apiVO.getRespList(), apiId);
     }
 
     @Override
@@ -104,17 +94,56 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         AbilityApiVO res = new AbilityApiVO();
         AbilityApiEntity apiEntity = abilityApiService.getById(apiId);
 
-        LambdaQueryWrapper<AbilityApiResp> respQW =
-                Wrappers.lambdaQuery(AbilityApiResp.class).eq(AbilityApiResp::getApiId, apiId);
-        List<AbilityApiResp> resps = abilityApiRespService.getBaseMapper().selectList(respQW);
-
-        LambdaQueryWrapper<AbilityApiReq> reqQW =
-                Wrappers.lambdaQuery(AbilityApiReq.class).eq(AbilityApiReq::getApiId, apiId);
-        List<AbilityApiReq> reqs = abilityApiReqService.getBaseMapper().selectList(reqQW);
-        BeanUtils.copyProperties(apiEntity, res);
+        String abilityName = abilityService.getById(apiEntity.getAbilityId()).getAbilityName();
+        List<AbilityApiResp> resps = abilityApiRespService.list(
+                Wrappers.lambdaQuery(AbilityApiResp.class).eq(AbilityApiResp::getApiId, apiId));
+        List<AbilityApiReq> reqs = abilityApiReqService.getBaseMapper().selectList(
+                Wrappers.lambdaQuery(AbilityApiReq.class).eq(AbilityApiReq::getApiId, apiId));
+        BeanUtil.copyProperties(apiEntity, res, true);
+        res.setAbilityName(abilityName);
         res.setRespList(resps);
         res.setReqList(reqs);
         return res ;
     }
 
+    public Page pageApi(AbilityApiQueryVO apiQueryVO){
+        Page<AbilityApiEntity> p = abilityApiService.page(apiQueryVO.toPage(), apiQueryVO.getQueryWrapper());
+        Page<AbilityApiVO> apiVOPage = new Page<>(p.getCurrent(), p.getSize(), p.getTotal());
+        // 查出能力ID和能力名称的映射
+        List<AbilityApiEntity> records = p.getRecords();
+        Set<Long> abilityIds = records.stream().map(e->e.getAbilityId()).collect(Collectors.toSet());
+        LambdaQueryWrapper abilityQW= Wrappers.lambdaQuery(AbilityEntity.class)
+                .in(AbilityEntity::getAbilityId, abilityIds)
+                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName);
+        List<AbilityEntity> abilitys = abilityService.getBaseMapper().selectList(abilityQW);
+        Map<Long, String> abilityMap = abilitys
+                .stream()
+                .collect(Collectors
+                .toMap(ability -> ability.getAbilityId(), ability -> ability.getAbilityName()));
+        // 构造返回的分页res
+        List<AbilityApiVO> newRecords = records.stream().map(api->{
+            AbilityApiVO apiVO = new AbilityApiVO();
+            BeanUtil.copyProperties(api, apiVO, true);
+            apiVO.setAbilityName(abilityMap.get(api.getAbilityId()));
+            return apiVO;
+        }).toList();
+        apiVOPage.setRecords(newRecords);
+        return apiVOPage;
+    }
+
+    @Override
+    public List<AbilityApiEntity> getApplyApiList(Long abilityApplyId) {
+        String apiIds = abilityApplyService.getById(abilityApplyId).getApiIds();
+        List<Long> idList = Arrays.asList(apiIds.split(",")).stream().map(e->Long.parseLong(e)).toList();
+        List<AbilityApiEntity> apis = abilityApiService.listByIds(idList);
+        return apis;
+    }
+
+    @Override
+    public List<AbilityApiEntity> getAbilityApiList(Long abilityId) {
+        List<AbilityApiEntity> apis = abilityApiService.list(
+                Wrappers.lambdaQuery(AbilityApiEntity.class).eq(AbilityApiEntity::getAbilityId, abilityId)
+        );
+        return apis;
+    }
 }

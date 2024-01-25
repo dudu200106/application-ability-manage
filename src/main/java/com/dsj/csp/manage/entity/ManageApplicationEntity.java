@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.*;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -21,7 +23,7 @@ public class ManageApplicationEntity implements Serializable {
      */
     @TableId(value = "YY_ID")
     @Schema(description = "appID数据库id")
-    private Long appId;
+    private String  appId;
 
     /**
      * 应用名称

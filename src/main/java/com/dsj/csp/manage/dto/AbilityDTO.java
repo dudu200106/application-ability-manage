@@ -1,31 +1,16 @@
-package com.dsj.csp.manage.entity;
+package com.dsj.csp.manage.dto;
 
-import com.baomidou.mybatisplus.annotation.*;
-import com.dsj.csp.common.entity.BaseEntity;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.dsj.csp.manage.entity.AbilityApiEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.sql.Date;
+import java.util.List;
 
-/**
- * @author Sean Du
- * @version 1.0.0
- * @date 2024/01/10
- */
-
-/**
- * 能力实体类
- */
 @Data
-@TableName("GXYYZC_NL")
-public class AbilityEntity extends BaseEntity implements Serializable {
-
-    /**
-     * 能力ID
-     */
-    @TableId(value = "NL_ID", type = IdType.NONE)
+public class AbilityDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     @Schema(description = "能力ID")
     private Long abilityId;
@@ -92,4 +77,7 @@ public class AbilityEntity extends BaseEntity implements Serializable {
     @TableField(value = "GXSJ")
     @Schema(description = "修改时间")
     private Date updateTime;
+
+    @Schema(description = "能力接口列表")
+    private List<AbilityApiEntity> apiList;
 }

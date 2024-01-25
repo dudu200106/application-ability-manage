@@ -1,10 +1,8 @@
 package com.dsj.csp.manage.dto;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -14,10 +12,11 @@ import java.util.Date;
  * @Todo:
  */
 @Data
-public class ManageApplictionVo {
+public class ManageApplictionVo implements Serializable {
     /**
      * 用户id
      */
+
     private String userId;
     /**
      * 用户名称
@@ -40,8 +39,12 @@ public class ManageApplictionVo {
 
     private String appKey;
 
-    private String appCode;
+//    private String appCode;
     //    appid
+
+
+    //    @JsonFormat(shape = JsonFormat.Shape.STRING)
+//    @JsonProperty
     private String appId;
 
     /**
@@ -51,9 +54,15 @@ public class ManageApplictionVo {
 
 
     //创建时间
+//    private Date appCreatetime/1000;
     private Date appCreatetime;
+//  private  Timestamp timestamp = new Timestamp(appCreatetime.getTime());
 
-//应用图标
+
+    //应用图标
     private String appIconpath;
-
+    //应用簡介
+    private String appSynopsis;
+    private  Long apptime;
+    private  String appUserId;
 }

@@ -14,14 +14,26 @@ import java.util.Objects;
 @Data
 public class AbilityApiQueryVO extends PageQuery<AbilityApiEntity> implements Serializable {
 
+    /**
+     * 查询的实体
+     */
     private AbilityApiEntity entity;
 
+    /**
+     * 创建时间范围--开始时间
+     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date startTime;
 
+    /**
+     * 创建时间范围--结束时间
+     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date endTime;
 
+    /**
+     * 查找匹配关键字
+     */
     private String keyword;
 
     public QueryWrapper<AbilityApiEntity> getQueryWrapper(){

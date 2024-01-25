@@ -13,15 +13,26 @@ import java.util.Objects;
 
 @Data
 public class AbilityQueryVO extends PageQuery<AbilityEntity> implements Serializable {
-
+    /**
+     * 查询的实体
+     */
     private AbilityEntity entity;
 
+    /**
+     * 创建时间范围--开始时间
+     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date startTime;
 
+    /**
+     * 创建时间范围--结束时间
+     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date endTime;
 
+    /**
+     * 查找匹配关键字
+     */
     private String keyword;
 
     public QueryWrapper<AbilityEntity> getQueryWrapper(){
@@ -45,6 +56,9 @@ public class AbilityQueryVO extends PageQuery<AbilityEntity> implements Serializ
                         i -> i.like(AbilityEntity::getAbilityName, keyword)
                                 .or().like(AbilityEntity::getAbilityProvider, keyword)
                 );
+        qw.lambda()
+                .orderByAsc(AbilityEntity::getStatus)
+                .orderByDesc(AbilityEntity::getCreateTime);
         return qw;
     }
 

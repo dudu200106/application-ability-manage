@@ -53,7 +53,6 @@ public class AdminApproveController {
     @PostMapping("/approveSuccess")
     public Result<String> approveSuccess(@RequestBody UserApproveRequest user,@RequestHeader String accessToken){
         userApproveService.approveSuccess(user,accessToken);
-
         return Result.success("审核通过");
     }
 //

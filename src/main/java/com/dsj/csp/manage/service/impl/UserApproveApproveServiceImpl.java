@@ -42,6 +42,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         String responseBody = response.getBody();
         JSONObject responseJson = JSON.parseObject(responseBody);
         JSONObject dataJson = JSON.parseObject(responseJson.getString("data"));
+        System.out.println(dataJson);
         UserApproveRequest userApproveRequest = new UserApproveRequest();
         userApproveRequest.setUserId(dataJson.getString("id"));
         userApproveRequest.setUserName(dataJson.getString("name"));
@@ -63,7 +64,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         headers.add("accessToken", token);
         String url = serverURL + "/user-server/rpc/user/updateSmztById";
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
-//        System.out.println(response);
+        System.out.println(response);
     }
 
     //远程调用根据ID查询接口
@@ -86,7 +87,6 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
                 user.setCreateTime(new Date());
                 baseMapper.updateById(user);
                 return "实名认证申请已提交";
-
             }
         }
         updateStatus(user2.getUserId(),UserStatusEnum.WAIT.getStatus(),accessToken);

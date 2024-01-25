@@ -12,4 +12,6 @@ import com.dsj.csp.manage.dto.AbilityDTO;
 public interface AbilityBizService {
     // 获取能力信息（包括接口列表）
     AbilityDTO getAbilityInfo(Long abilityApplyId);
+
+    Boolean removeAbilityByIds(String abilityId);
 }

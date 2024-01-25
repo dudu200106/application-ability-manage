@@ -27,7 +27,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -150,8 +149,8 @@ public class AbilityController {
     @GetMapping("/info-apply")
     public Result<?> getApplyInfoById(@Parameter(
             description = "能力申请ID") @RequestParam Long abilityApplyId) {
-        return Result.success(abilityApplyService.getById(abilityApplyId));
-//        return Result.success(abilityApplyBizService.getApplyInfo(abilityApplyId));
+//        return Result.success(abilityApplyService.getById(abilityApplyId));
+        return Result.success(abilityApplyBizService.getApplyInfo(abilityApplyId));
     }
 
     @Operation(summary = "审核能力使用申请", description = "审核能力使用申请")
@@ -216,19 +215,11 @@ public class AbilityController {
     }
 
     @Operation(summary = "删除能力")
-    @PostMapping("/delete-ability")
+    @PostMapping("/delete-ability-api")
     public Result<?> removeAbility(@Parameter(description = "能力id列表") @RequestBody AbilityDeleteDTO deleteDTO){
         String abilityIds = deleteDTO.getAbilityIds();
-        List<Long> ids = Arrays.asList(abilityIds.split(",")).stream().map(id -> Long.parseLong(id.trim())).toList();
-        long countRelateApply = abilityApplyService.count(Wrappers.lambdaUpdate(AbilityApplyEntity.class).
-                in(AbilityApplyEntity::getAbilityId, ids));
-//                .and(apply->apply.eq(AbilityApplyEntity::getIsDelete, 0)));
-        if (countRelateApply>0){
-            throw new BusinessException("删除能力失败:存在能力被使用!");
-        }
-        Boolean delFlag = abilityService.removeBatchByIds(ids);
-        Boolean apiDelFlag = abilityApiService.remove(Wrappers.lambdaUpdate(AbilityApiEntity.class).in(AbilityApiEntity::getAbilityId, ids));
-        return Result.success("删除能力完成! ", delFlag && apiDelFlag);
+        boolean delFlag = abilityBizService.removeAbilityByIds(abilityIds);
+        return Result.success("删除能力及其接口完成! ", delFlag);
     }
 
     @Operation(summary = "删除能力申请")

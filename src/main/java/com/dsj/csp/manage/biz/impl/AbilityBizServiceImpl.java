@@ -2,8 +2,8 @@ package com.dsj.csp.manage.biz.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.biz.AbilityBizService;
-import com.dsj.csp.manage.dto.AbilityApplyDTO;
 import com.dsj.csp.manage.dto.AbilityDTO;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
 import com.dsj.csp.manage.entity.AbilityApplyEntity;
@@ -32,6 +32,7 @@ public class AbilityBizServiceImpl implements AbilityBizService {
 
     private final AbilityService abilityService;
     private final AbilityApiService abilityApiService;
+    private final AbilityApplyService abilityApplyService;
 
 
 
@@ -45,5 +46,19 @@ public class AbilityBizServiceImpl implements AbilityBizService {
         );
         abilityDTO.setApiList(apis);
         return abilityDTO;
+    }
+
+    @Override
+    public Boolean removeAbilityByIds(String abilityIds) {
+        List<Long> ids = Arrays.asList(abilityIds.split(",")).stream().map(id -> Long.parseLong(id.trim())).toList();
+        long countRelateApply = abilityApplyService.count(Wrappers.lambdaUpdate(AbilityApplyEntity.class).
+                in(AbilityApplyEntity::getAbilityId, ids)
+                .and(apply->apply.eq(AbilityApplyEntity::getIsDelete, 0)));
+        if (countRelateApply>0){
+            throw new BusinessException("删除能力失败:存在能力被使用!");
+        }
+        Boolean delFlag = abilityService.removeBatchByIds(ids);
+        Boolean apiDelFlag = abilityApiService.remove(Wrappers.lambdaUpdate(AbilityApiEntity.class).in(AbilityApiEntity::getAbilityId, ids));
+        return delFlag && apiDelFlag;
     }
 }

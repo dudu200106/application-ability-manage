@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.UserApproveEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Date;
 
@@ -16,10 +17,12 @@ public interface UserApproveService extends IService<UserApproveEntity> {
     /**
      * 用户模块
      */
-    //根据id查看个人中心
-    UserApproveEntity personCenter(String userId);
     //用户申请实名认证
-    void approve(UserApproveEntity user);
+    String approve(UserApproveEntity user,String accessToken);
+    //远程调用用户接口，根据token识别用户
+//    UserApproveEntity identify(String accessToken);
+    //远程调用用户实名状态更新接口
+//    void updateStatus(String userId,Integer status);
 
     /**
      * 管理员实名认证审核模块
@@ -29,11 +32,12 @@ public interface UserApproveService extends IService<UserApproveEntity> {
     //查看实名认证申请详情
     UserApproveEntity find(String userId);
     //实名认证审核通过
-    void approveSuccess(UserApproveRequest user);
+    void approveSuccess(UserApproveRequest user, String accessToken);
     //实名认证审核未通过
-    void approveFail(UserApproveRequest user);
+    void approveFail(UserApproveRequest user,String accessToken);
     //统计用户总数
 
     Long userCount();
 
 }
+

@@ -19,26 +19,6 @@ import java.util.List;
  * @Entity generator.entity.ManageApplication
  */
 public interface ManageApplicationMapper extends MPJBaseMapper<ManageApplicationEntity> {
-
-    List<ManageApplicationEntity> selectappID(String appId, String appUserId);
-
-    int contAll();
-
-    List<ManageApplicationEntity> selectUserApp(String appUserId);
-
-
-    boolean upadataAppList(String appId, String appName, String appSynopsis, String appIconpath, String appUserId);
-
-    boolean updateIsdetele(String appId, String appUserId);
-
-
-//    List<ManageApplication> selectPages(LambdaQueryWrapper<ManageApplication> wrapper,String appUserId, String keyword, Date startTime, Date endTime, int page, int size);
-
-//    Page<ManageApplication> selectPages(Page page,String appUserId, String keyword, Date startTime, Date endTime);
-
-//    Page<ManageApplication> selectPages(String appUserId, String keyword, Date startTime, Date endTime, int page, int size);
-//
-//    IPage<ManageApplication> selectJoinPage(Page<Object> objectPage, Class<ManageApplication> manageApplicationClass, MPJLambdaWrapper<Object> eq);
 }
 
 

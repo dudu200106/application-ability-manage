@@ -80,7 +80,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         UserApproveEntity userApproveEntity = baseMapper.selectById(user);
         if (userApproveEntity != null) {
             Integer status = user2.getStatus();
-            if (status.equals(UserStatusEnum.WAIT.getStatus()) || status.equals(UserStatusEnum.FAIL.getStatus())) {
+            if (status.equals(UserStatusEnum.NOAPPROVE.getStatus()) || status.equals(UserStatusEnum.FAIL.getStatus())) {
                 updateStatus(user2.getUserId(),UserStatusEnum.WAIT.getStatus(),accessToken);
                 user.setStatus(UserStatusEnum.WAIT.getStatus());
                 user.setNote(null);

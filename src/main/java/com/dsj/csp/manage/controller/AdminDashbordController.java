@@ -3,11 +3,13 @@ package com.dsj.csp.manage.controller;
 
 import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
+import com.dsj.csp.manage.biz.AbilityBizService;
 import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.AbilityService;
 import com.dsj.csp.manage.service.ManageApplicationService;
 import com.dsj.csp.manage.service.UserApproveService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,8 +35,14 @@ public class AdminDashbordController {
     private UserApproveService userApproveServicel;
     @Autowired
     private AbilityService abilityService;
+    private
+    @Autowired AbilityBizService abilityBizService;
     @Autowired
-    private AbilityApiService abilityApiService;
+    private AbilityApiBizService abilityApiBizService;
+
+    public AdminDashbordController(AbilityBizService abilityBizService) {
+        this.abilityBizService = abilityBizService;
+    }
 
 
     @Operation(summary = "后端首页统计应用")
@@ -54,14 +62,14 @@ public class AdminDashbordController {
 
     @Operation(summary = "控制台首页统计")
     @GetMapping("/getKztTotal")
-    public Object kzinfo() {
-        int appTotal = (int) manageApplicationService.count();
-        int apiTotal= (int) abilityApiService.count();
-        int abilityTotal= (int) abilityService.count();
+    public Object kzinfo(@Parameter(description = "用户Id") String appUserId) {
+        Long appTotal = manageApplicationService.countAppUser(appUserId);
+        Long apiTotal=  abilityApiBizService.countUserApplyApi(appUserId);
+        Long abilityTotal= abilityBizService.countUserApplyAbility(appUserId);
         Map<String, Integer> data = new HashMap<>();
-        data.put("appTotal", appTotal);
-        data.put("apiTotal",apiTotal);
-        data.put("abilityTotal",abilityTotal);
+        data.put("appTotal", Math.toIntExact(appTotal));
+        data.put("apiTotal", Math.toIntExact(apiTotal));
+        data.put("abilityTotal", Math.toIntExact(abilityTotal));
         return Result.success(data);
     }
 

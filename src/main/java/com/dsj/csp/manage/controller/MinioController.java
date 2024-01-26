@@ -68,7 +68,6 @@ public class MinioController {
             UUID uuid = UUID.randomUUID();
             // 获取文件扩展名
             String fileExtension = filename.substring(filename.lastIndexOf(".") + 1);
-            System.out.println(fileExtension);
             //uuid重命名
             String newFileName = uuid + "." + fileExtension;
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");

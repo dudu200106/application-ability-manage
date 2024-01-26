@@ -63,16 +63,15 @@ public class AbilityApplyQueryVO extends PageQuery<AbilityApplyEntity> implement
                 .eq(entity.getUpdateTime() != null, AbilityApplyEntity::getUpdateTime, entity.getUpdateTime())
                 .eq(entity.getIsAgreeProtocols() != null, AbilityApplyEntity::getIsAgreeProtocols, entity.getIsAgreeProtocols())
                 .eq(entity.getRecallLimit() != null, AbilityApplyEntity::getRecallLimit, entity.getRecallLimit())
-                .eq(entity.getQps() != null, AbilityApplyEntity::getQps, entity.getQps());
-        qw.lambda()
+                .eq(entity.getQps() != null, AbilityApplyEntity::getQps, entity.getQps())
+                .notIn(entity.getUserId()==null, AbilityApplyEntity::getStatus, 4)
+                // 创建时间范围查询及关键字查询
                 .ge(Objects.nonNull(startTime), AbilityApplyEntity::getCreateTime, startTime)
                 .le(Objects.nonNull(endTime), AbilityApplyEntity::getCreateTime, endTime)
-                .and(keyword!=null && !"".equals(keyword),
-                        i -> i.like(AbilityApplyEntity::getAbilityName, keyword)
-                                .or().like(AbilityApplyEntity::getCompanyName, keyword)
-                                .or().like(AbilityApplyEntity::getGovName, keyword)
-                );
-        qw.lambda()
+                .and(keyword!=null && !"".equals(keyword), i -> i.like(AbilityApplyEntity::getAbilityName, keyword)
+                        .or().like(AbilityApplyEntity::getCompanyName, keyword)
+                        .or().like(AbilityApplyEntity::getGovName, keyword))
+                // 排序
                 .orderByAsc(AbilityApplyEntity::getStatus)
                 .orderByDesc(AbilityApplyEntity::getCreateTime);
         return qw;

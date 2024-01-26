@@ -2,11 +2,9 @@ package com.dsj.csp.manage.controller;
 
 import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.biz.AbilityApplyBizService;
@@ -175,29 +173,42 @@ public class AbilityController {
         return Result.success(abilityApplyService.update(abilityApply, updateWrapper));
     }
 
-    @Operation(summary = "统计可用能力数")
+    @Operation(summary = "统计能力数")
     @GetMapping("/count-avail-ability")
     public Result<?> countAvailableAbility(){
-        return Result.success(abilityService.countAvailAbility());
-
-    }
-
-    @Operation(summary = "统计能力数量")
-    @GetMapping("/count-ability")
-    public Result<?> countAbility(@Parameter(description = "能力状态") @RequestParam Integer status){
-        QueryWrapper<AbilityEntity> abilityQW = new QueryWrapper<>();
-        // 4:已发布能力
-        abilityQW.lambda().eq(AbilityEntity::getStatus, status);
-        return Result.success(abilityService.count(abilityQW));
-
+        return Result.success(abilityService.count());
     }
 
     @Operation(summary = "统计接口数量")
     @GetMapping("/count-api")
     public Result<?> countApi(){
-        return Result.success(abilityService.count());
-
+        return Result.success(abilityApiService.count());
     }
+
+    @Operation(summary = "统计用户能力数量")
+    @GetMapping("/count-user-ability")
+    public Result<?> countuserAbility(String userId){
+        return Result.success(abilityBizService.countUserApplyAbility(userId));
+    }
+
+    @Operation(summary = "统计用户接口数量")
+    @GetMapping("/count-user-api")
+    public Result<?> countUserApi(String userId){
+        return Result.success(abilityApiBizService.countUserApplyApi(userId));
+    }
+
+
+//    @Operation(summary = "统计能力数量")
+//    @GetMapping("/count-ability")
+//    public Result<?> countAbility(@Parameter(description = "能力状态") @RequestParam Integer status){
+//        QueryWrapper<AbilityEntity> abilityQW = new QueryWrapper<>();
+//        // 4:已发布能力
+//        abilityQW.lambda().eq(AbilityEntity::getStatus, status);
+//        return Result.success(abilityService.count(abilityQW));
+//
+//    }
+
+
 
     /**
      * 根据 app-code 获取 可访问路径

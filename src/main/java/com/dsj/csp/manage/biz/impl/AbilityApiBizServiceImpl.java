@@ -11,11 +11,13 @@ import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.*;
 import com.dsj.csp.manage.util.Sm2;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.SpringApplicationRunListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -107,18 +109,20 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     public Page pageApi(AbilityApiQueryVO apiQueryVO){
-        Page<AbilityApiEntity> p = abilityApiService.page(apiQueryVO.toPage(), apiQueryVO.getQueryWrapper());
+        Page<AbilityApiEntity> page = abilityApiService.page(apiQueryVO.toPage(), apiQueryVO.getQueryWrapper());
+        // 数据条数为空, 直接返回, 避免空指针
+        if (page.getTotal()==0){
+            return page;
+        }
         // 查出能力ID和能力名称的映射
-        List<AbilityApiEntity> records = p.getRecords();
+        List<AbilityApiEntity> records = page.getRecords();
         Set<Long> abilityIds = records.stream().map(e->e.getAbilityId()).collect(Collectors.toSet());
-        LambdaQueryWrapper abilityQW= Wrappers.lambdaQuery(AbilityEntity.class)
+        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
                 .in(AbilityEntity::getAbilityId, abilityIds)
-                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName);
-        List<AbilityEntity> abilitys = abilityService.getBaseMapper().selectList(abilityQW);
-        Map<Long, String> abilityMap = abilitys
-                .stream()
-                .collect(Collectors
-                .toMap(ability -> ability.getAbilityId(), ability -> ability.getAbilityName()));
+                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName));
+        Map<Long, String> abilityMap = abilitys.stream()
+                .collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability.getAbilityName()));
+
         // 构造返回的分页resPage
         List<AbilityApiVO> newRecords = records.stream().map(api->{
             AbilityApiVO apiVO = new AbilityApiVO();
@@ -126,7 +130,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
             apiVO.setAbilityName(abilityMap.get(api.getAbilityId()));
             return apiVO;
         }).toList();
-        Page<AbilityApiVO> resPage = new Page<>(p.getCurrent(), p.getSize(), p.getTotal());
+        Page<AbilityApiVO> resPage = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
         resPage.setRecords(newRecords);
         return resPage;
     }
@@ -145,5 +149,18 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                 Wrappers.lambdaQuery(AbilityApiEntity.class).eq(AbilityApiEntity::getAbilityId, abilityId)
         );
         return apis;
+    }
+
+    @Override
+    public long countUserApplyApi(String userId) {
+        List<AbilityApplyEntity> applyEntities = abilityApplyService.list(Wrappers.lambdaQuery(AbilityApplyEntity.class)
+                .eq(AbilityApplyEntity::getUserId, Long.parseLong(userId))
+                .select(AbilityApplyEntity::getApiIds));
+        List<String> ids = applyEntities.stream().map(e-> e.getApiIds()).toList();
+        AtomicLong cnt= new AtomicLong();
+        ids.forEach(e -> {
+            cnt.addAndGet(e.trim().split(",").length);
+        });
+        return cnt.get();
     }
 }

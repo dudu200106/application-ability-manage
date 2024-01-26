@@ -1,6 +1,5 @@
 package com.dsj.csp.manage.biz;
 
-import com.dsj.csp.manage.dto.AbilityApplyDTO;
 import com.dsj.csp.manage.dto.AbilityDTO;
 
 /**
@@ -14,4 +13,7 @@ public interface AbilityBizService {
     AbilityDTO getAbilityInfo(Long abilityApplyId);
 
     Boolean removeAbilityByIds(String abilityId);
+
+    // 统计用户申请的能力数
+    long countUserApplyAbility(String userId);
 }

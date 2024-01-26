@@ -1,6 +1,8 @@
 package com.dsj.csp.manage.biz.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.biz.AbilityBizService;
@@ -18,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 功能说明：
@@ -33,8 +37,6 @@ public class AbilityBizServiceImpl implements AbilityBizService {
     private final AbilityService abilityService;
     private final AbilityApiService abilityApiService;
     private final AbilityApplyService abilityApplyService;
-
-
 
     @Override
     public AbilityDTO getAbilityInfo(Long abilityId) {
@@ -61,4 +63,13 @@ public class AbilityBizServiceImpl implements AbilityBizService {
         Boolean apiDelFlag = abilityApiService.remove(Wrappers.lambdaUpdate(AbilityApiEntity.class).in(AbilityApiEntity::getAbilityId, ids));
         return delFlag && apiDelFlag;
     }
+
+    @Override
+    public long countUserApplyAbility(String userId) {
+        LambdaQueryWrapper<AbilityApplyEntity> queryWrapper = Wrappers.lambdaQuery((AbilityApplyEntity.class))
+                .eq(AbilityApplyEntity::getUserId, Long.parseLong(userId));
+        return abilityApplyService.count(queryWrapper);
+    }
+
+
 }

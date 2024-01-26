@@ -116,37 +116,34 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
 
     @Override
     public Page pageApply(AbilityApplyQueryVO applyQueryVO) {
-
+        // 分页获取基本申请信息, 后续会继续查询、插入必要的关联信息
         Page prePage = abilityApplyService.page(applyQueryVO.toPage(), applyQueryVO.getQueryWrapper());
         // 数据条数为空, 直接返回, 避免空指针
         if (prePage.getTotal()==0){
             return prePage;
         }
         List<AbilityApplyEntity> records = prePage.getRecords();
-
         // 1.用户表 过userId查出企业/政府名称
         Set<Long> userIds = records.stream().map(e->e.getUserId()).collect(Collectors.toSet());
-        List<UserApproveEntity> users = userApproveService.list(
-                Wrappers.lambdaQuery(UserApproveEntity.class)
-                        .select(UserApproveEntity::getUserId, UserApproveEntity::getCompanyName, UserApproveEntity::getGovName)
-                        .in(UserApproveEntity::getUserId, userIds)
-        );
+        List<UserApproveEntity> users = userApproveService.list(Wrappers.lambdaQuery(UserApproveEntity.class)
+                .select(UserApproveEntity::getUserId, UserApproveEntity::getCompanyName, UserApproveEntity::getGovName)
+                .in(UserApproveEntity::getUserId, userIds));
         // 将ID映射到数据上, 方便查找使用
         Map<String, UserApproveEntity> userMap = users.stream().collect(Collectors.toMap(user -> user.getUserId(), user -> user));
         // 2.应用表 通过appId查出应用名称
         Set<Long> appIds = records.stream().map(e  -> e.getAppId()).collect(Collectors.toSet());
-        List<ManageApplicationEntity> apps = manageApplicationService.list(
-                Wrappers.lambdaQuery(ManageApplicationEntity.class)
-                        .select(ManageApplicationEntity::getAppId, ManageApplicationEntity::getAppName)
-                        .in(ManageApplicationEntity::getAppId, appIds)
-        );
+        List<ManageApplicationEntity> apps = manageApplicationService.list(Wrappers.lambdaQuery(ManageApplicationEntity.class)
+                .select(ManageApplicationEntity::getAppId, ManageApplicationEntity::getAppName)
+                .in(ManageApplicationEntity::getAppId, appIds));
         Map<String, String> appMap = apps.stream().collect(Collectors.toMap(app -> app.getAppId(), app ->app.getAppName()));
         // 3.能力表 abilityId查出能力名称和类型
         Set<Long> abilityIds = records.stream().map(e  -> e.getAbilityId()).collect(Collectors.toSet());
-        LambdaQueryWrapper abilityQW = Wrappers.lambdaQuery(AbilityEntity.class)
-                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName, AbilityEntity::getAbilityType)
-                .in(AbilityEntity::getAbilityId, abilityIds);
-        List<AbilityEntity> abilitys = abilityService.list(abilityQW);
+        List<AbilityEntity> abilitys = abilityService.list( Wrappers.lambdaQuery(AbilityEntity.class)
+                .select(AbilityEntity::getAbilityId,
+                        AbilityEntity::getAbilityName,
+                        AbilityEntity::getAbilityType,
+                        AbilityEntity::getAbilityDesc)
+                .in(AbilityEntity::getAbilityId, abilityIds));
         Map<Long, AbilityEntity> abilityMap = abilitys.stream().collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability));
 
         // 返回的分页res
@@ -156,6 +153,7 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
             BeanUtil.copyProperties(apply, applyDTO, true);
             applyDTO.setAbilityName(abilityMap.get(apply.getAbilityId())==null ? null : abilityMap.get(apply.getAbilityId()).getAbilityName());
             applyDTO.setAbilityType(abilityMap.get(apply.getAbilityId())==null ? null : abilityMap.get(apply.getAbilityId()).getAbilityType());
+            applyDTO.setAbilityDesc(abilityMap.get(apply.getAbilityId())==null ? null : abilityMap.get(apply.getAbilityId()).getAbilityDesc());
             applyDTO.setAppName(appMap.get(apply.getAppId() + ""));
             applyDTO.setCompanyName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getCompanyName());
             applyDTO.setGovName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getGovName());

@@ -124,7 +124,6 @@ public class AbilityController {
     public Result<?> pageApi(
             @Valid @RequestBody AbilityApiQueryVO apiQueryVO ){
         return Result.success(abilityApiBizService.pageApi(apiQueryVO));
-//        return Result.success(abilityApiService.page(apiQueryVO.toPage(), apiQueryVO.getQueryWrapper()));
     }
 
 
@@ -147,7 +146,6 @@ public class AbilityController {
     @GetMapping("/info-apply")
     public Result<?> getApplyInfoById(@Parameter(
             description = "能力申请ID") @RequestParam Long abilityApplyId) {
-//        return Result.success(abilityApplyService.getById(abilityApplyId));
         return Result.success(abilityApplyBizService.getApplyInfo(abilityApplyId));
     }
 

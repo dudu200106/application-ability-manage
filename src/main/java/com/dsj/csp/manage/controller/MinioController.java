@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * MinIO对象存储管理
@@ -63,9 +64,16 @@ public class MinioController {
                 minioClient.setBucketPolicy(setBucketPolicyArgs);
             }
             String filename = file.getOriginalFilename();
+            // 生成UUID
+            UUID uuid = UUID.randomUUID();
+            // 获取文件扩展名
+            String fileExtension = filename.substring(filename.lastIndexOf(".") + 1);
+            System.out.println(fileExtension);
+            //uuid重命名
+            String newFileName = uuid + "." + fileExtension;
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
             // 设置存储对象名称
-            String objectName = sdf.format(new Date()) + "/" + filename;
+            String objectName = sdf.format(new Date()) + "/" + newFileName;
             // 使用putObject上传一个文件到存储桶中
             PutObjectArgs putObjectArgs = PutObjectArgs.builder()
                     .bucket(BUCKET_NAME)

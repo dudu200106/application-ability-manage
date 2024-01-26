@@ -25,6 +25,12 @@
             <groupId>com.dameng</groupId>
             <artifactId>Dm8JdbcDriver18</artifactId>
         </dependency>
+        <!-- user-server -->
+        <dependency>
+            <groupId>com.dsj.csp</groupId>
+            <artifactId>user-client</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>

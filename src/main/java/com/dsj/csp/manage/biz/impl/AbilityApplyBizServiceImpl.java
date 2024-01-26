@@ -65,10 +65,18 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
         List<Long> idList = Arrays.asList(apiIds.split(",")).stream().map(e->Long.parseLong(e)).toList();
         List<AbilityApiEntity> apis = abilityApiService.listByIds(idList);
         AbilityEntity ability = abilityService.getById(apply.getAbilityId());
-        //构造返回能力申请信息DTO
+        UserApproveEntity userApprove = userApproveService.getById(apply.getUserId());
+        ManageApplicationEntity app = manageApplicationService.getById(apply.getAppId());
         AbilityApplyDTO resApply = new AbilityApplyDTO();
+        //构造返回能力申请信息DTO
         BeanUtil.copyProperties(apply, resApply);
-        BeanUtil.copyProperties(ability, resApply);
+        resApply.setAbilityName(ability.getAbilityName());
+        resApply.setAbilityType(ability.getAbilityType());
+        resApply.setAbilityDesc(ability.getAbilityDesc());
+        resApply.setAppName(app.getAppName());
+        resApply.setCompanyName(userApprove.getCompanyName());
+        resApply.setGovName(userApprove.getGovName());
+
         resApply.setApiList(apis);
         return resApply;
     }

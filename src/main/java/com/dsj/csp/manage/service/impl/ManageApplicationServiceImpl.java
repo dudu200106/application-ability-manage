@@ -59,8 +59,8 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
                 .selectAll(ManageApplicationEntity.class)//查询user表全部字段
                 .selectAll(UserApproveEntity.class)
                 .leftJoin(UserApproveEntity.class, UserApproveEntity::getUserId, ManageApplicationEntity::getAppUserId)
-        .eq(ManageApplicationEntity::getAppId, appId)
-        .eq(ManageApplicationEntity::getAppUserId, appUserId);
+                .eq(ManageApplicationEntity::getAppId, appId)
+                .eq(ManageApplicationEntity::getAppUserId, appUserId);
 //        List<ManageApplictionVo> userList = ;
 //        userList.forEach(System.out::println);
 //     userMapper.selectJoinList(UserDTO.class, wrapper);
@@ -92,10 +92,14 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
 
         Page<ManageApplictionVo> userApproveEntityPage = manageApplicationMapper.selectJoinPage(new Page<>(pages, size), ManageApplictionVo.class,
                 new MPJLambdaWrapper<ManageApplicationEntity>()
-                        .eq(!StringUtils.isEmpty(appUserId), ManageApplicationEntity::getAppUserId, appUserId)
                         .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), ManageApplicationEntity::getAppCreatetime, startTime, endTime)
-                        .like(!StringUtils.isEmpty(keyword), ManageApplicationEntity::getAppName, keyword)
-                        .or().like(!StringUtils.isEmpty(keyword), ManageApplicationEntity::getAppName, keyword)
+                        .eq(!StringUtils.isEmpty(appUserId), ManageApplicationEntity::getAppUserId, appUserId)
+                        .like(!StringUtils.isEmpty(keyword), ManageApplicationEntity::getAppName, keyword)//应用名称
+                        .or().like(!StringUtils.isEmpty(keyword), UserApproveEntity::getUserId, keyword)//用户id
+                        .or().like(!StringUtils.isEmpty(keyword), UserApproveEntity::getCompanyName, keyword)//企业名称
+                        .or().like(!StringUtils.isEmpty(keyword), UserApproveEntity::getGovName, keyword)//  政府部门名称
+                        .or().like(!StringUtils.isEmpty(keyword), ManageApplicationEntity::getAppId, keyword)//AppID
+                        .or().like(!StringUtils.isEmpty(keyword), UserApproveEntity::getUserName, keyword )//用户Name
                         .selectAll(UserApproveEntity.class)
                         .selectAll(ManageApplicationEntity.class)
                         .leftJoin(UserApproveEntity.class, UserApproveEntity::getUserId, ManageApplicationEntity::getAppUserId)

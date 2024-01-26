@@ -67,8 +67,10 @@ public class AbilityBizServiceImpl implements AbilityBizService {
     @Override
     public long countUserApplyAbility(String userId) {
         LambdaQueryWrapper<AbilityApplyEntity> queryWrapper = Wrappers.lambdaQuery((AbilityApplyEntity.class))
-                .eq(AbilityApplyEntity::getUserId, Long.parseLong(userId));
-        return abilityApplyService.count(queryWrapper);
+                .eq(AbilityApplyEntity::getUserId, Long.parseLong(userId))
+                .select(AbilityApplyEntity::getAbilityId);
+        Set<Long> abilityIdSet = abilityApplyService.list(queryWrapper).stream().map(e-> e.getAbilityId()).collect(Collectors.toSet());
+        return abilityIdSet.size();
     }
 
 

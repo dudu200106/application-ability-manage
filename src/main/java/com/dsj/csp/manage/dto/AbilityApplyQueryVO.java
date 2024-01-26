@@ -72,6 +72,7 @@ public class AbilityApplyQueryVO extends PageQuery<AbilityApplyEntity> implement
                         .or().like(AbilityApplyEntity::getCompanyName, keyword)
                         .or().like(AbilityApplyEntity::getGovName, keyword))
                 // 排序
+                .orderByDesc(AbilityApplyEntity::getApproveTime)
                 .orderByAsc(AbilityApplyEntity::getStatus)
                 .orderByDesc(AbilityApplyEntity::getCreateTime);
         return qw;

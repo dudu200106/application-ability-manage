@@ -22,7 +22,7 @@ public class UserApproveController {
      */
     @Operation(summary = "实名认证申请")
     @PostMapping("/approve")
-    public Result<?> approve(@RequestBody UserApproveEntity user,@RequestHeader("Authorization") String accessToken){
+    public Result<?> approve(@RequestBody UserApproveEntity user,@RequestHeader("accessToken") String accessToken){
         userApproveService.approve(user,accessToken);
         return Result.success("实名认证审核中");
     }

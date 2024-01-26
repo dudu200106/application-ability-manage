@@ -2,6 +2,7 @@ package com.dsj.csp.manage.biz.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.log.Log;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -38,20 +39,21 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
     public void saveAbilityApply(AbilityApplyVO applyVO) {
         AbilityApplyEntity applyEntity = new AbilityApplyEntity();
         BeanUtil.copyProperties(applyVO, applyEntity, true);
+        // TODO 因实名认证页面还没做, 暂时取消一下记录操作, 直接存储绑定记录
         // 1.获取应用名称/用户ID
-        ManageApplicationEntity app = manageApplicationService.getById(applyVO.getAppId());
-        applyEntity.setAppName(app.getAppName());
-        applyEntity.setUserId(Long.parseLong(app.getAppUserId()));
-
-        // 2.通过用户ID获取企业/政府名称
-        UserApproveEntity userApproveEntity = userApproveService.getById(app.getAppUserId());
-        applyEntity.setCompanyName(userApproveEntity.getCompanyName());
-        applyEntity.setGovName(userApproveEntity.getGovName());
-
-        // 3.通过能力ID获取能力名称/能力类型
-        AbilityEntity ability = abilityService.getById(applyVO.getAbilityId());
-        applyEntity.setAbilityName(ability.getAbilityName());
-        applyEntity.setAbilityType(ability.getAbilityName());
+//        ManageApplicationEntity app = manageApplicationService.getById(applyVO.getAppId());
+//        applyEntity.setAppName(app.getAppName());
+//        applyEntity.setUserId(Long.parseLong(app.getAppUserId()));
+//
+//        // 2.通过用户ID获取企业/政府名称
+//        UserApproveEntity userApproveEntity = userApproveService.getById(applyVO.getUserId());
+//        applyEntity.setCompanyName(userApproveEntity.getCompanyName());
+//        applyEntity.setGovName(userApproveEntity.getGovName());
+//
+//        // 3.通过能力ID获取能力名称/能力类型
+//        AbilityEntity ability = abilityService.getById(applyVO.getAbilityId());
+//        applyEntity.setAbilityName(ability.getAbilityName());
+//        applyEntity.setAbilityType(ability.getAbilityName());
         abilityApplyService.save(applyEntity);
     }
 
@@ -116,6 +118,10 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
     public Page pageApply(AbilityApplyQueryVO applyQueryVO) {
 
         Page prePage = abilityApplyService.page(applyQueryVO.toPage(), applyQueryVO.getQueryWrapper());
+        // 数据条数为空, 直接返回, 避免空指针
+        if (prePage.getTotal()==0){
+            return prePage;
+        }
         List<AbilityApplyEntity> records = prePage.getRecords();
 
         // 1.用户表 过userId查出企业/政府名称
@@ -148,11 +154,11 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
         List<AbilityApplyDTO> resRecords = records.stream().map(apply ->{
             AbilityApplyDTO applyDTO = new AbilityApplyDTO();
             BeanUtil.copyProperties(apply, applyDTO, true);
-            applyDTO.setAbilityName(abilityMap.get(apply.getAbilityId()).getAbilityName());
-            applyDTO.setAbilityType(abilityMap.get(apply.getAbilityId()).getAbilityType());
+            applyDTO.setAbilityName(abilityMap.get(apply.getAbilityId())==null ? null : abilityMap.get(apply.getAbilityId()).getAbilityName());
+            applyDTO.setAbilityType(abilityMap.get(apply.getAbilityId())==null ? null : abilityMap.get(apply.getAbilityId()).getAbilityType());
             applyDTO.setAppName(appMap.get(apply.getAppId() + ""));
-            applyDTO.setCompanyName(userMap.get(apply.getUserId() + "").getCompanyName());
-            applyDTO.setGovName(userMap.get(apply.getUserId() + "").getGovName());
+            applyDTO.setCompanyName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getCompanyName());
+            applyDTO.setGovName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getGovName());
             return applyDTO;
         }).toList();
         newPage.setRecords(resRecords);

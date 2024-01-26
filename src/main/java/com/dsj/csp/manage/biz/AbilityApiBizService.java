@@ -23,4 +23,7 @@ public interface AbilityApiBizService {
 
     List<AbilityApiEntity> getAbilityApiList(Long abilityId);
 
+    // 统计用户申请的能力接口数
+    long countUserApplyApi(String userId);
+
 }

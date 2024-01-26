@@ -71,7 +71,7 @@ public class AbilityController {
     @PostMapping ("/page-available-ability")
     public Result<?> queryAvailablePage(
             @Valid @RequestBody AbilityQueryVO abilityQuery) {
-        LambdaQueryWrapper abilityQW = abilityQuery.getQueryWrapper().lambda().in(AbilityEntity::getStatus, 3,4);
+        LambdaQueryWrapper abilityQW = abilityQuery.getQueryWrapper().lambda().in(AbilityEntity::getStatus, 4);
         return Result.success(abilityService.page(abilityQuery.toPage(), abilityQW));
     }
 

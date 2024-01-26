@@ -57,7 +57,7 @@ public class AbilityBizServiceImpl implements AbilityBizService {
                 in(AbilityApplyEntity::getAbilityId, ids)
                 .and(apply->apply.eq(AbilityApplyEntity::getIsDelete, 0)));
         if (countRelateApply>0){
-            throw new BusinessException("删除能力失败:存在能力被使用!");
+            throw new BusinessException("删除能力失败:能力还在被应用使用!");
         }
         Boolean delFlag = abilityService.removeBatchByIds(ids);
         Boolean apiDelFlag = abilityApiService.remove(Wrappers.lambdaUpdate(AbilityApiEntity.class).in(AbilityApiEntity::getAbilityId, ids));

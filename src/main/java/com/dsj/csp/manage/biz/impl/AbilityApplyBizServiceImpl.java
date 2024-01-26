@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.biz.AbilityApplyBizService;
 import com.dsj.csp.manage.dto.AbilityApplyAuditVO;
 import com.dsj.csp.manage.dto.AbilityApplyDTO;
@@ -37,6 +38,13 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
 
     @Override
     public void saveAbilityApply(AbilityApplyVO applyVO) {
+        long cnt =abilityApplyService.count(Wrappers.lambdaQuery(AbilityApplyEntity.class)
+                .eq(AbilityApplyEntity::getAppId, applyVO.getAppId())
+                .eq(AbilityApplyEntity::getAbilityId,applyVO.getAbilityId())
+                .eq(AbilityApplyEntity::getStatus, 0));
+        if (cnt!=0){
+            throw new BusinessException("应用已提交对该能力的申请,请耐心等待或撤销申请审核...");
+        }
         AbilityApplyEntity applyEntity = new AbilityApplyEntity();
         BeanUtil.copyProperties(applyVO, applyEntity, true);
         // TODO 因实名认证页面还没做, 暂时取消一下记录操作, 直接存储绑定记录

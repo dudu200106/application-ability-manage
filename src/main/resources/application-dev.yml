@@ -70,3 +70,12 @@ minio:
   bucketName: manager #存储桶名称
   accessKey: admin #访问的key
   secretKey: dsjGS20240101 #访问的秘钥
+feign:
+  client:
+    default-config:
+      connectTimeout: 1000
+      readTimeout: 2000
+dsj:
+  rpc:
+    user-server:
+      service-name: user-server

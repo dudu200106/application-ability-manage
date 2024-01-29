@@ -35,14 +35,11 @@ public class AdminDashbordController {
     private UserApproveService userApproveServicel;
     @Autowired
     private AbilityService abilityService;
-    private
-    @Autowired AbilityBizService abilityBizService;
+    @Autowired
+    private AbilityBizService abilityBizService;
     @Autowired
     private AbilityApiBizService abilityApiBizService;
 
-    public AdminDashbordController(AbilityBizService abilityBizService) {
-        this.abilityBizService = abilityBizService;
-    }
 
 
     @Operation(summary = "后端首页统计应用")

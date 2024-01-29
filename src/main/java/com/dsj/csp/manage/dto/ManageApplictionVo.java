@@ -64,5 +64,10 @@ public class ManageApplictionVo implements Serializable {
     //应用簡介
     private String appSynopsis;
     private  Long apptime;
-    private  String appUserId;
+
+    private String appUserId;
+
+
+
+
 }

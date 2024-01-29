@@ -5,11 +5,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.dsj.common.dto.BusinessException;
+import com.dsj.common.dto.Result;
 import com.dsj.csp.common.api.rpc.RpcUserApi;
+import com.dsj.csp.common.constant.AccountLoginWay;
 import com.dsj.csp.common.dto.UserChangePasswordDTO;
 import com.dsj.csp.common.dto.UserSmztDTO;
+import com.dsj.csp.common.enums.CodeEnum;
 import com.dsj.csp.common.enums.UserStatusEnum;
+import com.dsj.csp.common.exception.FlowException;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.UserApproveEntity;
 import com.dsj.csp.manage.mapper.UserApproveMapper;
@@ -17,15 +20,11 @@ import com.dsj.csp.manage.service.UserApproveService;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.Objects;
 
@@ -39,6 +38,7 @@ import java.util.Objects;
 public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper, UserApproveEntity> implements UserApproveService {
     @Resource
     private RpcUserApi rpcUserApi;
+
     //远程调用用户接口，根据token识别用户
     public UserApproveRequest identify(String accessToken) throws RuntimeException {
         RestTemplate restTemplate = new RestTemplate();
@@ -51,7 +51,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
         String responseBody = response.getBody();
         JSONObject responseJson = JSON.parseObject(responseBody);
-        JSONObject dataJson=JSON.parseObject(responseJson.getString("data"));
+        JSONObject dataJson = JSON.parseObject(responseJson.getString("data"));
         UserApproveRequest userApproveRequest = new UserApproveRequest();
         try {
             userApproveRequest.setUserId(dataJson.getString("id"));
@@ -60,41 +60,41 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
             userApproveRequest.setPhone(dataJson.getString("phone"));
             return userApproveRequest;
         } catch (Exception e) {
-            throw new RuntimeException("登录状态过期",e);
+            throw new FlowException(CodeEnum.TOKEN_ERROR);
         }
     }
 
     //远程调用用户实名状态更新接口
     @Override
-    public void approveFeign(String userId,Integer status){
-        UserSmztDTO userSmztDTO=new UserSmztDTO();
+    public void approveFeign(String userId, Integer status) {
+        UserSmztDTO userSmztDTO = new UserSmztDTO();
         userSmztDTO.setId(userId);
         userSmztDTO.setSmzt(status);
         rpcUserApi.updateSmztById(userSmztDTO);
     }
 
-    @Override
-    public String updatePassword(String password,String newPassword, String accessToken) {
-        UserApproveRequest identify = identify(accessToken);
-        UserChangePasswordDTO userChangePasswordDTO=new UserChangePasswordDTO();
-        userChangePasswordDTO.setPassword(password);
-        userChangePasswordDTO.setNewPassword(newPassword);
-        rpcUserApi.changePassword(userChangePasswordDTO);
-        return null;
-    }
+//    @Override
+//    public Result<Boolean> updatePassword(String password, String newPassword, String newPassword2, String accessToken) {
+//        UserApproveRequest identify = identify(accessToken);
+//        UserChangePasswordDTO userChangePasswordDTO=new UserChangePasswordDTO();
+//        if(newPassword.equals(newPassword2)){
+//            userChangePasswordDTO.setPassword(password);
+//            userChangePasswordDTO.setNewPassword(newPassword);
+//            userChangePasswordDTO.setLoginWay(AccountLoginWay.valueOf(identify.getLoginWay()));
+//            userChangePasswordDTO.setLoginName(identify.getLoginName());
+//            return rpcUserApi.changePassword(userChangePasswordDTO);
+//        }else {
+//            return Result.failed("两次密码不一致，请重新输入");
+//        }
+//    }
 
 
     /**
      * 用户实名认证申请模块
      */
     @Override
-    public String approve(UserApproveEntity user,String accessToken) {
-        UserApproveRequest user2 = null;
-        try {
-            user2 = identify(accessToken);
-        } catch (RuntimeException e) {
-            throw new RuntimeException("登录状态过期,请重新登录", e);
-        }
+    public String approve(UserApproveEntity user, String accessToken) {
+        UserApproveRequest user2 = identify(accessToken);
         user.setUserId(user2.getUserId());
         user.setUserName(user2.getUserName());
         UserApproveEntity userApproveEntity = baseMapper.selectById(user);
@@ -107,16 +107,25 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
                 user.setCreateTime(new Date());
                 baseMapper.updateById(user);
                 return "实名认证已提交，请等待管理员审核";
-            }else {
-                return "不可重复提交实名认证申请";
+            } else {
+                throw new FlowException(CodeEnum.APPROVE_ERROR);
             }
+        }else {
+            approveFeign(user2.getUserId(), UserStatusEnum.WAIT.getStatus());
+            user.setStatus(UserStatusEnum.WAIT.getStatus());
+            user.setCreateTime(new Date());
+            baseMapper.insert(user);
+            return "实名认证已提交，请等待管理员审核";
         }
-        approveFeign(user2.getUserId(), UserStatusEnum.WAIT.getStatus());
-        user.setStatus(UserStatusEnum.WAIT.getStatus());
-        user.setCreateTime(new Date());
-        baseMapper.insert(user);
-        return "实名认证已提交，请等待管理员审核";
     }
+
+    //回显用户信息到前端
+    @Override
+    public UserApproveEntity echo(String accessToken) {
+        UserApproveRequest identify = identify(accessToken);
+        return baseMapper.selectById(identify.getUserId());
+    }
+
 
     /**
      * 管理员实名认证审核模块
@@ -142,14 +151,9 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     }
 
     @Override
-    public void approveSuccess(UserApproveRequest user,String accessToken) {
-        UserApproveRequest identify = null;
-        try {
-            identify = identify(accessToken);
-        } catch (RuntimeException e) {
-            throw new RuntimeException("登录状态过期，请重新登录", e);
-        }
-        approveFeign(user.getUserId(),UserStatusEnum.SUCCESS.getStatus());
+    public void approveSuccess(UserApproveRequest user, String accessToken) {
+        identify(accessToken);
+        approveFeign(user.getUserId(), UserStatusEnum.SUCCESS.getStatus());
         UserApproveEntity userApproveEntity = baseMapper.selectById(user.getUserId());
         boolean updateResult = this.lambdaUpdate()
                 .eq(Objects.nonNull(userApproveEntity.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())
@@ -159,23 +163,16 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
                 .update();
         if (!updateResult) {
             log.error("更新失败");
-            throw new BusinessException("更新失败");
+            throw new FlowException(CodeEnum.UPDATE_ERROR);
         }
 //          FIXME  return updateResult; 在controller做判断并进行不同的响应
         // TODO 为每一次的sql结果负责
-//        int i=1/0;
-//        updateStatus(userId,UserStatusEnum.SUCCESS.getStatus(),accessToken);
     }
 
     @Override
-    public void approveFail(UserApproveRequest user,String accessToken) {
-        UserApproveRequest identify = null;
-        try {
-            identify = identify(accessToken);
-        } catch (RuntimeException e) {
-            throw new RuntimeException("登录状态过期，请重新登录", e);
-        }
-        approveFeign(user.getUserId(),UserStatusEnum.FAIL.getStatus());
+    public void approveFail(UserApproveRequest user, String accessToken) {
+        identify(accessToken);
+        approveFeign(user.getUserId(), UserStatusEnum.FAIL.getStatus());
         UserApproveEntity userApproveEntity = baseMapper.selectById(user.getUserId());
         boolean updateResult = this.lambdaUpdate()
                 .eq(Objects.nonNull(userApproveEntity.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())
@@ -186,7 +183,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
                 .update();
         if (!updateResult) {
             log.error("更新失败");
-            throw new BusinessException("更新失败");
+            throw new FlowException(CodeEnum.UPDATE_ERROR);
         }
     }
 

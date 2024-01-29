@@ -64,7 +64,7 @@ public class AbilityApplyQueryVO extends PageQuery<AbilityApplyEntity> implement
                 .eq(entity.getIsAgreeProtocols() != null, AbilityApplyEntity::getIsAgreeProtocols, entity.getIsAgreeProtocols())
                 .eq(entity.getRecallLimit() != null, AbilityApplyEntity::getRecallLimit, entity.getRecallLimit())
                 .eq(entity.getQps() != null, AbilityApplyEntity::getQps, entity.getQps())
-                .notIn(entity.getUserId()==null, AbilityApplyEntity::getStatus, 4)
+                .notIn(entity.getUserId()==null, AbilityApplyEntity::getStatus, -1)
                 // 创建时间范围查询及关键字查询
                 .ge(Objects.nonNull(startTime), AbilityApplyEntity::getCreateTime, startTime)
                 .le(Objects.nonNull(endTime), AbilityApplyEntity::getCreateTime, endTime)

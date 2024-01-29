@@ -17,12 +17,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation = Propagation.REQUIRED)
 public class AbilityApplyServiceImpl extends ServiceImpl<AbilityApplyMapper, AbilityApplyEntity> implements AbilityApplyService {
 
-    @Override
-    public void saveAbilityApply(AbilityApplyVO applyVO) {
-        AbilityApplyEntity applyEntity = new AbilityApplyEntity();
-        BeanUtils.copyProperties(applyVO, applyEntity);
-        this.getBaseMapper().insert(applyEntity);
-
-    }
 
 }

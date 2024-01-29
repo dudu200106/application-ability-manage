@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.biz.AbilityApplyBizService;
@@ -17,15 +18,18 @@ import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.AbilityApplyService;
 import com.dsj.csp.manage.service.AbilityService;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -78,13 +82,8 @@ public class AbilityController {
     @Operation(summary = "审核能力注册", description = "审核能力注册申请")
     @PostMapping("/audit-login")
     public Result<?> auditAbility(@RequestBody AbilityAuditVO auditVO) {
-        LambdaUpdateWrapper<AbilityEntity> updateWrapper = Wrappers.lambdaUpdate();
-        updateWrapper.eq(AbilityEntity::getAbilityId, auditVO.getAbilityId());
-        updateWrapper.set(AbilityEntity::getStatus, auditVO.getFlag());
-        updateWrapper.set(AbilityEntity::getNote, auditVO.getNote());
-        updateWrapper.set(AbilityEntity::getUpdateTime, DateTime.now());
-        abilityService.update(updateWrapper);
-        return Result.success("审核完成！");
+        String msg = abilityBizService.auditAbility(auditVO);
+        return Result.success(msg);
     }
 
     @Operation(summary = "编辑注册的能力")
@@ -107,17 +106,6 @@ public class AbilityController {
         return Result.success(abilityApiBizService.getApiInfo(apiId));
     }
 
-    @Operation(summary = "查询申请的接口列表", description = "查询申请的接口列表")
-    @GetMapping("/query-apply-api")
-    public Result<?> queryApplyApiList(@Parameter(description = "能力申请ID") @RequestParam Long abilityApplyId) {
-        return Result.success(abilityApiBizService.getApplyApiList(abilityApplyId));
-    }
-
-    @Operation(summary = "查询能力的接口列表", description = "查询能力的接口列表")
-    @GetMapping("/query-api-list")
-    public Result<?> queryApiList(@Parameter(description = "能力ID") @RequestParam Long abilityId) {
-        return Result.success(abilityApiBizService.getAbilityApiList(abilityId));
-    }
 
     @Operation(summary = "分页查询接口列表", description = "查询接口分页列表")
     @PostMapping("/page-api")
@@ -152,8 +140,8 @@ public class AbilityController {
     @Operation(summary = "审核能力使用申请", description = "审核能力使用申请")
     @PostMapping("/audit-apply")
     public Result<?> auditAbilityApply(@RequestBody AbilityApplyAuditVO auditVO){
-        abilityApplyBizService.auditApply(auditVO);
-        return Result.success("审核完成!");
+        String  msg = abilityApplyBizService.auditApply(auditVO);
+        return Result.success(msg);
     }
 
     @Operation(summary = "分页查询申请能力列表", description = "分页查询申请能力列表")
@@ -247,6 +235,42 @@ public class AbilityController {
         List<Long> ids = Arrays.asList(apiIds.split(",")).stream().map(id -> Long.parseLong(id)).toList();
         Boolean delFlag = abilityApiService.removeBatchByIds(ids);
         return Result.success("删除能力完成! ", delFlag);
+    }
+
+//    @Operation(summary = "获取api信息分页")
+//    @GetMapping("page-api2")
+//    public Result<?> pageApiList(@Parameter(description = "用户ID") Long userId, @Parameter(description = "应用ID") Long appId,
+//                                 @Parameter(description = "能力ID") Long abilityId, @Parameter(description = "分页条数") int size,
+//                                 @Parameter(description = "当前页数") int current, @Parameter(description = "搜索关键字") String keyword,
+//                                 @Parameter(description = "开始时间") @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8") Date startTime,
+//                                 @Parameter(description = "结束时间") @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8") Date endTime) {
+//        AbilityApiQueryVO queryVO = new AbilityApiQueryVO(userId, appId, abilityId, size, current, keyword, startTime, endTime);
+//        return Result.success();
+//
+//    }
+
+    @Operation(summary = "查询申请的接口列表", description = "查询申请的接口列表")
+    @GetMapping("/query-apply-api")
+    public Result<?> queryApplyApiList(@Parameter(description = "能力申请ID") @RequestParam Long abilityApplyId) {
+        return Result.success(abilityApiBizService.getApplyApiList(abilityApplyId));
+    }
+
+    @Operation(summary = "查询能力的接口列表", description = "查询能力的接口列表")
+    @GetMapping("/query-api-list")
+    public Result<?> queryApiList(@Parameter(description = "能力ID") @RequestParam Long abilityId) {
+        return Result.success(abilityApiBizService.getAbilityApiList(abilityId));
+    }
+
+    @Operation(summary = "查询用户申请到的api列表")
+    @GetMapping("/query-user-apis")
+    public Result<?> queryUserApis(@Parameter(description = "用户ID") @RequestParam Long userId) {
+        return Result.success(abilityApiBizService.getUserApiList(userId));
+    }
+
+    @Operation(summary = "查询应用申请到的api列表")
+    @GetMapping("/query-app-apis")
+    public Result<?> queryAppApis(@Parameter(description = "应用ID") @RequestParam Long appId) {
+        return Result.success(abilityApiBizService.getAppApiList(appId));
     }
 
 }

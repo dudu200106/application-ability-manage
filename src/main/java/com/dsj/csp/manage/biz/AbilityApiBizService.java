@@ -27,9 +27,9 @@ public interface AbilityApiBizService {
     long countUserApplyApi(String userId);
 
     // 根据appId查询该应用下申请的所有接口
-    List<AbilityApiEntity> getAppApiList(Long appId);
+    List<AbilityApiVO> getAppApiList(Long appId);
 
     // 根据userId查询该用户
-    List<AbilityApiEntity> getUserApiList(Long userId);
+    List<AbilityApiVO> getUserApiList(Long userId);
 
 }

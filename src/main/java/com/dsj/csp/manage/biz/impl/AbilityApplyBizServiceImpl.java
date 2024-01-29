@@ -70,14 +70,19 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
     @Override
     public AbilityApplyDTO getApplyInfo(Long abilityApplyId) {
         AbilityApplyEntity apply = abilityApplyService.getById(abilityApplyId);
+        if (apply==null){
+            throw new BusinessException("能力申请记录不存在!!请核实你的能力申请");
+        }
+        // 查询申请的api接口列表
         String apiIds = abilityApplyService.getById(abilityApplyId).getApiIds();
         List<Long> idList = Arrays.asList(apiIds.split(",")).stream().map(e->Long.parseLong(e)).toList();
         List<AbilityApiEntity> apis = abilityApiService.listByIds(idList);
+        // 查询申请的能力、用户、应用信息
         AbilityEntity ability = abilityService.getById(apply.getAbilityId());
         UserApproveEntity userApprove = userApproveService.getById(apply.getUserId());
         ManageApplicationEntity app = manageApplicationService.getById(apply.getAppId());
-        AbilityApplyDTO resApply = new AbilityApplyDTO();
         //构造返回能力申请信息DTO
+        AbilityApplyDTO resApply = new AbilityApplyDTO();
         BeanUtil.copyProperties(apply, resApply,true);
         resApply.setAbilityName(ability==null ? null : ability.getAbilityName());
         resApply.setAbilityType(ability==null ? null : ability.getAbilityType());
@@ -90,7 +95,19 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
         return resApply;
     }
 
-    public void auditApply(AbilityApplyAuditVO auditVO) {
+    public String auditApply(AbilityApplyAuditVO auditVO) {
+        AbilityApplyEntity apply = abilityApplyService.getById(auditVO.getAbilityApplyId());
+        if (apply==null){
+            throw new BusinessException("审核失败! 请刷新页面后重试...");
+        }
+        // 审核流程限制: 状态(-1待提交 0待审核 1审核通过 2审核不通过 3已停用 )
+        if ((auditVO.getFlag() == -1 && apply.getStatus() != 0)
+                || (auditVO.getFlag() == 0 && apply.getStatus() != -1)
+                || (auditVO.getFlag() == 1 && apply.getStatus() != 0)
+                || (auditVO.getFlag() == 2 && apply.getStatus() != 0)
+                || (auditVO.getFlag() == 3 && apply.getStatus() != 1)) {
+            throw new BusinessException("审核失败! 请刷新页面后重试...");
+        }
         // 创建更新条件构造器
         LambdaUpdateWrapper<AbilityApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(AbilityApplyEntity::getAbilityApplyId, auditVO.getAbilityApplyId());
@@ -105,30 +122,36 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
         ManageApplicationEntity app = manageApplicationService.getById(appId);
         // 如果申请的appId不存在
         if (app == null){
-            return;
+            throw new BusinessException("审核失败! 申请能力的appId不存在!");
         }
         String appSecretKey =  app.getAppSecret();
         String appAppKey =  app.getAppSecret();
         // 如果审核结果不通过 或者应用的公钥私钥有一个不为空, 就不用生成密钥了
-        if (auditVO.getFlag() != 1
-                || (appSecretKey!=null && !"".equals(appSecretKey))
-                || (appAppKey!=null && !"".equals(appAppKey))){
-            return;
+        if (auditVO.getFlag() == 1
+                && (appSecretKey==null || "".equals(appSecretKey))
+                && (appAppKey==null || "".equals(appAppKey))){
+            Map<String, String> sm2Map = Sm2.sm2Test();
+            String appKey = sm2Map.get("publicEncode");
+            String secretKey = sm2Map.get("privateEncode");
+            Map<String, String> sm2Map2 = Sm2.sm2Test();
+            String wgKey = sm2Map2.get("publicEncode");
+            String wgSecre = sm2Map2.get("privateEncode");
+            LambdaUpdateWrapper<ManageApplicationEntity> appUpdateWrapper
+                    = Wrappers.lambdaUpdate(ManageApplicationEntity.class)
+                    .eq(ManageApplicationEntity::getAppId, appId)
+                    .set(ManageApplicationEntity::getAppKey, appKey)
+                    .set(ManageApplicationEntity::getAppSecret, secretKey)
+                    .set(ManageApplicationEntity::getAppWgKey, wgKey)
+                    .set(ManageApplicationEntity::getAppWgSecret, wgSecre);
+            manageApplicationService.update(appUpdateWrapper);
         }
-        Map<String, String> sm2Map = Sm2.sm2Test();
-        String appKey = sm2Map.get("publicEncode");
-        String secretKey = sm2Map.get("privateEncode");
-        Map<String, String> sm2Map2 = Sm2.sm2Test();
-        String wgKey = sm2Map2.get("publicEncode");
-        String wgSecre = sm2Map2.get("privateEncode");
-        LambdaUpdateWrapper<ManageApplicationEntity> appUpdateWrapper
-                = Wrappers.lambdaUpdate(ManageApplicationEntity.class)
-                .eq(ManageApplicationEntity::getAppId, appId)
-                .set(ManageApplicationEntity::getAppKey, appKey)
-                .set(ManageApplicationEntity::getAppSecret, secretKey)
-                .set(ManageApplicationEntity::getAppWgKey, wgKey)
-                .set(ManageApplicationEntity::getAppWgSecret, wgSecre);
-        manageApplicationService.update(appUpdateWrapper);
+        // 审核反馈信息
+        String auditMsg = auditVO.getFlag()==-1 ? "审核撤回完毕!" :
+                auditVO.getFlag()==0 ? "审核提交完毕, 等待审核..." :
+                        auditVO.getFlag()==1 ? "审核通过完毕!" :
+                                auditVO.getFlag()==2 ? "审核不通过完毕!." :
+                                        "停用完毕!";
+        return auditMsg;
     }
 
     @Override

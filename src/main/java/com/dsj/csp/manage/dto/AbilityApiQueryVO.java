@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.PageQuery;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
+import com.dsj.csp.manage.entity.AbilityApplyEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -83,7 +84,9 @@ public class AbilityApiQueryVO extends PageQuery<AbilityApiEntity> implements Se
                 .le(Objects.nonNull(endTime), AbilityApiEntity::getCreateTime, endTime)
                 .and(keyword!=null && !"".equals(keyword),
                         i -> i.like(AbilityApiEntity::getApiName, keyword)
-                );
+                )
+                // 排序
+                .orderByDesc(AbilityApiEntity::getCreateTime);
         return qw;
     }
 

@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.dto.AbilityApiQueryVO;
 import com.dsj.csp.manage.dto.AbilityApiVO;
@@ -63,11 +64,15 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     public void saveApi(AbilityApiVO apiVO) {
         // 插入能力基本信息
         AbilityApiEntity api = new AbilityApiEntity();
-        BeanUtil.copyProperties(apiVO, api, true);
-        Map<String, String> sm2Map = Sm2.sm2Test();
-        api.setPublicKey(sm2Map.get("publicEncode"));
-        api.setSecretKey(sm2Map.get("privateEncode"));
-        abilityApiService.save(api);
+        try{
+            BeanUtil.copyProperties(apiVO, api, true);
+            Map<String, String> sm2Map = Sm2.sm2Test();
+            api.setPublicKey(sm2Map.get("publicEncode"));
+            api.setSecretKey(sm2Map.get("privateEncode"));
+            abilityApiService.save(api);
+        }catch (Exception e){
+            throw new BusinessException("保存api信息出错! 可能存在的异常:输入的URL地址重名");
+        }
 
         // 插入接口的出参入参
         abilityApiReqService.saveReqList(apiVO.getReqList(), api.getApiId());
@@ -152,24 +157,10 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     @Override
-    public List<AbilityApiEntity> getAppApiList(Long appId) {
+    public List<AbilityApiVO> getAppApiList(Long appId) {
         List<String> apiIdsList = abilityApplyService.list(Wrappers.lambdaQuery(AbilityApplyEntity.class)
-                .eq(AbilityApplyEntity::getAppId, appId)
-                .select(AbilityApplyEntity::getApiIds))
-                .stream().map(e->e.getApiIds()).toList();
-        // 分割去重得到apiId集合
-        Set<Long> ids = new HashSet<>();
-        apiIdsList.forEach(apiIds ->{
-            ids.addAll(Arrays.asList(apiIds.split(",")).stream().map(e->Long.parseLong(e)).toList());
-        });
-        List<AbilityApiEntity> apis = abilityApiService.listByIds(ids);
-        return apis;
-    }
-
-    @Override
-    public List<AbilityApiEntity> getUserApiList(Long userId) {
-        List<String> apiIdsList = abilityApplyService.list(Wrappers.lambdaQuery(AbilityApplyEntity.class)
-                        .eq(AbilityApplyEntity::getUserId, userId)
+                        .eq(AbilityApplyEntity::getAppId, appId)
+                        .eq(AbilityApplyEntity::getStatus, 1)
                         .select(AbilityApplyEntity::getApiIds))
                 .stream().map(e->e.getApiIds()).toList();
         // 分割去重得到apiId集合
@@ -178,8 +169,54 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
             ids.addAll(Arrays.asList(apiIds.split(",")).stream().map(e->Long.parseLong(e)).toList());
         });
         List<AbilityApiEntity> apis = abilityApiService.listByIds(ids);
-        return apis;
+        // 查询api对应能力id集合, 并查出能力ID对应能力名称
+        Set<Long> abilityIds = apis.stream().map(e->e.getAbilityId()).collect(Collectors.toSet());
+        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
+                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
+                .in(AbilityEntity::getAbilityId, abilityIds));
+        // 构造能力ID与能力name映射, 方便查找
+        Map<Long, String> abilityMap = abilitys.stream().collect(Collectors.toMap(e->e.getAbilityId(), e-> e.getAbilityName()));
+        // 构造返回值
+        List<AbilityApiVO> apiVOs = apis.stream().map(api->{
+            AbilityApiVO apiVO = new AbilityApiVO();
+            BeanUtil.copyProperties(api, apiVO, true);
+            apiVO.setAbilityName(abilityMap.get(api.getAbilityId()));
+            return apiVO;
+        }).toList();
+        return apiVOs;
     }
+
+    @Override
+    public List<AbilityApiVO> getUserApiList(Long userId) {
+        List<String> apiIdsList = abilityApplyService.list(Wrappers.lambdaQuery(AbilityApplyEntity.class)
+                        .eq(AbilityApplyEntity::getUserId, userId)
+                        .eq(AbilityApplyEntity::getStatus, 1)
+                        .select(AbilityApplyEntity::getApiIds))
+                .stream().map(e->e.getApiIds()).toList();
+        // 分割去重得到apiId集合
+        Set<Long> ids = new HashSet<>();
+        apiIdsList.forEach(apiIds ->{
+            ids.addAll(Arrays.asList(apiIds.split(",")).stream().map(e->Long.parseLong(e)).toList());
+        });
+        List<AbilityApiEntity> apis = abilityApiService.listByIds(ids);
+        // 查询api对应能力id集合, 并查出能力ID对应能力名称
+        Set<Long> abilityIds = apis.stream().map(e->e.getAbilityId()).collect(Collectors.toSet());
+        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
+                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
+                .in(AbilityEntity::getAbilityId, abilityIds));
+        // 构造能力ID与能力name映射, 方便查找
+        Map<Long, String> abilityMap = abilitys.stream().collect(Collectors.toMap(e->e.getAbilityId(), e-> e.getAbilityName()));
+        // 构造返回值
+        List<AbilityApiVO> apiVOs = apis.stream().map(api->{
+            AbilityApiVO apiVO = new AbilityApiVO();
+            BeanUtil.copyProperties(api, apiVO, true);
+            apiVO.setAbilityName(abilityMap.get(api.getAbilityId()));
+            return apiVO;
+        }).toList();
+        return apiVOs;
+    }
+
+
 
 
     @Override

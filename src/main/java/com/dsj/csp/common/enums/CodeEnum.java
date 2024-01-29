@@ -15,7 +15,7 @@ public enum CodeEnum {
     SYSTEM_ERROR(500,"系统异常"),
     //业务异常
     TOKEN_ERROR(601,"登录状态过期,请重新登录"),
-    APPNAME(201,"应用名已存在")
+    APPNAME(611,"应用名已存在")
 
     ;
     private final Integer code;

@@ -32,7 +32,8 @@ public class AbilityApiQueryVO extends PageQuery<AbilityApiEntity> implements Se
      * 查询的实体
      */
     private AbilityApiEntity entity;
-//    private Long
+
+
     private Long abilityId;
     private Long appId;
     private Long userId;
@@ -84,7 +85,8 @@ public class AbilityApiQueryVO extends PageQuery<AbilityApiEntity> implements Se
                 .le(Objects.nonNull(endTime), AbilityApiEntity::getCreateTime, endTime)
                 .and(keyword!=null && !"".equals(keyword),
                         i -> i.like(AbilityApiEntity::getApiName, keyword)
-                )
+                                .like(AbilityApiEntity::getApiUrl, keyword)
+                                .like(AbilityApiEntity::getDescription, keyword))
                 // 排序
                 .orderByDesc(AbilityApiEntity::getCreateTime);
         return qw;

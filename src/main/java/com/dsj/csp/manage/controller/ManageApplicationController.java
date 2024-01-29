@@ -2,6 +2,8 @@ package com.dsj.csp.manage.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.Result;
+import com.dsj.csp.manage.biz.AbilityApiBizService;
+import com.dsj.csp.manage.biz.AbilityApplyBizService;
 import com.dsj.csp.manage.dto.ManageApplictionVo;
 import com.dsj.csp.manage.entity.ManageApplicationEntity;
 import com.dsj.csp.manage.service.ManageApplicationService;
@@ -9,10 +11,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Du Shun Chang
@@ -27,7 +32,8 @@ import java.util.List;
 public class ManageApplicationController {
     //    @Resource
     private final ManageApplicationService manageApplicationService;
-
+    @Autowired
+    private final AbilityApplyBizService abilityApplyBizService;
 
 
     /**
@@ -46,7 +52,7 @@ public class ManageApplicationController {
     @GetMapping("/selectPage")
     public Result<Page<ManageApplictionVo>> selectPage(@Parameter(description = "用户id") String appUserId, @Parameter(description = "查询关键字 Id或名称") String keyword, @Parameter(description = "开始时间") Date startTime, @Parameter(description = "结束时间") Date endTime, @Parameter int size, @Parameter int pages) {
 
-        return Result.success(manageApplicationService.selectPage(appUserId, keyword, startTime,endTime,pages,size));
+        return Result.success(manageApplicationService.selectPage(appUserId, keyword, startTime, endTime, pages, size));
 
     }
 
@@ -56,7 +62,6 @@ public class ManageApplicationController {
     @Operation(summary = "添加应用")
     @PostMapping("/addInfo")
     public Result<?> add(@RequestBody ManageApplicationEntity manageApplication) {
-
         return Result.success(manageApplicationService.saveApp(manageApplication));
     }
 
@@ -70,7 +75,7 @@ public class ManageApplicationController {
     @Operation(summary = "查询应用")
     @GetMapping("/selectappID")
     public Result selectappID(@Parameter(description = "appID") String appId, @Parameter(description = "用户Id") String appUserId) {
-        return Result.success(manageApplicationService.selectappID(appId,appUserId));
+        return Result.success(manageApplicationService.selectappID(appId, appUserId));
     }
 
 
@@ -84,8 +89,10 @@ public class ManageApplicationController {
     //统计个人应用总数
     @Operation(summary = "统计个人应用总数")
     @GetMapping("/countAppUser")
-    public Result<?> countAppUser(@Parameter String  appUserId) {
-    return  Result.success(manageApplicationService.countAppUser(appUserId));
+    public Result<?> countAppUser(@Parameter String appUserId) {
+        return Result.success(manageApplicationService.countAppUser(appUserId));
     }
+
+
 
 }

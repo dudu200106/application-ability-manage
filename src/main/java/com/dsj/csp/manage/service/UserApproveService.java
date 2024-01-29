@@ -2,9 +2,9 @@ package com.dsj.csp.manage.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.UserApproveEntity;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Date;
 
@@ -19,10 +19,17 @@ public interface UserApproveService extends IService<UserApproveEntity> {
      */
     //用户申请实名认证
     String approve(UserApproveEntity user,String accessToken);
+    //回显用户信息到前端
+    UserApproveEntity echo(String accessToken);
+
+    //用户修改实名认证信息
+
     //远程调用用户接口，根据token识别用户
-//    UserApproveEntity identify(String accessToken);
+//    UserApproveRequest identify(String accessToken);
     //远程调用用户实名状态更新接口
     void approveFeign(String userId,Integer status);
+    //用户修改密码
+//    Result<Boolean> updatePassword(String password, String newPassword, String newPassword2, String accessToken);
 
     /**
      * 管理员实名认证审核模块

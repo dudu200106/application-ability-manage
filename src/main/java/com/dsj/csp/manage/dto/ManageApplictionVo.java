@@ -1,5 +1,7 @@
 package com.dsj.csp.manage.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,7 +18,7 @@ public class ManageApplictionVo implements Serializable {
     /**
      * 用户id
      */
-
+    @JsonSerialize(using = ToStringSerializer.class)
     private String userId;
     /**
      * 用户名称
@@ -66,6 +68,10 @@ public class ManageApplictionVo implements Serializable {
     private  Long apptime;
 
     private String appUserId;
+
+
+    private Long abilityApplyId;
+
 
 
 

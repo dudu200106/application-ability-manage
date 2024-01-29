@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.dsj.csp.manage.dto.AbilityApplyDTO;
 import com.dsj.csp.manage.entity.ManageApplicationEntity;
 import com.github.yulichang.base.MPJBaseMapper;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;

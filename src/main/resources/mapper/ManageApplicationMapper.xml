@@ -5,7 +5,7 @@
 <mapper namespace="com.dsj.csp.manage.mapper.ManageApplicationMapper">
 
     <resultMap id="BaseResultMap" type="com.dsj.csp.manage.entity.ManageApplicationEntity">
-        <id property="appId" column="YY_ID" jdbcType="VARCHAR"/>
+        <id property="appId" column="YY_ID" jdbcType="BIGINT"/>
         <result property="appName" column="YY_MC" jdbcType="VARCHAR"/>
         <result property="appSynopsis" column="YY_MC" jdbcType="VARCHAR"/>
         <result property="appAbility" column="YY_NLBD" jdbcType="VARCHAR"/>

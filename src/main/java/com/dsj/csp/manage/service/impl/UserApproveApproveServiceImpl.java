@@ -5,10 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.dsj.common.dto.Result;
 import com.dsj.csp.common.api.rpc.RpcUserApi;
-import com.dsj.csp.common.constant.AccountLoginWay;
-import com.dsj.csp.common.dto.UserChangePasswordDTO;
 import com.dsj.csp.common.dto.UserSmztDTO;
 import com.dsj.csp.common.enums.CodeEnum;
 import com.dsj.csp.common.enums.UserStatusEnum;
@@ -104,7 +101,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
             if (status.equals(UserStatusEnum.NOAPPROVE.getStatus()) || status.equals(UserStatusEnum.SUCCESS.getStatus()) || status.equals(UserStatusEnum.FAIL.getStatus())) {
                 approveFeign(user2.getUserId(), UserStatusEnum.WAIT.getStatus());
                 user.setStatus(UserStatusEnum.WAIT.getStatus());
-                user.setNote(null);
+                user.setNote("审核中");
                 user.setCreateTime(new Date());
                 baseMapper.updateById(user);
                 return "实名认证已提交，请等待管理员审核";

@@ -7,7 +7,4 @@ import com.dsj.csp.manage.entity.AbilityApplyEntity;
 
 public interface AbilityApplyService extends IService<AbilityApplyEntity> {
 
-    // 保存能力使用申请
-    void saveAbilityApply(AbilityApplyVO applyVO);
-
 }

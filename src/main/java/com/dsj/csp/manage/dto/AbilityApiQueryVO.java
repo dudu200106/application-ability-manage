@@ -4,20 +4,38 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.PageQuery;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
+import com.dsj.csp.manage.entity.AbilityApplyEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 import java.util.Objects;
 
 @Data
 public class AbilityApiQueryVO extends PageQuery<AbilityApiEntity> implements Serializable {
+    public AbilityApiQueryVO(){
+    }
+
+    public AbilityApiQueryVO(Long userId, Long appId, Long abilityId, int size, int current, String keyword, Date startTime, Date endTime) {
+        super.setSize(size);
+        super.setCurrent(current);
+        this.appId = appId;
+        this.userId = userId;
+        this.abilityId = abilityId;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.keyword = keyword;
+    }
 
     /**
      * 查询的实体
      */
     private AbilityApiEntity entity;
+//    private Long
+    private Long abilityId;
+    private Long appId;
+    private Long userId;
 
     /**
      * 创建时间范围--开始时间
@@ -66,7 +84,9 @@ public class AbilityApiQueryVO extends PageQuery<AbilityApiEntity> implements Se
                 .le(Objects.nonNull(endTime), AbilityApiEntity::getCreateTime, endTime)
                 .and(keyword!=null && !"".equals(keyword),
                         i -> i.like(AbilityApiEntity::getApiName, keyword)
-                );
+                )
+                // 排序
+                .orderByDesc(AbilityApiEntity::getCreateTime);
         return qw;
     }
 

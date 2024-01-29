@@ -14,8 +14,12 @@ public interface AbilityApplyBizService {
     // 查询申请能力信息
     AbilityApplyDTO getApplyInfo(Long abilityApplyId);
 
-    // 审核能力申请
-    void auditApply(AbilityApplyAuditVO auditVO);
+    /**
+     *  审核能力申请
+     * @param auditVO
+     * @return 审核反馈信息
+     */
+    String auditApply(AbilityApplyAuditVO auditVO);
 
     Page pageApply(AbilityApplyQueryVO applyQueryVO);
 }

@@ -4,7 +4,6 @@ import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.entity.UserApproveEntity;
 import com.dsj.csp.manage.service.UserApproveService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -24,5 +23,11 @@ public class UserApproveController {
     @PostMapping("/approve")
     public Result<?> approve(@RequestBody UserApproveEntity user,@RequestHeader("accessToken") String accessToken){
         return Result.success(userApproveService.approve(user,accessToken));
+    }
+
+    @Operation(summary = "用户修改密码")
+    @PostMapping("/updatePassword")
+    public Result<?> updatePassword(String password,String newPassword,@RequestHeader("accessToken") String accessToken){
+        return Result.success(userApproveService.updatePassword(password,newPassword,accessToken));
     }
 }

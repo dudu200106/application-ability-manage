@@ -31,4 +31,9 @@ public interface ManageApplicationService extends IService<ManageApplicationEnti
 
     Page<ManageApplictionVo> selectPage(String appUserId, String keyword, Date startTime, Date endTime, int pages, int size);
 
+
+
+
+//    AbilityApplyDTO getApplyInfos(Long abilityApplyId);
+
 }

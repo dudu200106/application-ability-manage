@@ -68,6 +68,10 @@ public class ManageApplictionVo implements Serializable {
     private String appUserId;
 
 
+    private Long abilityApplyId;
+
+
+
 
 
 }

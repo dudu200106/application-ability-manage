@@ -28,4 +28,5 @@ public class GlobalExceptionHandler {
         Result result = new Result(CodeEnum.SYSTEM_ERROR.getCode(),false,CodeEnum.SYSTEM_ERROR.getMessage(), null);
         return result;
     }
+
 }

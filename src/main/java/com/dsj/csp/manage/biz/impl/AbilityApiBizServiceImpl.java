@@ -152,6 +152,37 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     @Override
+    public List<AbilityApiEntity> getAppApiList(Long appId) {
+        List<String> apiIdsList = abilityApplyService.list(Wrappers.lambdaQuery(AbilityApplyEntity.class)
+                .eq(AbilityApplyEntity::getAppId, appId)
+                .select(AbilityApplyEntity::getApiIds))
+                .stream().map(e->e.getApiIds()).toList();
+        // 分割去重得到apiId集合
+        Set<Long> ids = new HashSet<>();
+        apiIdsList.forEach(apiIds ->{
+            ids.addAll(Arrays.asList(apiIds.split(",")).stream().map(e->Long.parseLong(e)).toList());
+        });
+        List<AbilityApiEntity> apis = abilityApiService.listByIds(ids);
+        return apis;
+    }
+
+    @Override
+    public List<AbilityApiEntity> getUserApiList(Long userId) {
+        List<String> apiIdsList = abilityApplyService.list(Wrappers.lambdaQuery(AbilityApplyEntity.class)
+                        .eq(AbilityApplyEntity::getUserId, userId)
+                        .select(AbilityApplyEntity::getApiIds))
+                .stream().map(e->e.getApiIds()).toList();
+        // 分割去重得到apiId集合
+        Set<Long> ids = new HashSet<>();
+        apiIdsList.forEach(apiIds ->{
+            ids.addAll(Arrays.asList(apiIds.split(",")).stream().map(e->Long.parseLong(e)).toList());
+        });
+        List<AbilityApiEntity> apis = abilityApiService.listByIds(ids);
+        return apis;
+    }
+
+
+    @Override
     public long countUserApplyApi(String userId) {
         List<AbilityApplyEntity> applyEntities = abilityApplyService.list(Wrappers.lambdaQuery(AbilityApplyEntity.class)
                 .eq(AbilityApplyEntity::getUserId, Long.parseLong(userId))

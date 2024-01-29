@@ -29,23 +29,8 @@ public class AbilityApplyVO implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long userId;
 
-    @Schema(description = "能力名称", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String abilityName;
-
-    @Schema(description = "能力类型")
-    private String abilityType;
-
-    @Schema(description = "应用名称")
-    private String appName;
-
     @Schema(description = "申请使用的接口列表", requiredMode = Schema.RequiredMode.REQUIRED)
     private String apiIds;
-
-    @Schema(description = "公司名称")
-    private String companyName;
-
-    @Schema(description = "政府名称")
-    private String govName;
 
     @Schema(description = "申请说明")
     private String illustrate;

@@ -48,7 +48,8 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
         AbilityApplyEntity applyEntity = new AbilityApplyEntity();
         BeanUtil.copyProperties(applyVO, applyEntity, true);
         // TODO 因实名认证页面还没做, 暂时取消一下记录操作, 直接存储绑定记录
-        // 1.获取应用名称/用户ID
+        //以下信息直接存入能力申请记录信息数据库, 方便查询
+//        // 1.获取应用名称/用户ID
 //        ManageApplicationEntity app = manageApplicationService.getById(applyVO.getAppId());
 //        applyEntity.setAppName(app.getAppName());
 //        applyEntity.setUserId(Long.parseLong(app.getAppUserId()));

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.biz.AbilityApplyBizService;
@@ -17,15 +18,18 @@ import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.AbilityApplyService;
 import com.dsj.csp.manage.service.AbilityService;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -248,5 +252,20 @@ public class AbilityController {
         Boolean delFlag = abilityApiService.removeBatchByIds(ids);
         return Result.success("删除能力完成! ", delFlag);
     }
+
+//    @Operation(summary = "获取api信息分页")
+//    @GetMapping("page-api2")
+//    public Result<?> pageApiList(@Parameter(description = "用户ID") Long userId, @Parameter(description = "应用ID") Long appId,
+//                                 @Parameter(description = "能力ID") Long abilityId, @Parameter(description = "分页条数") int size,
+//                                 @Parameter(description = "当前页数") int current, @Parameter(description = "搜索关键字") String keyword,
+//                                 @Parameter(description = "开始时间") @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8") Date startTime,
+//                                 @Parameter(description = "结束时间") @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8") Date endTime) {
+//        AbilityApiQueryVO queryVO = new AbilityApiQueryVO(userId, appId, abilityId, size, current, keyword, startTime, endTime);
+//        LambdaQueryWrapper queryWrapper = queryVO.getQueryWrapper().lambda();
+//        abilityApiService.page(new Page<>(size, current), );
+//        return Result.success();
+//
+//    }
+
 
 }

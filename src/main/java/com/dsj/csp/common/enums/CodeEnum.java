@@ -16,7 +16,7 @@ public enum CodeEnum {
     //业务异常
     TOKEN_ERROR(601,"登录状态过期,请重新登录"),
     APPNAME(611,"应用名已存在"),
-    Img_ERROR(612,"图片破损")
+    Img_ERROR(612,"图片已破损,请重新上传")
 
     ;
     private final Integer code;

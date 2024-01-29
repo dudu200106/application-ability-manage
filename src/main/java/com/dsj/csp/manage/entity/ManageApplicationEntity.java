@@ -7,8 +7,10 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 /**
  * 应用列表
@@ -21,6 +23,7 @@ public class ManageApplicationEntity implements Serializable {
     /**
      * id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     @TableId(value = "YY_ID")
     @Schema(description = "appID数据库id")
     private String  appId;

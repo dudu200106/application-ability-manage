@@ -25,9 +25,15 @@ public class UserApproveController {
         return Result.success(userApproveService.approve(user,accessToken));
     }
 
-    @Operation(summary = "用户修改密码")
-    @PostMapping("/updatePassword")
-    public Result<?> updatePassword(String password,String newPassword,@RequestHeader("accessToken") String accessToken){
-        return Result.success(userApproveService.updatePassword(password,newPassword,accessToken));
+    @Operation(summary = "根据ID回显用户信息/")
+    @GetMapping("/echo")
+    public Result<?> echo(@RequestHeader("accessToken") String accessToken){
+        return Result.success(userApproveService.echo(accessToken));
     }
+
+//    @Operation(summary = "用户修改密码")
+//    @PostMapping("/updatePassword")
+//    public Result<?> updatePassword(String password,String newPassword,String newPassword2,@RequestHeader("accessToken") String accessToken){
+//        return Result.success(userApproveService.updatePassword(password,newPassword,newPassword2,accessToken));
+//    }
 }

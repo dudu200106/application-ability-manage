@@ -14,7 +14,11 @@ public enum CodeEnum {
     //业务异常
     SYSTEM_ERROR(500,"系统异常"),
     //业务异常
-    TOKEN_ERROR(601,"登录状态过期,请重新登录")
+    TOKEN_ERROR(601,"登录状态过期,请重新登录"),
+    //重复提交异常
+    APPROVE_ERROR(602,"正在审核中，不可重复提交实名认证申请"),
+    //更新异常
+    UPDATE_ERROR(603,"更新失败")
     ;
     private final Integer code;
     private final String message;

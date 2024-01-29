@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
@@ -58,6 +57,8 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
             userApproveRequest.setUserName(dataJson.getString("name"));
             userApproveRequest.setStatus(Integer.valueOf(dataJson.getString("smzt")));
             userApproveRequest.setPhone(dataJson.getString("phone"));
+            userApproveRequest.setLoginWay(dataJson.getString("loginWays"));
+            userApproveRequest.setLoginName(dataJson.getString("loginName"));
             return userApproveRequest;
         } catch (Exception e) {
             throw new FlowException(CodeEnum.TOKEN_ERROR);
@@ -100,7 +101,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         UserApproveEntity userApproveEntity = baseMapper.selectById(user);
         if (userApproveEntity != null) {
             Integer status = user2.getStatus();
-            if (status.equals(UserStatusEnum.NOAPPROVE.getStatus()) || status.equals(UserStatusEnum.FAIL.getStatus())) {
+            if (status.equals(UserStatusEnum.NOAPPROVE.getStatus()) || status.equals(UserStatusEnum.SUCCESS.getStatus()) ||status.equals(UserStatusEnum.FAIL.getStatus())) {
                 approveFeign(user2.getUserId(), UserStatusEnum.WAIT.getStatus());
                 user.setStatus(UserStatusEnum.WAIT.getStatus());
                 user.setNote(null);

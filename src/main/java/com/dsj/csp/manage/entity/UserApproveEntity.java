@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.dsj.csp.common.util.annotation.NotBlankOrWhitespace;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -65,7 +66,7 @@ public class UserApproveEntity implements Serializable {
      */
     @TableField(value = "QY_MC")
     @Schema(description = "企业名称")
-    @NotBlank(message = "企业名称不能为空")
+    @NotBlankOrWhitespace(message = "企业名称不能为空")
     private String companyName;
 
     /**
@@ -73,7 +74,7 @@ public class UserApproveEntity implements Serializable {
      */
     @TableField(value = "QY_ZCH")
     @Schema(description = "企业营业执照注册号")
-    @NotBlank(message = "营业执照注册号不能为空")
+    @NotBlankOrWhitespace(message = "营业执照注册号不能为空")
     private String companyNum;
 
     /**
@@ -81,7 +82,7 @@ public class UserApproveEntity implements Serializable {
      */
     @TableField(value = "QY_FDDBR")
     @Schema(description = "企业法定代表人")
-    @NotBlank(message = "企业法定代表人不能为空")
+    @NotBlankOrWhitespace(message = "企业法定代表人不能为空")
     private String companyRepresent;
 
     /**
@@ -89,7 +90,7 @@ public class UserApproveEntity implements Serializable {
      */
     @TableField(value = "QY_TP")
     @Schema(description = "企业营业执照扫描件")
-    @NotBlank(message = "企业营业执照扫描件不能为空")
+    @NotBlankOrWhitespace(message = "企业营业执照扫描件不能为空")
     private String companyImage;
 
     /**
@@ -97,7 +98,7 @@ public class UserApproveEntity implements Serializable {
      */
     @TableField(value = "SQH")
     @Schema(description = "政府授权函")
-    @NotBlank(message = "政府授权函不能为空")
+    @NotBlankOrWhitespace(message = "政府授权函不能为空")
     private String authorization;
 
     /**
@@ -105,7 +106,7 @@ public class UserApproveEntity implements Serializable {
      */
     @TableField(value = "QY_LXRXM")
     @Schema(description = "企业联系人姓名")
-    @NotBlank(message = "企业联系人姓名不能为空")
+    @NotBlankOrWhitespace(message = "企业联系人姓名不能为空")
     private String companyUser;
 
     /**
@@ -113,7 +114,7 @@ public class UserApproveEntity implements Serializable {
      */
     @TableField(value = "QY_SFZH")
     @Schema(description = "企业联系人身份证号")
-    @NotBlank(message = "企业联系人身份证号不能为空")
+    @NotBlankOrWhitespace(message = "企业联系人身份证号不能为空")
     private String companyIdnum;
 
     /**
@@ -121,7 +122,7 @@ public class UserApproveEntity implements Serializable {
      */
     @TableField(value = "QY_DHHM")
     @Schema(description = "企业联系人手机号码")
-    @NotBlank(message = "企业联系人手机号码不能为空")
+    @NotBlankOrWhitespace(message = "企业联系人手机号码不能为空")
     private String companyPhone;
 
     /**

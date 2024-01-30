@@ -136,11 +136,11 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     }
 
     @Override
-    public Page<AbilityApiApplyDTO> pageApply(Long appId, String userId, Long abilityId, String keyword, Date startTime, Date endTime,  int current, int size) {
-        // 分页获取基本申请信息, 后续会继续查询、插入必要的关联信息
+    public Page<AbilityApiApplyDTO> pageApply(Long appId, Long userId, Long abilityId, String keyword, Date startTime, Date endTime,  int current, int size) {
+        // 分页条件构造器
         LambdaQueryWrapper<AbilityApiApplyEntity> qw = Wrappers.lambdaQuery();
-        qw.eq(appId != null, AbilityApiApplyEntity::getApiId, appId)
-                .eq(userId != null, AbilityApiApplyEntity::getAbilityId, userId)
+        qw.eq(appId != null, AbilityApiApplyEntity::getAppId, appId)
+                .eq(userId != null, AbilityApiApplyEntity::getUserId, userId)
                 .eq(abilityId != null, AbilityApiApplyEntity::getAbilityId, abilityId)
                 .ge(Objects.nonNull(startTime), AbilityApiApplyEntity::getCreateTime, startTime)
                 .le(Objects.nonNull(endTime), AbilityApiApplyEntity::getCreateTime, endTime)
@@ -153,13 +153,13 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                 .orderByDesc(AbilityApiApplyEntity::getUpdateTime)
                 .orderByAsc(AbilityApiApplyEntity::getStatus);
 
-        // 构造分页
+        // 主表分页, 并单表查询从表信息, 构造分页返回结果
         Page prePage = abilityApiApplyService.page(new Page<>(current, size), qw);
         if (prePage.getTotal()==0){
             return prePage;
         }
         List<AbilityApiApplyEntity> records = prePage.getRecords();
-        // 用户表 过userId查出企业/政府名称
+        // 用户表 查出企业/政府名称
         Set<Long> userIds = records.stream().map(e->e.getUserId()).collect(Collectors.toSet());
         List<UserApproveEntity> users = userApproveService.list(Wrappers.lambdaQuery(UserApproveEntity.class)
                 .select(UserApproveEntity::getUserId, UserApproveEntity::getCompanyName, UserApproveEntity::getGovName)

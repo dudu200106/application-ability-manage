@@ -63,105 +63,195 @@ public class GenericExceptionHandler {
         return result;
     }
 
-    //处理数据格式异常
+    /**
+     * 处理数据格式异常
+     * @param req
+     * @param resp
+     * @param e
+     * @return
+     */
     @ExceptionHandler(BindException.class)
     public Result bind(HttpServletRequest req, HttpServletResponse resp, BindException e){
         Result result = new Result(CodeEnum.BIND_ERROR.getCode(),false,CodeEnum.BIND_ERROR.getMessage(), null);
         return result;
     }
 
-    //缺少参数异常
+    /**
+     * 缺少参数异常
+     * @param req
+     * @param resp
+     * @param e
+     * @return
+     */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public Result missingServletRequestParameter(HttpServletRequest req, HttpServletResponse resp, MissingServletRequestParameterException e){
         Result result = new Result(CodeEnum.MISSING_SERVLET_REQUEST_PARAMETER_ERROR.getCode(),false,CodeEnum.MISSING_SERVLET_REQUEST_PARAMETER_ERROR.getMessage(), null);
         return result;
     }
 
-    //数据验证未通过
+    /**
+     * 数据验证未通过
+     * @param req
+     * @param resp
+     * @param e
+     * @return
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Result methodArgumentNotValid(HttpServletRequest req, HttpServletResponse resp, MethodArgumentNotValidException e){
         Result result = new Result(CodeEnum.METHOD_ARGUMENT_NOT_VALID_ERROR.getCode(),false,CodeEnum.METHOD_ARGUMENT_NOT_VALID_ERROR.getMessage(), null);
         return result;
     }
 
-    //参数错误异常
+    /**
+     * 参数错误异常
+     * @param req
+     * @param resp
+     * @param e
+     * @return
+     */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public Result httpMessageNotReadable(HttpServletRequest req, HttpServletResponse resp, HttpMessageNotReadableException e){
         Result result = new Result(CodeEnum.HTTP_MESSAGE_NOT_READABLE_ERROR.getCode(),false,CodeEnum.HTTP_MESSAGE_NOT_READABLE_ERROR.getMessage(), null);
         return result;
     }
 
-    //非法参数异常
+    /**
+     * 非法参数异常
+     * @param req
+     * @param resp
+     * @param e
+     * @return
+     */
     @ExceptionHandler(IllegalArgumentException.class)
     public Result illegalArgument(HttpServletRequest req, HttpServletResponse resp, IllegalArgumentException e){
         Result result = new Result(CodeEnum.ILLEGAL_ARGUEMENT_ERROR.getCode(),false,CodeEnum.ILLEGAL_ARGUEMENT_ERROR.getMessage(), null);
         return result;
     }
 
-    //入参异常
+    /**
+     * 入参异常
+     * @param req
+     * @param resp
+     * @param e
+     * @return
+     */
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public Result httpMediaTypeNotSupported(HttpServletRequest req, HttpServletResponse resp, HttpMediaTypeNotSupportedException e){
         Result result = new Result(CodeEnum.HTTP_MEDIA_TYPE_NOT_SUPPORTED_ERROR.getCode(),false,CodeEnum.HTTP_MEDIA_TYPE_NOT_SUPPORTED_ERROR.getMessage(), null);
         return result;
     }
 
-    //服务器异常,数据库数据异常
+    /**
+     * 服务器异常,数据库数据异常
+     * @param req
+     * @param resp
+     * @param e
+     * @return
+     */
     @ExceptionHandler(DuplicateKeyException.class)
     public Result duplicateKey(HttpServletRequest req, HttpServletResponse resp, DuplicateKeyException e){
         Result result = new Result(CodeEnum.DUPLICATE_KEY_ERROR.getCode(),false,CodeEnum.DUPLICATE_KEY_ERROR.getMessage(), null);
         return result;
     }
 
-    //服务器异常
+    /**
+     * 服务器异常
+     * @param req
+     * @param resp
+     * @param e
+     * @return
+     */
     @ExceptionHandler(SpelEvaluationException.class)
     public Result spelEvaluation(HttpServletRequest req, HttpServletResponse resp, SpelEvaluationException e){
         Result result = new Result(CodeEnum.SPEL_EVALUATION_ERROR.getCode(),false,CodeEnum.SPEL_EVALUATION_ERROR.getMessage(), null);
         return result;
     }
 
-    //服务器异常
+    /**
+     * 服务器异常
+     * @param req
+     * @param resp
+     * @param e
+     * @return
+     */
     @ExceptionHandler(NullPointerException.class)
     public Result nullPointer(HttpServletRequest req, HttpServletResponse resp, NullPointerException e){
         Result result = new Result(CodeEnum.NULL_POINTER_ERROR.getCode(),false,CodeEnum.NULL_POINTER_ERROR.getMessage(), null);
         return result;
     }
 
-    //服远程调用异常
+    /**
+     * 服远程调用异常
+     * @param req
+     * @param resp
+     * @param e
+     * @return
+     */
     @ExceptionHandler(RemoteException.class)
     public Result remoteError(HttpServletRequest req, HttpServletResponse resp, RemoteException e){
         Result result = new Result(CodeEnum.REMOTE_ERROR.getCode(),false,CodeEnum.REMOTE_ERROR.getMessage(), null);
         return result;
     }
 
-    //入参异常
+    /**
+     * 入参异常
+     * @param req
+     * @param resp
+     * @param e
+     * @return
+     */
     @ExceptionHandler(IllegalStateException.class)
     public Result illegalState(HttpServletRequest req, HttpServletResponse resp, IllegalStateException e){
         Result result = new Result(CodeEnum.ILLEGAL_STATE_ERROR.getCode(),false,CodeEnum.ILLEGAL_STATE_ERROR.getMessage(), null);
         return result;
     }
 
-    //入参异常
+    /**
+     * 入参异常
+     * @param req
+     * @param resp
+     * @param e
+     * @return
+     */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public Result methodArgumentTypeMismatch(HttpServletRequest req, HttpServletResponse resp, MethodArgumentTypeMismatchException e){
         Result result = new Result(CodeEnum.METHOD_ARGUMENT_TYPE_MISMATCH_ERROR.getCode(),false,CodeEnum.METHOD_ARGUMENT_TYPE_MISMATCH_ERROR.getMessage(), null);
         return result;
     }
 
-    //入参异常
+    /**
+     * 入参异常
+     * @param req
+     * @param resp
+     * @param e
+     * @return
+     */
     @ExceptionHandler(UnsupportedEncodingException.class)
     public Result unsupportedEncoding(HttpServletRequest req, HttpServletResponse resp, UnsupportedEncodingException e){
         Result result = new Result(CodeEnum.UNSUPPORTED_ENCODING_ERROR.getCode(),false,CodeEnum.UNSUPPORTED_ENCODING_ERROR.getMessage(), null);
         return result;
     }
 
-    //    运行异常
+    /**
+     * 运行异常
+     * @param req
+     * @param resp
+     * @param e
+     * @return
+     */
     @ExceptionHandler(RuntimeException.class)
     public Result runtimeError(HttpServletRequest req, HttpServletResponse resp, RuntimeException e){
         Result result = new Result(CodeEnum.RUNTIME_ERROR.getCode(),false,CodeEnum.RUNTIME_ERROR.getMessage(), null);
         return result;
     }
 
-    //处理系统异常
+    /**
+     * 处理系统异常
+     * @param req
+     * @param resp
+     * @param e
+     * @return
+     */
     @ExceptionHandler(Exception.class)
     public Result systemExceptionHandler(HttpServletRequest req, HttpServletResponse resp, Exception e){
         e.printStackTrace();

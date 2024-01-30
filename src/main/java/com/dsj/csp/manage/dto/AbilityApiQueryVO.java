@@ -20,7 +20,6 @@ public class AbilityApiQueryVO implements Serializable {
      * 查询的实体
      */
     private AbilityApiEntity entity;
-
     private long current;
     private long size;
 
@@ -49,9 +48,6 @@ public class AbilityApiQueryVO implements Serializable {
                     .eq(entity.getApiId() != null, AbilityApiEntity::getApiId, entity.getApiId())
                     .eq(entity.getAbilityId() != null, AbilityApiEntity::getAbilityId, entity.getAbilityId())
                     .eq(entity.getApiName() != null, AbilityApiEntity::getApiName, entity.getApiName())
-                    .eq(entity.getDescription() != null, AbilityApiEntity::getDescription, entity.getDescription())
-                    .eq(entity.getRecallLimit() != null, AbilityApiEntity::getRecallLimit, entity.getRecallLimit())
-                    .eq(entity.getQps() != null, AbilityApiEntity::getQps, entity.getQps())
                     .eq(entity.getRespFormat() != null, AbilityApiEntity::getRespFormat, entity.getRespFormat())
                     .eq(entity.getProtocol() != null, AbilityApiEntity::getProtocol, entity.getProtocol())
                     .eq(entity.getApiHost() != null, AbilityApiEntity::getApiHost, entity.getApiHost())
@@ -61,10 +57,8 @@ public class AbilityApiQueryVO implements Serializable {
                     .eq(entity.getUpdateTime() != null, AbilityApiEntity::getUpdateTime, entity.getUpdateTime())
                     .eq(entity.getPublicKey() != null, AbilityApiEntity::getPublicKey, entity.getPublicKey())
                     .eq(entity.getSecretKey() != null, AbilityApiEntity::getSecretKey, entity.getSecretKey())
-                    .eq(entity.getReqMethod() != null, AbilityApiEntity::getReqMethod, entity.getReqMethod())
-                    .eq(entity.getReqDemo() != null, AbilityApiEntity::getReqDemo, entity.getReqDemo())
-                    .eq(entity.getRespDemo() != null, AbilityApiEntity::getRespDemo, entity.getRespDemo())
-                    .eq(entity.getRespStatusCode() != null, AbilityApiEntity::getRespStatusCode, entity.getRespStatusCode());
+                    .eq(entity.getReqMethod() != null, AbilityApiEntity::getReqMethod, entity.getReqMethod());
+
         }
         qw.lambda()
                 .ge(Objects.nonNull(startTime), AbilityApiEntity::getCreateTime, startTime)

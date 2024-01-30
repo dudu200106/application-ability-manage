@@ -15,10 +15,5 @@ public interface AbilityBizService {
 
     Boolean removeAbilityByIds(String abilityId);
 
-    // 统计用户申请的能力数
-    long countUserApplyAbility(String userId);
-
-    // 审核能力注册
-    String auditAbility(AbilityAuditVO auditVO);
 
 }

@@ -86,7 +86,7 @@ public class AbilityController {
     @Operation(summary = "审核能力注册", description = "审核能力注册申请")
     @PostMapping("/audit-login")
     public Result<?> auditAbility(@RequestBody AbilityAuditVO auditVO) {
-        String msg = abilityBizService.auditAbility(auditVO);
+        String msg = abilityService.auditAbility(auditVO);
         return Result.success(msg);
     }
 
@@ -178,13 +178,13 @@ public class AbilityController {
     @Operation(summary = "统计用户能力数量")
     @GetMapping("/count-user-ability")
     public Result<?> countuserAbility(String userId){
-        return Result.success(abilityBizService.countUserApplyAbility(userId));
+        return Result.success(abilityApplyService.countUserApplyAbility(userId));
     }
 
     @Operation(summary = "统计用户接口数量")
     @GetMapping("/count-user-api")
     public Result<?> countUserApi(String userId){
-        return Result.success(abilityApiBizService.countUserApplyApi(userId));
+        return Result.success(abilityApplyService.countUserApplyApi(userId));
     }
 
 
@@ -298,10 +298,12 @@ public class AbilityController {
     }
 
     @Operation(summary = "分页查询接口申请列表", description = "分页查询接口申请列表")
-    @PostMapping("/page-api-apply")
-    public Result<?> pageApiApply(
-            @Valid @RequestBody AbilityApplyQueryVO abilityApplyQueryVO) {
-        return Result.success(abilityApplyBizService.pageApply(abilityApplyQueryVO));
+    @GetMapping("/page-api-apply")
+    public Result<?> pageApiApply(@Parameter(description = "用户ID") Long userId, @Parameter(description = "应用ID") Long appId,
+                                  @Parameter(description = "能力ID") Long abilityId, @Parameter(description = "分页条数") int size,
+                                  @Parameter(description = "当前页数") int current, @Parameter(description = "搜索关键字") String keyword,
+                                  @Parameter(description = "开始时间") Date startTime, @Parameter(description = "结束时间") Date endTime) {
+        return Result.success(abilityApiApplyBizService.pageApply(appId, userId, abilityId, keyword, startTime, endTime, current, size));
     }
 
     @Operation(summary = "编辑能力使用申请", description = "编辑能力使用申请")

@@ -6,7 +6,9 @@ import com.dsj.csp.manage.dto.AbilityApiVO;
 import com.dsj.csp.manage.dto.AbilityApplyDTO;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public interface AbilityApiBizService {
     List<String> getApiList(String appCode);
@@ -31,5 +33,10 @@ public interface AbilityApiBizService {
 
     // 根据userId查询该用户
     List<AbilityApiVO> getUserApiList(Long userId);
+
+    // 返回可用api接口Id
+    Set<Long> getApiIds(Long userId, Long appId, Long abilityId, String keyword);
+
+    Page pageApplyApis(Long userId, Long appId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime);
 
 }

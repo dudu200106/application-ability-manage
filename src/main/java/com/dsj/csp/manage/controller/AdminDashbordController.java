@@ -2,12 +2,8 @@
 package com.dsj.csp.manage.controller;
 
 import com.dsj.common.dto.Result;
-import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.biz.AbilityBizService;
-import com.dsj.csp.manage.service.AbilityApiService;
-import com.dsj.csp.manage.service.AbilityService;
-import com.dsj.csp.manage.service.ManageApplicationService;
-import com.dsj.csp.manage.service.UserApproveService;
+import com.dsj.csp.manage.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -38,7 +34,7 @@ public class AdminDashbordController {
     @Autowired
     private AbilityBizService abilityBizService;
     @Autowired
-    private AbilityApiBizService abilityApiBizService;
+    private AbilityApplyService abilityApplyService;
 
 
 
@@ -61,8 +57,8 @@ public class AdminDashbordController {
     @GetMapping("/getKztTotal")
     public Object kzinfo(@Parameter(description = "用户Id") String appUserId) {
         Long appTotal = manageApplicationService.countAppUser(appUserId);
-        Long apiTotal=  abilityApiBizService.countUserApplyApi(appUserId);
-        Long abilityTotal= abilityBizService.countUserApplyAbility(appUserId);
+        Long apiTotal=  abilityApplyService.countUserApplyApi(appUserId);
+        Long abilityTotal= abilityApplyService.countUserApplyAbility(appUserId);
         Map<String, Integer> data = new HashMap<>();
         data.put("appTotal", Math.toIntExact(appTotal));
         data.put("apiTotal", Math.toIntExact(apiTotal));

@@ -12,13 +12,11 @@ import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.*;
 import com.dsj.csp.manage.util.Sm2;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.SpringApplicationRunListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -89,7 +87,6 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         abilityApiReqService.remove(reqQW);
         LambdaQueryWrapper respQW = Wrappers.lambdaQuery(AbilityApiResp.class).eq(AbilityApiResp::getApiId, apiVO.getApiId());
         abilityApiRespService.remove(respQW);
-
         Long apiId = apiVO.getApiId();
         return abilityApiService.updateById(api) &&
                 abilityApiReqService.saveReqList(apiVO.getReqList(), apiId) &&
@@ -168,6 +165,9 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         apiIdsList.forEach(apiIds ->{
             ids.addAll(Arrays.asList(apiIds.split(",")).stream().map(e->Long.parseLong(e)).toList());
         });
+        if (ids.size()==0){
+            return null;
+        }
         List<AbilityApiEntity> apis = abilityApiService.listByIds(ids);
         // 查询api对应能力id集合, 并查出能力ID对应能力名称
         Set<Long> abilityIds = apis.stream().map(e->e.getAbilityId()).collect(Collectors.toSet());
@@ -216,28 +216,12 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         return apiVOs;
     }
 
-    @Override
-    public Set<Long> getApiIds(Long userId, Long appId, Long abilityId, String keyword) {
-        List<String> apiIdsList = abilityApplyService.list(Wrappers.lambdaQuery(AbilityApplyEntity.class)
-                        .eq(userId!= null, AbilityApplyEntity::getUserId, userId)
-                        .eq(appId!= null, AbilityApplyEntity::getAppId, appId)
-                        .eq(abilityId!= null, AbilityApplyEntity::getAbilityId, abilityId)
-                        .and(keyword!=null && !"".equals(keyword), i -> i.like(AbilityApplyEntity::getAbilityName, keyword))
-                        .select(AbilityApplyEntity::getApiIds))
-                .stream().map(e->e.getApiIds()).toList();
-        // 分割去重得到apiId集合
-        Set<Long> ids = new HashSet<>();
-        apiIdsList.forEach(apiIds ->{
-            ids.addAll(Arrays.asList(apiIds.split(",")).stream().map(e->Long.parseLong(e)).toList());
-        });
-        System.out.println("apiId集合:====================: " + ids.toString());
-        return ids;
-    }
+
 
     @Override
     public Page pageApplyApis(Long userId, Long appId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime) {
         // 查出符合的接口Id列表, 准备分页
-        Set<Long> apiIds = getApiIds(userId, appId, abilityId, keyword);
+        Set<Long> apiIds = abilityApplyService.getApiIds(userId, appId, abilityId, keyword);
         if (apiIds.size()==0){
             return new Page(current,size);
         }
@@ -268,16 +252,4 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
 
-    @Override
-    public long countUserApplyApi(String userId) {
-        List<AbilityApplyEntity> applyEntities = abilityApplyService.list(Wrappers.lambdaQuery(AbilityApplyEntity.class)
-                .eq(AbilityApplyEntity::getUserId, Long.parseLong(userId))
-                .select(AbilityApplyEntity::getApiIds));
-        List<String> ids = applyEntities.stream().map(e-> e.getApiIds()).toList();
-        AtomicLong cnt= new AtomicLong();
-        ids.forEach(e -> {
-            cnt.addAndGet(e.trim().split(",").length);
-        });
-        return cnt.get();
-    }
 }

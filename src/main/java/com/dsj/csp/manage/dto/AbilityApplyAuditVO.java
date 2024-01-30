@@ -6,9 +6,17 @@ import lombok.Data;
 
 @Data
 public class AbilityApplyAuditVO {
-    @Schema(description = "能力申请ID", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "能力申请ID")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long abilityApplyId;
+
+    @Schema(description = "接口申请ID")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private Long apiApplyId;
+
+    @Schema(description = "能力ID")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private Long abilityId;
 
     @Schema(description = "审核状态", requiredMode = Schema.RequiredMode.REQUIRED)
     private int flag;

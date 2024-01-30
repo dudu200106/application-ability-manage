@@ -97,7 +97,7 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
         // 审核流程限制: 状态(-1待提交 0待审核 1审核通过 2审核不通过 3已停用 )
         if ((auditVO.getFlag() == -1 && apply.getStatus() != 0)
                 || (auditVO.getFlag() == 0 && apply.getStatus() != -1)
-                || (auditVO.getFlag() == 1 && apply.getStatus() != 0)
+                || (auditVO.getFlag() == 1 && (apply.getStatus() != 0 && apply.getStatus() != 3) )
                 || (auditVO.getFlag() == 2 && apply.getStatus() != 0)
                 || (auditVO.getFlag() == 3 && apply.getStatus() != 1)) {
             throw new BusinessException("审核失败! 请刷新页面后重试...");

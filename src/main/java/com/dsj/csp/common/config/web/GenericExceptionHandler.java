@@ -90,19 +90,6 @@ public class GenericExceptionHandler {
     }
 
     /**
-     * 数据验证未通过
-     * @param req
-     * @param resp
-     * @param e
-     * @return
-     */
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Result methodArgumentNotValid(HttpServletRequest req, HttpServletResponse resp, MethodArgumentNotValidException e){
-        Result result = new Result(CodeEnum.METHOD_ARGUMENT_NOT_VALID_ERROR.getCode(),false,CodeEnum.METHOD_ARGUMENT_NOT_VALID_ERROR.getMessage(), null);
-        return result;
-    }
-
-    /**
      * 参数错误异常
      * @param req
      * @param resp

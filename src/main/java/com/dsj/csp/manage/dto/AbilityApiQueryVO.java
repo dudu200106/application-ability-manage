@@ -11,32 +11,18 @@ import lombok.Data;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Set;
 
 @Data
-public class AbilityApiQueryVO extends PageQuery<AbilityApiEntity> implements Serializable {
-    public AbilityApiQueryVO(){
-    }
-
-    public AbilityApiQueryVO(Long userId, Long appId, Long abilityId, int size, int current, String keyword, Date startTime, Date endTime) {
-        super.setSize(size);
-        super.setCurrent(current);
-        this.appId = appId;
-        this.userId = userId;
-        this.abilityId = abilityId;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.keyword = keyword;
-    }
+public class AbilityApiQueryVO implements Serializable {
 
     /**
      * 查询的实体
      */
     private AbilityApiEntity entity;
 
-
-    private Long abilityId;
-    private Long appId;
-    private Long userId;
+    private long current;
+    private long size;
 
     /**
      * 创建时间范围--开始时间
@@ -85,8 +71,8 @@ public class AbilityApiQueryVO extends PageQuery<AbilityApiEntity> implements Se
                 .le(Objects.nonNull(endTime), AbilityApiEntity::getCreateTime, endTime)
                 .and(keyword!=null && !"".equals(keyword),
                         i -> i.like(AbilityApiEntity::getApiName, keyword)
-                                .like(AbilityApiEntity::getApiUrl, keyword)
-                                .like(AbilityApiEntity::getDescription, keyword))
+                                .or().like(AbilityApiEntity::getApiUrl, keyword)
+                                .or().like(AbilityApiEntity::getDescription, keyword))
                 // 排序
                 .orderByDesc(AbilityApiEntity::getCreateTime);
         return qw;

@@ -48,21 +48,21 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
         AbilityApplyEntity applyEntity = new AbilityApplyEntity();
         BeanUtil.copyProperties(applyVO, applyEntity, true);
         // TODO 因实名认证页面还没做, 暂时取消一下记录操作, 直接存储绑定记录
-        //以下信息直接存入能力申请记录信息数据库, 方便查询
-//        // 1.获取应用名称/用户ID
-//        ManageApplicationEntity app = manageApplicationService.getById(applyVO.getAppId());
-//        applyEntity.setAppName(app.getAppName());
-//        applyEntity.setUserId(Long.parseLong(app.getAppUserId()));
-//
-//        // 2.通过用户ID获取企业/政府名称
-//        UserApproveEntity userApproveEntity = userApproveService.getById(applyVO.getUserId());
-//        applyEntity.setCompanyName(userApproveEntity.getCompanyName());
-//        applyEntity.setGovName(userApproveEntity.getGovName());
-//
-//        // 3.通过能力ID获取能力名称/能力类型
-//        AbilityEntity ability = abilityService.getById(applyVO.getAbilityId());
-//        applyEntity.setAbilityName(ability.getAbilityName());
-//        applyEntity.setAbilityType(ability.getAbilityName());
+        // 以下信息直接存入能力申请记录信息数据库, 方便查询
+        // 从应用表中获取应用名称/用户ID; 从用户表中获取企业/政府名称; 从能力表获取能力名称/能力类型
+        ManageApplicationEntity app = manageApplicationService.getById(applyVO.getAppId());
+        UserApproveEntity userApproveEntity = userApproveService.getById(applyVO.getUserId());
+        AbilityEntity ability = abilityService.getById(applyVO.getAbilityId());
+
+        if (app==null || userApproveEntity==null || ability==null){
+            throw new BusinessException("申请能力异常! 请确保相关的用户实名认证、应用、能力数据信息正常!");
+        }
+        applyEntity.setAppName(app.getAppName());
+        applyEntity.setUserId(Long.parseLong(app.getAppUserId()));
+        applyEntity.setCompanyName(userApproveEntity.getCompanyName());
+        applyEntity.setGovName(userApproveEntity.getGovName());
+        applyEntity.setAbilityName(ability.getAbilityName());
+        applyEntity.setAbilityType(ability.getAbilityName());
         abilityApplyService.save(applyEntity);
     }
 
@@ -77,20 +77,14 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
         String apiIds = abilityApplyService.getById(abilityApplyId).getApiIds();
         List<Long> idList = Arrays.asList(apiIds.split(",")).stream().map(e->Long.parseLong(e)).toList();
         List<AbilityApiEntity> apis = abilityApiService.listByIds(idList);
-        // 查询申请的能力、用户、应用信息
+        // 查询需要返回的申请的能力、用户、应用的其他信息
         AbilityEntity ability = abilityService.getById(apply.getAbilityId());
-        UserApproveEntity userApprove = userApproveService.getById(apply.getUserId());
-        ManageApplicationEntity app = manageApplicationService.getById(apply.getAppId());
+//        UserApproveEntity userApprove = userApproveService.getById(apply.getUserId());
+//        ManageApplicationEntity app = manageApplicationService.getById(apply.getAppId());
         //构造返回能力申请信息DTO
         AbilityApplyDTO resApply = new AbilityApplyDTO();
         BeanUtil.copyProperties(apply, resApply,true);
-        resApply.setAbilityName(ability==null ? null : ability.getAbilityName());
-        resApply.setAbilityType(ability==null ? null : ability.getAbilityType());
         resApply.setAbilityDesc(ability==null ? null : ability.getAbilityDesc());
-        resApply.setAppName(app==null ? null : app.getAppName());
-        resApply.setCompanyName(userApprove==null ? null : userApprove.getCompanyName());
-        resApply.setGovName(userApprove==null ? null : userApprove.getGovName());
-
         resApply.setApiList(apis);
         return resApply;
     }
@@ -163,40 +157,33 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
             return prePage;
         }
         List<AbilityApplyEntity> records = prePage.getRecords();
-        // 1.用户表 过userId查出企业/政府名称
-        Set<Long> userIds = records.stream().map(e->e.getUserId()).collect(Collectors.toSet());
-        List<UserApproveEntity> users = userApproveService.list(Wrappers.lambdaQuery(UserApproveEntity.class)
-                .select(UserApproveEntity::getUserId, UserApproveEntity::getCompanyName, UserApproveEntity::getGovName)
-                .in(UserApproveEntity::getUserId, userIds));
-        // 将ID映射到数据上, 方便查找使用
-        Map<String, UserApproveEntity> userMap = users.stream().collect(Collectors.toMap(user -> user.getUserId(), user -> user));
-        // 2.应用表 通过appId查出应用名称
-        Set<Long> appIds = records.stream().map(e  -> e.getAppId()).collect(Collectors.toSet());
-        List<ManageApplicationEntity> apps = manageApplicationService.list(Wrappers.lambdaQuery(ManageApplicationEntity.class)
-                .select(ManageApplicationEntity::getAppId, ManageApplicationEntity::getAppName)
-                .in(ManageApplicationEntity::getAppId, appIds));
-        Map<String, String> appMap = apps.stream().collect(Collectors.toMap(app -> app.getAppId(), app ->app.getAppName()));
+//        // 1.用户表 过userId查出企业/政府名称
+//        Set<Long> userIds = records.stream().map(e->e.getUserId()).collect(Collectors.toSet());
+//        List<UserApproveEntity> users = userApproveService.list(Wrappers.lambdaQuery(UserApproveEntity.class)
+//                .select(UserApproveEntity::getUserId, UserApproveEntity::getCompanyName, UserApproveEntity::getGovName)
+//                .in(UserApproveEntity::getUserId, userIds));
+//        // 将ID映射到数据上, 方便查找使用
+//        Map<String, UserApproveEntity> userMap = users.stream().collect(Collectors.toMap(user -> user.getUserId(), user -> user));
+//        // 2.应用表 通过appId查出应用名称
+//        Set<Long> appIds = records.stream().map(e  -> e.getAppId()).collect(Collectors.toSet());
+//        List<ManageApplicationEntity> apps = manageApplicationService.list(Wrappers.lambdaQuery(ManageApplicationEntity.class)
+//                .select(ManageApplicationEntity::getAppId, ManageApplicationEntity::getAppName)
+//                .in(ManageApplicationEntity::getAppId, appIds));
+//        Map<String, String> appMap = apps.stream().collect(Collectors.toMap(app -> app.getAppId(), app ->app.getAppName()));
         // 3.能力表 abilityId查出能力名称和类型
         Set<Long> abilityIds = records.stream().map(e  -> e.getAbilityId()).collect(Collectors.toSet());
         List<AbilityEntity> abilitys = abilityService.list( Wrappers.lambdaQuery(AbilityEntity.class)
-                .select(AbilityEntity::getAbilityId,
-                        AbilityEntity::getAbilityName,
-                        AbilityEntity::getAbilityType,
-                        AbilityEntity::getAbilityDesc)
+                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityDesc)
                 .in(AbilityEntity::getAbilityId, abilityIds));
-        Map<Long, AbilityEntity> abilityMap = abilitys.stream().collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability));
+        Map<Long, AbilityEntity> abilityMap = abilitys.stream()
+                .collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability));
 
         // 返回的分页res
         Page newPage = new Page<>(prePage.getCurrent(),  prePage.getSize(), prePage.getTotal());
         List<AbilityApplyDTO> resRecords = records.stream().map(apply ->{
             AbilityApplyDTO applyDTO = new AbilityApplyDTO();
             BeanUtil.copyProperties(apply, applyDTO, true);
-            applyDTO.setAbilityName(abilityMap.get(apply.getAbilityId())==null ? null : abilityMap.get(apply.getAbilityId()).getAbilityName());
-            applyDTO.setAbilityType(abilityMap.get(apply.getAbilityId())==null ? null : abilityMap.get(apply.getAbilityId()).getAbilityType());
             applyDTO.setAbilityDesc(abilityMap.get(apply.getAbilityId())==null ? null : abilityMap.get(apply.getAbilityId()).getAbilityDesc());
-            applyDTO.setAppName(appMap.get(apply.getAppId() + ""));
-            applyDTO.setCompanyName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getCompanyName());
-            applyDTO.setGovName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getGovName());
             return applyDTO;
         }).toList();
         newPage.setRecords(resRecords);

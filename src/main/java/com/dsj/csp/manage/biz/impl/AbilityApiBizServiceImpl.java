@@ -216,7 +216,56 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         return apiVOs;
     }
 
+    @Override
+    public Set<Long> getApiIds(Long userId, Long appId, Long abilityId, String keyword) {
+        List<String> apiIdsList = abilityApplyService.list(Wrappers.lambdaQuery(AbilityApplyEntity.class)
+                        .eq(userId!= null, AbilityApplyEntity::getUserId, userId)
+                        .eq(appId!= null, AbilityApplyEntity::getAppId, appId)
+                        .eq(abilityId!= null, AbilityApplyEntity::getAbilityId, abilityId)
+                        .and(keyword!=null && !"".equals(keyword), i -> i.like(AbilityApplyEntity::getAbilityName, keyword))
+                        .select(AbilityApplyEntity::getApiIds))
+                .stream().map(e->e.getApiIds()).toList();
+        // 分割去重得到apiId集合
+        Set<Long> ids = new HashSet<>();
+        apiIdsList.forEach(apiIds ->{
+            ids.addAll(Arrays.asList(apiIds.split(",")).stream().map(e->Long.parseLong(e)).toList());
+        });
+        System.out.println("apiId集合:====================: " + ids.toString());
+        return ids;
+    }
 
+    @Override
+    public Page pageApplyApis(Long userId, Long appId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime) {
+        // 查出符合的接口Id列表, 准备分页
+        Set<Long> apiIds = getApiIds(userId, appId, abilityId, keyword);
+        if (apiIds.size()==0){
+            return new Page(current,size);
+        }
+        AbilityApiQueryVO queryVO = new AbilityApiQueryVO();
+        queryVO.setCurrent(current);
+        queryVO.setSize(size);
+        queryVO.setStartTime(startTime);
+        queryVO.setEndTime(endTime);
+        queryVO.setKeyword(keyword);
+        LambdaQueryWrapper queryWrapper = queryVO.getQueryWrapper().lambda()
+                .in(AbilityApiEntity::getApiId, apiIds);
+        Page<AbilityApiEntity> page = abilityApiService.page(queryVO.toPage(), queryWrapper);
+//        Set<Long> abilityIds = page.getRecords().stream().map(api->api.getAbilityId()).collect(Collectors.toSet());
+//        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
+//                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
+//                .in(AbilityEntity::getAbilityId, abilityIds));
+//        // 构造能力ID与能力name映射, 方便查找
+//        Map<Long, String> abilityMap = abilitys.stream().collect(Collectors.toMap(e->e.getAbilityId(), e-> e.getAbilityName()));
+//        List<AbilityApiVO> resRecords = page.getRecords().stream().map(api -> {
+//            AbilityApiVO apiVO = new AbilityApiVO();
+//            BeanUtil.copyProperties(api, apiVO, true);
+//            apiVO.setAbilityName(abilityMap.getOrDefault(api.getAbilityId(), null));
+//            return apiVO;
+//        }).toList();
+//        Page resPage = new Page(page.getCurrent(), page.getSize());
+//        resPage.setRecords(resRecords);
+        return page;
+    }
 
 
     @Override

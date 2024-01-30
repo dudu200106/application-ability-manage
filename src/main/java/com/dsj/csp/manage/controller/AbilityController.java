@@ -237,17 +237,15 @@ public class AbilityController {
         return Result.success("删除能力完成! ", delFlag);
     }
 
-//    @Operation(summary = "获取api信息分页")
-//    @GetMapping("page-api2")
-//    public Result<?> pageApiList(@Parameter(description = "用户ID") Long userId, @Parameter(description = "应用ID") Long appId,
-//                                 @Parameter(description = "能力ID") Long abilityId, @Parameter(description = "分页条数") int size,
-//                                 @Parameter(description = "当前页数") int current, @Parameter(description = "搜索关键字") String keyword,
-//                                 @Parameter(description = "开始时间") @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8") Date startTime,
-//                                 @Parameter(description = "结束时间") @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8") Date endTime) {
-//        AbilityApiQueryVO queryVO = new AbilityApiQueryVO(userId, appId, abilityId, size, current, keyword, startTime, endTime);
-//        return Result.success();
-//
-//    }
+    @Operation(summary = "获取api信息分页")
+    @GetMapping("page-api2")
+    public Result<?> pageApiList(@Parameter(description = "用户ID") Long userId, @Parameter(description = "应用ID") Long appId,
+                                 @Parameter(description = "能力ID") Long abilityId, @Parameter(description = "分页条数") int size,
+                                 @Parameter(description = "当前页数") int current, @Parameter(description = "搜索关键字") String keyword,
+                                 @Parameter(description = "开始时间") Date startTime, @Parameter(description = "结束时间") Date endTime) {
+        return Result.success(abilityApiBizService.pageApplyApis(userId, appId, abilityId, keyword, size, current, startTime, endTime));
+
+    }
 
     @Operation(summary = "查询申请的接口列表", description = "查询申请的接口列表")
     @GetMapping("/query-apply-api")

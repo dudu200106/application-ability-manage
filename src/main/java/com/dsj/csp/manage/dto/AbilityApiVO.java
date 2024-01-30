@@ -7,6 +7,7 @@ import com.dsj.csp.manage.entity.AbilityApiResp;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -23,12 +24,15 @@ public class AbilityApiVO implements Serializable {
     private Long abilityId;
 
     @Schema(description = "能力名称")
+    @Length(max= 30,message="编码长度不能超过30")
     private String abilityName;
 
     @Schema(description="接口名称", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Length(max= 30,message="编码长度不能超过30")
     private String apiName;
 
     @Schema(description="接口描述")
+    @Length(max= 300,message="编码长度不能超过300")
     private String description;
 
     @Schema(description="调用量限制")

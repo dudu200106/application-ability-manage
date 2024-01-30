@@ -1,6 +1,7 @@
 package com.dsj.csp.manage.dto.request;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.dsj.csp.common.constant.AccountLoginWay;
+import com.dsj.csp.common.dto.UserAccountDTO;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -15,6 +16,6 @@ public class UserApproveRequest {
     private String email;
     private Integer status;
     private String note;
-    private String loginWay;
+    private AccountLoginWay loginWay;
     private String loginName;
 }

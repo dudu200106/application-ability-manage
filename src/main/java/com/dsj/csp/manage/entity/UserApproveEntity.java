@@ -8,6 +8,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,13 +23,13 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class
-UserApproveEntity implements Serializable {
+public class UserApproveEntity implements Serializable {
     /**
      * 用户ID
      */
     @TableId(value = "YH_XH")
     @Schema(description = "用户ID")
+    @NotBlank(message = "用户ID不能为空")
     private String userId;
 
     /**
@@ -64,6 +65,7 @@ UserApproveEntity implements Serializable {
      */
     @TableField(value = "QY_MC")
     @Schema(description = "企业名称")
+    @NotBlank(message = "企业名称不能为空")
     private String companyName;
 
     /**
@@ -71,6 +73,7 @@ UserApproveEntity implements Serializable {
      */
     @TableField(value = "QY_ZCH")
     @Schema(description = "企业营业执照注册号")
+    @NotBlank(message = "营业执照注册号不能为空")
     private String companyNum;
 
     /**
@@ -78,6 +81,7 @@ UserApproveEntity implements Serializable {
      */
     @TableField(value = "QY_FDDBR")
     @Schema(description = "企业法定代表人")
+    @NotBlank(message = "企业法定代表人不能为空")
     private String companyRepresent;
 
     /**
@@ -85,6 +89,7 @@ UserApproveEntity implements Serializable {
      */
     @TableField(value = "QY_TP")
     @Schema(description = "企业营业执照扫描件")
+    @NotBlank(message = "企业营业执照扫描件不能为空")
     private String companyImage;
 
     /**
@@ -92,6 +97,7 @@ UserApproveEntity implements Serializable {
      */
     @TableField(value = "SQH")
     @Schema(description = "政府授权函")
+    @NotBlank(message = "政府授权函不能为空")
     private String authorization;
 
     /**
@@ -99,6 +105,7 @@ UserApproveEntity implements Serializable {
      */
     @TableField(value = "QY_LXRXM")
     @Schema(description = "企业联系人姓名")
+    @NotBlank(message = "企业联系人姓名不能为空")
     private String companyUser;
 
     /**
@@ -106,6 +113,7 @@ UserApproveEntity implements Serializable {
      */
     @TableField(value = "QY_SFZH")
     @Schema(description = "企业联系人身份证号")
+    @NotBlank(message = "企业联系人身份证号不能为空")
     private String companyIdnum;
 
     /**
@@ -113,6 +121,7 @@ UserApproveEntity implements Serializable {
      */
     @TableField(value = "QY_DHHM")
     @Schema(description = "企业联系人手机号码")
+    @NotBlank(message = "企业联系人手机号码不能为空")
     private String companyPhone;
 
     /**
@@ -120,6 +129,7 @@ UserApproveEntity implements Serializable {
      */
     @TableField(value = "ZF_MC")
     @Schema(description = "政府部门名称")
+    @NotBlank(message = "政府部门名称不能为空")
     private String govName;
 
     /**
@@ -127,6 +137,7 @@ UserApproveEntity implements Serializable {
      */
     @TableField(value = "ZF_ZCH")
     @Schema(description = "政府营业执照注册号")
+    @NotBlank(message = "政府营业执照注册号不能为空")
     private String govNum;
 
     /**
@@ -134,6 +145,7 @@ UserApproveEntity implements Serializable {
      */
     @TableField(value = "ZF_FDDBR")
     @Schema(description = "政府部门法定代表人")
+    @NotBlank(message = "政府部门法定代表人不能为空")
     private String govRepresent;
 
     /**
@@ -141,6 +153,7 @@ UserApproveEntity implements Serializable {
      */
     @TableField(value = "ZF_TP")
     @Schema(description = "政府部门营业执照扫描件")
+    @NotBlank(message = "政府部门营业执照扫描件不能为空")
     private String govImage;
 
     /**
@@ -148,6 +161,7 @@ UserApproveEntity implements Serializable {
      */
     @TableField(value = "ZF_LXRXM")
     @Schema(description = "政府部门联系人姓名")
+    @NotBlank(message = "政府部门联系人姓名不能为空")
     private String govUser;
 
     /**
@@ -155,6 +169,7 @@ UserApproveEntity implements Serializable {
      */
     @TableField(value = "ZF_SFZH")
     @Schema(description = "政府部门联系人身份证号")
+    @NotBlank(message = "政府部门联系人身份证号不能为空")
     private String govIdnum;
 
     /**
@@ -162,6 +177,7 @@ UserApproveEntity implements Serializable {
      */
     @TableField(value = "ZF_DHHM")
     @Schema(description = "政府部门联系人手机号码")
+    @NotBlank(message = "政府部门联系人手机号码不能为空")
     private String govPhone;
 
     /**

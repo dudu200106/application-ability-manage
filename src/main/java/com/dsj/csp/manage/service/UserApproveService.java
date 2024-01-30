@@ -29,7 +29,7 @@ public interface UserApproveService extends IService<UserApproveEntity> {
     //远程调用用户实名状态更新接口
     void approveFeign(String userId,Integer status);
     //用户修改密码
-//    Result<Boolean> updatePassword(String password, String newPassword, String newPassword2, String accessToken);
+    Result<Boolean> updatePassword(String password, String newPassword, String newPassword2, String accessToken);
 
     /**
      * 管理员实名认证审核模块

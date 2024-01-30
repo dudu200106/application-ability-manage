@@ -89,7 +89,6 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         abilityApiReqService.remove(reqQW);
         LambdaQueryWrapper respQW = Wrappers.lambdaQuery(AbilityApiResp.class).eq(AbilityApiResp::getApiId, apiVO.getApiId());
         abilityApiRespService.remove(respQW);
-
         Long apiId = apiVO.getApiId();
         return abilityApiService.updateById(api) &&
                 abilityApiReqService.saveReqList(apiVO.getReqList(), apiId) &&
@@ -168,6 +167,9 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         apiIdsList.forEach(apiIds ->{
             ids.addAll(Arrays.asList(apiIds.split(",")).stream().map(e->Long.parseLong(e)).toList());
         });
+        if (ids.size()==0){
+            return null;
+        }
         List<AbilityApiEntity> apis = abilityApiService.listByIds(ids);
         // 查询api对应能力id集合, 并查出能力ID对应能力名称
         Set<Long> abilityIds = apis.stream().map(e->e.getAbilityId()).collect(Collectors.toSet());

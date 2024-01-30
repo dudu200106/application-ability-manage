@@ -5,7 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.dsj.common.dto.Result;
 import com.dsj.csp.common.api.rpc.RpcUserApi;
+import com.dsj.csp.common.constant.AccountLoginWay;
+import com.dsj.csp.common.dto.UserChangePasswordDTO;
 import com.dsj.csp.common.dto.UserSmztDTO;
 import com.dsj.csp.common.enums.CodeEnum;
 import com.dsj.csp.common.enums.UserStatusEnum;
@@ -48,13 +51,14 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         String responseBody = response.getBody();
         JSONObject responseJson = JSON.parseObject(responseBody);
         JSONObject dataJson = JSON.parseObject(responseJson.getString("data"));
+//        JSONObject dataJson = JSON.parseObject(responseJson.getString("data"));
         UserApproveRequest userApproveRequest = new UserApproveRequest();
         try {
             userApproveRequest.setUserId(dataJson.getString("id"));
             userApproveRequest.setUserName(dataJson.getString("name"));
-            userApproveRequest.setStatus(Integer.valueOf(dataJson.getString("smzt")));
+            userApproveRequest.setStatus(dataJson.getInteger("smzt"));
             userApproveRequest.setPhone(dataJson.getString("phone"));
-            userApproveRequest.setLoginWay(dataJson.getString("loginWays"));
+            userApproveRequest.setLoginWay(dataJson.getObject("loginWays",AccountLoginWay.class));
             userApproveRequest.setLoginName(dataJson.getString("loginName"));
             return userApproveRequest;
         } catch (Exception e) {
@@ -71,20 +75,20 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         rpcUserApi.updateSmztById(userSmztDTO);
     }
 
-//    @Override
-//    public Result<Boolean> updatePassword(String password, String newPassword, String newPassword2, String accessToken) {
-//        UserApproveRequest identify = identify(accessToken);
-//        UserChangePasswordDTO userChangePasswordDTO=new UserChangePasswordDTO();
-//        if(newPassword.equals(newPassword2)){
-//            userChangePasswordDTO.setPassword(password);
-//            userChangePasswordDTO.setNewPassword(newPassword);
-//            userChangePasswordDTO.setLoginWay(AccountLoginWay.valueOf(identify.getLoginWay()));
-//            userChangePasswordDTO.setLoginName(identify.getLoginName());
-//            return rpcUserApi.changePassword(userChangePasswordDTO);
-//        }else {
-//            return Result.failed("两次密码不一致，请重新输入");
-//        }
-//    }
+    @Override
+    public Result<Boolean> updatePassword(String password, String newPassword, String newPassword2, String accessToken) {
+        UserApproveRequest identify = identify(accessToken);
+        UserChangePasswordDTO userChangePasswordDTO=new UserChangePasswordDTO();
+        if(newPassword.equals(newPassword2)){
+            userChangePasswordDTO.setPassword(password);
+            userChangePasswordDTO.setNewPassword(newPassword);
+            userChangePasswordDTO.setLoginWay(identify.getLoginWay());
+            userChangePasswordDTO.setLoginName(identify.getLoginName());
+            return rpcUserApi.changePassword(userChangePasswordDTO);
+        }else {
+            return Result.failed("两次密码不一致，请重新输入");
+        }
+    }
 
 
     /**

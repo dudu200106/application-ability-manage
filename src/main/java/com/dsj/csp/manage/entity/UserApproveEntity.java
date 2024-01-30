@@ -6,8 +6,10 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.dsj.csp.common.util.annotation.NotBlankOrWhitespace;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,8 +24,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class
-UserApproveEntity implements Serializable {
+public class UserApproveEntity implements Serializable {
     /**
      * 用户ID
      */

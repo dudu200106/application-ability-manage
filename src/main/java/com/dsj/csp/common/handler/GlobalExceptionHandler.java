@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    //处理业务异常
+    //自定义处理业务异常
     @ExceptionHandler(FlowException.class)
     public Result defaultExceptionHandler(HttpServletRequest req, HttpServletResponse resp, FlowException e){
         Result result = new Result(e.getCode(),false,e.getMessage(),null);

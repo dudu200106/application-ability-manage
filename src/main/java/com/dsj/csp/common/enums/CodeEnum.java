@@ -25,9 +25,9 @@ public enum CodeEnum {
     BIND_ERROR(650,"数据格式异常"),
     MISSING_SERVLET_REQUEST_PARAMETER_ERROR(651,"缺少必要参数"),
     HTTP_MESSAGE_NOT_READABLE_ERROR(652,"参数错误"),
-    ILLEGAL_ARGUEMENT_ERROR(652,"非法参数"),
-    HTTP_MEDIA_TYPE_NOT_SUPPORTED_ERROR(653,"入参异常"),
-    ILLEGAL_STATE_ERROR(654,"请求参数不正确"),
+    ILLEGAL_ARGUEMENT_ERROR(653,"非法参数"),
+    HTTP_MEDIA_TYPE_NOT_SUPPORTED_ERROR(654,"入参异常"),
+    ILLEGAL_STATE_ERROR(655,"请求参数不正确"),
     ;
     private final Integer code;
     private final String message;

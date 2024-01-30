@@ -5,6 +5,7 @@ import com.dsj.csp.manage.entity.UserApproveEntity;
 import com.dsj.csp.manage.service.UserApproveService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 @Tag(name = "用户提交实名认证申请")
@@ -21,7 +22,7 @@ public class UserApproveController {
      */
     @Operation(summary = "实名认证申请")
     @PostMapping("/approve")
-    public Result<?> approve(@RequestBody UserApproveEntity user,@RequestHeader("accessToken") String accessToken){
+    public Result<?> approve(@RequestBody UserApproveEntity user, @RequestHeader("accessToken") String accessToken){
         return Result.success(userApproveService.approve(user,accessToken));
     }
 
@@ -31,9 +32,9 @@ public class UserApproveController {
         return Result.success(userApproveService.echo(accessToken));
     }
 
-//    @Operation(summary = "用户修改密码")
-//    @PostMapping("/updatePassword")
-//    public Result<?> updatePassword(String password,String newPassword,String newPassword2,@RequestHeader("accessToken") String accessToken){
-//        return Result.success(userApproveService.updatePassword(password,newPassword,newPassword2,accessToken));
-//    }
+    @Operation(summary = "用户修改密码")
+    @PostMapping("/updatePassword")
+    public Result<?> updatePassword(String password,String newPassword,String newPassword2,@RequestHeader("accessToken") String accessToken){
+        return Result.success(userApproveService.updatePassword(password,newPassword,newPassword2,accessToken));
+    }
 }

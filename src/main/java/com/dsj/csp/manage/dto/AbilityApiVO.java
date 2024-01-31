@@ -84,6 +84,9 @@ public class AbilityApiVO implements Serializable {
     @Schema(description = "接口提供者ID")
     private Long userId;
 
+    @Schema(description = "接口提供公司名称")
+    private String companyName;
+
     /**
      * 请求参数列表
      */

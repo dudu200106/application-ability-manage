@@ -1,17 +1,18 @@
 package com.dsj.csp.manage.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import com.dsj.csp.common.entity.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.sql.Date;
 
 @Data
+@EqualsAndHashCode
 @TableName("GXYYZC_NLSQ")
-public class AbilityApplyEntity extends BaseEntity implements Serializable {
+public class AbilityApplyEntity implements Serializable {
     @Schema(description = "能力申请ID")
     @TableId(value = "NLSQ_ID", type = IdType.NONE)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
@@ -75,6 +76,14 @@ public class AbilityApplyEntity extends BaseEntity implements Serializable {
     @TableField(value = "NLSQ_GXSJ")
     @Schema(description="更新时间")
     private Date updateTime;
+
+    /**
+     * 逻辑删除
+     */
+    @TableLogic(value = "0", delval = "1")
+    @TableField(value = "IS_DELETE")
+    @Schema(description = "逻辑删除")
+    private Integer isDelete;
 
     @TableField("NLSQ_SFTYXY")
     @Schema(description="是否同意所有协议")

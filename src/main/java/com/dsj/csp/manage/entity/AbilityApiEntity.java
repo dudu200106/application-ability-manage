@@ -1,7 +1,6 @@
 package com.dsj.csp.manage.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import com.dsj.csp.common.entity.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -11,7 +10,7 @@ import java.sql.Timestamp;
 
 @Data
 @TableName("GXYYZC_NLJK")
-public class AbilityApiEntity extends BaseEntity implements Serializable {
+public class AbilityApiEntity implements Serializable {
     @TableId("NLJK_ID")
     @Schema(description = "接口ID")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
@@ -58,13 +57,6 @@ public class AbilityApiEntity extends BaseEntity implements Serializable {
     @Schema(description = "接口版本")
     private String apiVersion;
 
-    @TableField(value = "NLJK_CJSJ" )
-    @Schema(description = "创建时间")
-    private Timestamp createTime;
-
-    @TableField(value = "NLJK_GXSJ")
-    @Schema(description = "更新时间")
-    private Timestamp updateTime;
 
     @TableField(value = "WG_GY")
     @Schema(description = "公钥")
@@ -102,6 +94,20 @@ public class AbilityApiEntity extends BaseEntity implements Serializable {
     @Schema(description = "接口提供者ID")
     private Long userId;
 
+    /**
+     * 逻辑删除
+     */
+    @TableLogic(value = "0", delval = "1")
+    @TableField(value = "IS_DELETE")
+    @Schema(description = "逻辑删除")
+    private Integer isDelete;
 
+    @TableField(value = "NLJK_CJSJ" )
+    @Schema(description = "创建时间")
+    private Timestamp createTime;
+
+    @TableField(value = "NLJK_GXSJ")
+    @Schema(description = "更新时间")
+    private Timestamp updateTime;
 
 }

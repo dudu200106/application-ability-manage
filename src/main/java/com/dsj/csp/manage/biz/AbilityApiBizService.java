@@ -41,7 +41,7 @@ public interface AbilityApiBizService {
      * @param endTime
      * @return 返回申请审核通过的api列表
      */
-    Page pageApplyApis(Long userId, Long appId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime);
+    Page pagePassedApis(Long userId, Long appId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime);
 
     /**
      * 查询接口目录分页列表

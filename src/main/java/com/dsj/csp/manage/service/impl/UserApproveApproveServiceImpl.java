@@ -14,6 +14,7 @@ import com.dsj.csp.common.enums.CodeEnum;
 import com.dsj.csp.common.enums.UserStatusEnum;
 import com.dsj.csp.common.exception.FlowException;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
+import com.dsj.csp.manage.dto.response.UserApproveResponse;
 import com.dsj.csp.manage.entity.UserApproveEntity;
 import com.dsj.csp.manage.mapper.UserApproveMapper;
 import com.dsj.csp.manage.service.UserApproveService;
@@ -76,17 +77,17 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     }
 
     @Override
-    public Result<Boolean> updatePassword(String password, String newPassword, String newPassword2, String accessToken) {
+    public Result<Boolean> updatePassword(UserApproveResponse userApproveResponse, String accessToken) {
         UserApproveRequest identify = identify(accessToken);
         UserChangePasswordDTO userChangePasswordDTO = new UserChangePasswordDTO();
-        if (newPassword.equals(newPassword2)) {
-            userChangePasswordDTO.setPassword(password);
-            userChangePasswordDTO.setNewPassword(newPassword);
+        if (!userApproveResponse.getNewPassword().equals(userApproveResponse.getNewPassword2())) {
+            return Result.failed("两次密码不一致，请重新输入");
+        } else {
+            userChangePasswordDTO.setPassword(userApproveResponse.getPassword());
+            userChangePasswordDTO.setNewPassword(userApproveResponse.getNewPassword());
             userChangePasswordDTO.setLoginWay(AccountLoginWay.of(2));
             userChangePasswordDTO.setLoginName(identify.getLoginName());
             return rpcUserApi.changePassword(userChangePasswordDTO);
-        } else {
-            return Result.failed("两次密码不一致，请重新输入");
         }
     }
 

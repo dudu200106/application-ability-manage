@@ -21,6 +21,7 @@ class ManageApplicationTests {
     private AbilityApiBizService abilityApiBizService;
     @Autowired
     private AbilityApiApplyService abilityApiApplyService;
+
     @Autowired
     private AbilityApplyService abilityApplyService;
 
@@ -40,10 +41,20 @@ class ManageApplicationTests {
         AbilityApiApplyEntity apply =  abilityApiApplyService.getById(1);
         System.out.println(apply);
     }
+
     @Test
     void testDeleteApply(){
 
         abilityApplyService.deleteApplyByAppId(1750354280476332033L);
+    }
+    @Test
+    void testPageApis(){
+        abilityApiBizService.pageApis(true, null,  null, null, 100, 1, null, null);
+    }
+
+    @Test
+    void testPageApplyApi(){
+        abilityApiBizService.pageApplyApis(null, null,  1749356491904835586L, null, 100, 1, null, null);
     }
 
 }

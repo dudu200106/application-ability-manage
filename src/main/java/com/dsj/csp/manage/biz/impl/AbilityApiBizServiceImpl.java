@@ -11,7 +11,6 @@ import com.dsj.csp.manage.dto.AbilityApiVO;
 import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.*;
 import lombok.RequiredArgsConstructor;
-import org.bouncycastle.math.ec.WTauNafMultiplier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -217,56 +216,74 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
     @Override
     public Page pageApplyApis(Long userId, Long appId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime) {
-        // 查出符合的接口Id列表, 准备分页
-        Set<Long> apiIds = abilityApplyService.getApiIds(userId, appId, abilityId, keyword);
+        // 查询出申请通过的apiId集合
+        Set<Long> apiIds = abilityApiApplyService.getPassedApiIds(userId, appId, abilityId, keyword);
         if (apiIds.size()==0){
-            return new Page(current,size);
+            return new Page(1,0,0);
         }
-        AbilityApiQueryVO queryVO = new AbilityApiQueryVO();
-        queryVO.setCurrent(current);
-        queryVO.setSize(size);
-        queryVO.setStartTime(startTime);
-        queryVO.setEndTime(endTime);
-        queryVO.setKeyword(keyword);
-        LambdaQueryWrapper queryWrapper = queryVO.getQueryWrapper().lambda()
-                .in(AbilityApiEntity::getApiId, apiIds);
-        Page<AbilityApiEntity> page = abilityApiService.page(queryVO.toPage(), queryWrapper);
-//        Set<Long> abilityIds = page.getRecords().stream().map(api->api.getAbilityId()).collect(Collectors.toSet());
-//        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
-//                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
-//                .in(AbilityEntity::getAbilityId, abilityIds));
-//        // 构造能力ID与能力name映射, 方便查找
-//        Map<Long, String> abilityMap = abilitys.stream().collect(Collectors.toMap(e->e.getAbilityId(), e-> e.getAbilityName()));
-//        List<AbilityApiVO> resRecords = page.getRecords().stream().map(api -> {
-//            AbilityApiVO apiVO = new AbilityApiVO();
-//            BeanUtil.copyProperties(api, apiVO, true);
-//            apiVO.setAbilityName(abilityMap.getOrDefault(api.getAbilityId(), null));
-//            return apiVO;
-//        }).toList();
-//        Page resPage = new Page(page.getCurrent(), page.getSize());
-//        resPage.setRecords(resRecords);
-        return page;
-    }
-
-
-    @Override
-    public Page pageApiList(Boolean onlyPublished, Long userId, Long appId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime) {
-        Set<Long> apiIds = abilityApiApplyService.getApiIds(userId, appId, abilityId, keyword);
+        // 构造分页条件
         LambdaQueryWrapper queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)
                 .ge(Objects.nonNull(startTime), AbilityApiEntity::getCreateTime, startTime)
                 .le(Objects.nonNull(endTime), AbilityApiEntity::getCreateTime, endTime)
-                .in(onlyPublished, AbilityApiEntity::getStatus, 3)
-                .in(apiIds.size()>0, AbilityApiEntity::getApiId, apiIds)
+                .in(AbilityApiEntity::getApiId, apiIds)
+                // 接口信息关键字模糊查询
+                .and(keyword!=null && !"".equals(keyword),i -> i
+                        .like(AbilityApiEntity::getApiName, keyword)
+                        .or().like(AbilityApiEntity::getDescription, keyword)
+                        .or().like(AbilityApiEntity::getApiUrl, keyword))
                 // 排序
                 .orderByAsc(AbilityApiEntity::getStatus)
                 .orderByDesc(AbilityApiEntity::getCreateTime);
+        // 主表分页查询
         Page prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
         List<AbilityApiEntity> preRecords = prePage.getRecords();
+        if (preRecords.size()==0){
+            return prePage;
+        }
+        // 构造返回分页
         Set<Long> abilityIds = preRecords.stream().map(api -> api.getAbilityId()).collect(Collectors.toSet());
         List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
                 .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
                 .in(AbilityEntity::getAbilityId, abilityIds));
         Map<Long, String> abilityMap = abilitys.stream().collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability.getAbilityName()));
+        Page resPage = new Page(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
+        List<AbilityApiVO> resRecords = preRecords.stream().map(api -> {
+            AbilityApiVO apiVO = new AbilityApiVO();
+            BeanUtil.copyProperties(api, apiVO);
+            apiVO.setAbilityName(abilityMap.get(api.getAbilityId()));
+            return apiVO;
+        }).toList();
+        resPage.setRecords(resRecords);
+        return resPage;
+    }
+
+
+    @Override
+    public Page pageApis(Boolean onlyPublished, Long userId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime) {
+        LambdaQueryWrapper queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)
+                .eq(userId!=null, AbilityApiEntity::getUserId, userId)
+                .eq(userId!=null, AbilityApiEntity::getAbilityId, abilityId)
+                .ge(Objects.nonNull(startTime), AbilityApiEntity::getCreateTime, startTime)
+                .le(Objects.nonNull(endTime), AbilityApiEntity::getCreateTime, endTime)
+                .in(onlyPublished, AbilityApiEntity::getStatus, 3)
+                .and(keyword!=null && !"".equals(keyword),
+                        i -> i.like(AbilityApiEntity::getApiName, keyword)
+                                .or().like(AbilityApiEntity::getDescription, keyword)
+                                .or().like(AbilityApiEntity::getApiUrl, keyword))
+                // 排序
+                .orderByAsc(AbilityApiEntity::getStatus)
+                .orderByDesc(AbilityApiEntity::getCreateTime);
+        Page prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
+        List<AbilityApiEntity> preRecords = prePage.getRecords();
+        if (preRecords.size()==0){
+            return prePage;
+        }
+        Set<Long> abilityIds = preRecords.stream().map(api -> api.getAbilityId()).collect(Collectors.toSet());
+        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
+                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
+                .in(AbilityEntity::getAbilityId, abilityIds));
+        Map<Long, String> abilityMap = abilitys.stream().collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability.getAbilityName()));
+
         // 构造返回分页
         Page resPage = new Page(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         List<AbilityApiVO> resRecords = preRecords.stream().map(api -> {

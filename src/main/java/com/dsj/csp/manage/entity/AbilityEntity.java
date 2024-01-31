@@ -1,10 +1,10 @@
 package com.dsj.csp.manage.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import com.dsj.csp.common.entity.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.sql.Date;
@@ -19,8 +19,9 @@ import java.sql.Date;
  * 能力实体类
  */
 @Data
+@EqualsAndHashCode
 @TableName("GXYYZC_NL")
-public class AbilityEntity extends BaseEntity implements Serializable {
+public class AbilityEntity implements Serializable {
 
     /**
      * 能力ID
@@ -78,6 +79,14 @@ public class AbilityEntity extends BaseEntity implements Serializable {
     @TableField("BZ")
     @Schema(description = "备注")
     private String note;
+
+    /**
+     * 逻辑删除
+     */
+    @TableLogic(value = "0", delval = "1")
+    @TableField(value = "IS_DELETE")
+    @Schema(description = "逻辑删除")
+    private Integer isDelete;
 
     /**
      * 创建时间

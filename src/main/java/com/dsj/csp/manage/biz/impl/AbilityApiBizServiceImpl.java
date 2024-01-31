@@ -215,7 +215,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
 
     @Override
-    public Page pageApplyApis(Long userId, Long appId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime) {
+    public Page pagePassedApis(Long userId, Long appId, Long abilityId, String keyword, int current, int size, Date startTime, Date endTime) {
         // 查询出申请通过的apiId集合
         Set<Long> apiIds = abilityApiApplyService.getPassedApiIds(userId, appId, abilityId, keyword);
         if (apiIds.size()==0){

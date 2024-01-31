@@ -143,12 +143,13 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
 
 
     @Override
-    public Page<AbilityApiApplyDTO> pageApiApply(Boolean onlySubmitted, Long appId, Long userId, Long abilityId, String keyword, Date startTime, Date endTime, int current, int size) {
+    public Page<AbilityApiApplyDTO> pageApiApply(Boolean onlySubmitted, Long appId, Long userId, Long abilityId, String keyword, Integer status, Date startTime, Date endTime, int current, int size) {
         // 分页条件构造器
         LambdaQueryWrapper<AbilityApiApplyEntity> qw = Wrappers.lambdaQuery();
         qw.eq(appId != null, AbilityApiApplyEntity::getAppId, appId)
                 .eq(userId != null, AbilityApiApplyEntity::getUserId, userId)
                 .eq(abilityId != null, AbilityApiApplyEntity::getAbilityId, abilityId)
+                .eq(status != null, AbilityApiApplyEntity::getStatus, status)
                 // 如果过滤未提交状态
                 .notIn(onlySubmitted, AbilityApiApplyEntity::getStatus, 0)
                 .ge(Objects.nonNull(startTime), AbilityApiApplyEntity::getCreateTime, startTime)

@@ -42,6 +42,14 @@ public class AbilityApiApplyDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long userId;
 
+    @Schema(description="接口名称", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Length(max= 30,message="编码长度不能超过30")
+    private String apiName;
+
+    @Schema(description="接口描述")
+    @Length(max= 300,message="编码长度不能超过300")
+    private String apiDesc;
+
     @Schema(description = "能力名称")
     @Length(max= 30,message="编码长度不能超过30")
     private String abilityName;

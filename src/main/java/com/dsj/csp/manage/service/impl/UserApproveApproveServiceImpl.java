@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
@@ -34,6 +35,7 @@ import java.util.Objects;
  */
 @Service
 @RequiredArgsConstructor
+@Transactional(rollbackFor = Exception.class)
 public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper, UserApproveEntity> implements UserApproveService {
     @Resource
     private RpcUserApi rpcUserApi;
@@ -101,20 +103,20 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         if (userApproveEntity != null) {
             Integer status = user2.getStatus();
             if (status.equals(UserStatusEnum.NOAPPROVE.getStatus()) || status.equals(UserStatusEnum.SUCCESS.getStatus()) || status.equals(UserStatusEnum.FAIL.getStatus())) {
-                approveFeign(user2.getUserId(), UserStatusEnum.WAIT.getStatus());
                 user.setStatus(UserStatusEnum.WAIT.getStatus());
                 user.setNote("审核中");
                 user.setCreateTime(new Date());
                 baseMapper.updateById(user);
+                approveFeign(user2.getUserId(), UserStatusEnum.WAIT.getStatus());
                 return "实名认证已提交，请等待管理员审核";
             } else {
                 throw new FlowException(CodeEnum.APPROVE_ERROR);
             }
         } else {
-            approveFeign(user2.getUserId(), UserStatusEnum.WAIT.getStatus());
             user.setStatus(UserStatusEnum.WAIT.getStatus());
             user.setCreateTime(new Date());
             baseMapper.insert(user);
+            approveFeign(user2.getUserId(), UserStatusEnum.WAIT.getStatus());
             return "实名认证已提交，请等待管理员审核";
         }
     }
@@ -153,7 +155,6 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     @Override
     public void approveSuccess(UserApproveRequest user, String accessToken) {
         identify(accessToken);
-        approveFeign(user.getUserId(), UserStatusEnum.SUCCESS.getStatus());
         UserApproveEntity userApproveEntity = baseMapper.selectById(user.getUserId());
         boolean updateResult = this.lambdaUpdate()
                 .eq(Objects.nonNull(userApproveEntity.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())
@@ -165,6 +166,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
             log.error("更新失败");
             throw new FlowException(CodeEnum.UPDATE_ERROR);
         }
+        approveFeign(user.getUserId(), UserStatusEnum.SUCCESS.getStatus());
 //          FIXME  return updateResult; 在controller做判断并进行不同的响应
         // TODO 为每一次的sql结果负责
     }
@@ -172,19 +174,18 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     @Override
     public void approveFail(UserApproveRequest user, String accessToken) {
         identify(accessToken);
-        approveFeign(user.getUserId(), UserStatusEnum.FAIL.getStatus());
         UserApproveEntity userApproveEntity = baseMapper.selectById(user.getUserId());
         boolean updateResult = this.lambdaUpdate()
                 .eq(Objects.nonNull(userApproveEntity.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())
                 .eq(UserApproveEntity::getUserId, user.getUserId())
                 .set(UserApproveEntity::getStatus, UserStatusEnum.FAIL.getStatus())
                 .set(UserApproveEntity::getNote, user.getNote())
-                .set(UserApproveEntity::getUserType, 0)
                 .update();
         if (!updateResult) {
             log.error("更新失败");
             throw new FlowException(CodeEnum.UPDATE_ERROR);
         }
+        approveFeign(user.getUserId(), UserStatusEnum.FAIL.getStatus());
     }
 
     @Override

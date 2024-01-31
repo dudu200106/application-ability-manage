@@ -73,14 +73,14 @@ public class AbilityController {
         return Result.success(abilityService.page(abilityQuery.toPage(), abilityQuery.getQueryWrapper()));
     }
 
-//
-//    @Operation(summary = "分页查询可调用能力列表", description = "分页查询可调用能力列表")
-//    @PostMapping ("/page-available-ability")
-//    public Result<?> queryAvailablePage(
-//            @Valid @RequestBody AbilityQueryVO abilityQuery) {
-//        LambdaQueryWrapper abilityQW = abilityQuery.getQueryWrapper().lambda().in(AbilityEntity::getStatus, 4);
-//        return Result.success(abilityService.page(abilityQuery.toPage(), abilityQW));
-//    }
+
+    @Operation(summary = "分页查询可调用能力列表", description = "分页查询可调用能力列表")
+    @PostMapping ("/page-available-ability")
+    public Result<?> queryAvailablePage(
+            @Valid @RequestBody AbilityQueryVO abilityQuery) {
+        LambdaQueryWrapper abilityQW = abilityQuery.getQueryWrapper().lambda().in(AbilityEntity::getStatus, 4);
+        return Result.success(abilityService.page(abilityQuery.toPage(), abilityQW));
+    }
 
     @Operation(summary = "审核能力注册", description = "审核能力注册申请")
     @PostMapping("/audit-login")

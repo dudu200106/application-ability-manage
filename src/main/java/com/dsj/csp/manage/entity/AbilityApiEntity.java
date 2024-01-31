@@ -27,7 +27,7 @@ public class AbilityApiEntity implements Serializable {
 
     @TableField("NLJK_MS")
     @Schema(description = "接口描述")
-    private String description;
+    private String apiDesc;
 
     @TableField("DYLXZ")
     @Schema(description = "调用量限制")

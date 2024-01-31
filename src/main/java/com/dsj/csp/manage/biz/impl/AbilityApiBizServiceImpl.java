@@ -229,7 +229,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                 // 接口信息关键字模糊查询
                 .and(keyword!=null && !"".equals(keyword),i -> i
                         .like(AbilityApiEntity::getApiName, keyword)
-                        .or().like(AbilityApiEntity::getDescription, keyword)
+                        .or().like(AbilityApiEntity::getApiDesc, keyword)
                         .or().like(AbilityApiEntity::getApiUrl, keyword))
                 // 排序
                 .orderByAsc(AbilityApiEntity::getStatus)
@@ -268,7 +268,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                 .in(onlyPublished, AbilityApiEntity::getStatus, 3)
                 .and(keyword!=null && !"".equals(keyword),
                         i -> i.like(AbilityApiEntity::getApiName, keyword)
-                                .or().like(AbilityApiEntity::getDescription, keyword)
+                                .or().like(AbilityApiEntity::getApiDesc, keyword)
                                 .or().like(AbilityApiEntity::getApiUrl, keyword))
                 // 排序
                 .orderByAsc(AbilityApiEntity::getStatus)

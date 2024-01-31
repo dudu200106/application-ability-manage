@@ -1,11 +1,9 @@
 package com.dsj.csp.manage.controller;
 
-import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
@@ -20,12 +18,10 @@ import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.AbilityApplyService;
 import com.dsj.csp.manage.service.AbilityService;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -297,14 +293,21 @@ public class AbilityController {
         return Result.success(msg);
     }
 
-    @Operation(summary = "分页查询接口申请列表", description = "分页查询接口申请列表")
+    @Operation(summary = "分页查询所有接口申请列表", description = "分页查询接口申请列表")
     @GetMapping("/page-api-apply")
-    public Result<?> pageApiApply(@Parameter(description = "用户ID") Long userId, @Parameter(description = "应用ID") Long appId,
-                                  @Parameter(description = "能力ID") Long abilityId, @Parameter(description = "分页条数") int size,
-                                  @Parameter(description = "当前页数") int current, @Parameter(description = "搜索关键字") String keyword,
-                                  @Parameter(description = "开始时间") Date startTime, @Parameter(description = "结束时间") Date endTime) {
-        return Result.success(abilityApiApplyBizService.pageApply(appId, userId, abilityId, keyword, startTime, endTime, current, size));
+    public Result<?> pageApiApply(@Parameter(description = "是否屏蔽'未提交'状态申请") Boolean onlySubmitted,
+                                  @Parameter(description = "用户ID") Long userId,
+                                  @Parameter(description = "应用ID") Long appId,
+                                  @Parameter(description = "能力ID") Long abilityId,
+                                  @Parameter(description = "分页条数") int size,
+                                  @Parameter(description = "当前页数") int current,
+                                  @Parameter(description = "搜索关键字") String keyword,
+                                  @Parameter(description = "开始时间") Date startTime,
+                                  @Parameter(description = "结束时间") Date endTime) {
+        return Result.success(abilityApiApplyBizService.pageApiApply(onlySubmitted, appId, userId, abilityId, keyword, startTime, endTime, current, size));
     }
+
+
 
     @Operation(summary = "编辑能力使用申请", description = "编辑能力使用申请")
     @PostMapping("/edit-api-apply")
@@ -313,5 +316,15 @@ public class AbilityController {
                 .eq(AbilityApiApplyEntity::getApiApplyId, apiApplyEntity.getApiApplyId());
         return Result.success(abilityApiApplyService.update(apiApplyEntity, updateWrapper));
     }
+
+    @Operation(summary = "删除接口申请")
+    @PostMapping("/delete-api-apply")
+    public Result<?> removeApiApply(@RequestBody AbilityDeleteDTO deleteDTO){
+        String apiApplyIds = deleteDTO.getApiApplyIds();
+        List<Long> ids = Arrays.asList(apiApplyIds.split(",")).stream().map(id -> Long.parseLong(id)).toList();
+        Boolean delFlag = abilityApiApplyService.removeBatchByIds(ids);
+        return Result.success("删除能力申请完成! ", delFlag);
+    }
+
 
 }

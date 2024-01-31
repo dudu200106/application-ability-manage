@@ -1,12 +1,11 @@
 package com.dsj.csp.manage.dto;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.dsj.csp.manage.entity.AbilityApiReq;
 import com.dsj.csp.manage.entity.AbilityApiResp;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -23,12 +22,15 @@ public class AbilityApiVO implements Serializable {
     private Long abilityId;
 
     @Schema(description = "能力名称")
+    @Length(max= 30,message="编码长度不能超过30")
     private String abilityName;
 
     @Schema(description="接口名称", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Length(max= 30,message="编码长度不能超过30")
     private String apiName;
 
     @Schema(description="接口描述")
+    @Length(max= 300,message="编码长度不能超过300")
     private String description;
 
     @Schema(description="调用量限制")
@@ -58,11 +60,11 @@ public class AbilityApiVO implements Serializable {
     @Schema(description = "更新时间")
     private Timestamp updateTime;
 
-    @Schema(description = "网关公钥")
-    private String publicKey;
-
-    @Schema(description = "网关私钥")
-    private String secretKey;
+//    @Schema(description = "网关公钥")
+//    private String publicKey;
+//
+//    @Schema(description = "网关私钥")
+//    private String secretKey;
 
     @Schema(description = "请求方法", requiredMode = Schema.RequiredMode.REQUIRED)
     private String reqMethod;
@@ -76,14 +78,22 @@ public class AbilityApiVO implements Serializable {
     @Schema(description = "响应状态码")
     private String respStatusCode;
 
+    @Schema(description = "状态")
+    private Integer status;
+
+    @Schema(description = "接口提供者ID")
+    private Long userId;
+
     /**
      * 请求参数列表
      */
+    @Schema(description = "接口的请求参数")
     private List<AbilityApiReq> reqList;
 
     /**
      * 相应参数列表
      */
+    @Schema(description = "接口的响应参数")
     private List<AbilityApiResp> respList;
 
 }

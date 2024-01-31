@@ -2,7 +2,9 @@ package com.dsj.csp.manage.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 @Data
 public class AbilityApplyAuditVO {
@@ -22,5 +24,6 @@ public class AbilityApplyAuditVO {
     private int flag;
 
     @Schema(description = "备注说明")
+    @Length(max= 300,message="编码长度不能超过300")
     private String note;
 }

@@ -31,6 +31,8 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     private final UserApproveService userApproveService;
     private final AbilityService abilityService;
     private final AbilityApiService abilityApiService;
+    private final AbilityApiReqService abilityApiReqService;
+    private final AbilityApiRespService abilityApiRespService;
 
     @Override
     public void saveApiApply(AbilityApiApplyEntity applyEntity) {
@@ -66,9 +68,14 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         if (api==null || user==null){
             throw new BusinessException("申请接口状态异常! 请确保相关申请的应用、接口数据信息正常!");
         }
+        List<AbilityApiReq> reqParams = abilityApiReqService.list(Wrappers.lambdaQuery(AbilityApiReq.class).eq(AbilityApiReq::getApiId, api.getApiId()));
+        List<AbilityApiResp> respParams = abilityApiRespService.list(Wrappers.lambdaQuery(AbilityApiResp.class).eq(AbilityApiResp::getApiId, api.getApiId()));
         //构造返回能力申请信息DTO
         AbilityApiApplyDTO resApply = new AbilityApiApplyDTO();
         BeanUtil.copyProperties(apply, resApply,true);
+        resApply.setApi(api);
+        resApply.setReqParams(reqParams);
+        resApply.setRespParams(respParams);
         resApply.setApi(api);
         resApply.setCompanyName(user.getCompanyName());
         resApply.setGovName(user.getGovName());
@@ -135,13 +142,17 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         return auditMsg;
     }
 
+
+
     @Override
-    public Page<AbilityApiApplyDTO> pageApply(Long appId, Long userId, Long abilityId, String keyword, Date startTime, Date endTime,  int current, int size) {
+    public Page<AbilityApiApplyDTO> pageApiApply(Boolean onlySubmitted, Long appId, Long userId, Long abilityId, String keyword, Date startTime, Date endTime, int current, int size) {
         // 分页条件构造器
         LambdaQueryWrapper<AbilityApiApplyEntity> qw = Wrappers.lambdaQuery();
         qw.eq(appId != null, AbilityApiApplyEntity::getAppId, appId)
                 .eq(userId != null, AbilityApiApplyEntity::getUserId, userId)
                 .eq(abilityId != null, AbilityApiApplyEntity::getAbilityId, abilityId)
+                // 如果过滤未提交状态
+                .notIn(onlySubmitted, AbilityApiApplyEntity::getStatus, 0)
                 .ge(Objects.nonNull(startTime), AbilityApiApplyEntity::getCreateTime, startTime)
                 .le(Objects.nonNull(endTime), AbilityApiApplyEntity::getCreateTime, endTime)
                 // 关键字

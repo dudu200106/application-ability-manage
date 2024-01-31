@@ -32,4 +32,6 @@ public interface AbilityApiBizService {
 
     Page pageApplyApis(Long userId, Long appId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime);
 
+    Page pageApiList(Boolean onlyPublished, Long userId, Long appId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime);
+
 }

@@ -2,6 +2,7 @@ package com.dsj.csp.manage.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
@@ -19,6 +20,7 @@ public class AbilityAuditVO {
     private Long abilityId;
 
     @Schema(description = "审核状态", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Size(max= 5, min = 0, message="flag范围在0~5")
     private int flag;
 
     @Schema(description = "备注说明")

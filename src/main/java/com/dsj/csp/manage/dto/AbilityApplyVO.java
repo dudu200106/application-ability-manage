@@ -3,6 +3,7 @@ package com.dsj.csp.manage.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 import java.io.Serializable;
 
@@ -22,6 +23,7 @@ public class AbilityApplyVO implements Serializable {
     private Long abilityId;
 
     @Schema(description = "能力名称", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Length(max= 30,message="编码长度不能超过30")
     private String abilityName;
 
     @Schema(description = "申请状态")
@@ -39,5 +41,6 @@ public class AbilityApplyVO implements Serializable {
     private String apiIds;
 
     @Schema(description = "申请说明")
+    @Length(max= 300,message="编码长度不能超过300")
     private String illustrate;
 }

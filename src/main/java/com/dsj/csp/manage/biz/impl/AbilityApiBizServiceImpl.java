@@ -245,12 +245,12 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
                 .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
                 .in(AbilityEntity::getAbilityId, abilityIds));
-        Map<Long, String> abilityMap = abilitys.stream().collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability.getAbilityName()));
+        Map<Long, AbilityEntity> abilityMap = abilitys.stream().collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability));
         Page resPage = new Page(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         List<AbilityApiVO> resRecords = preRecords.stream().map(api -> {
             AbilityApiVO apiVO = new AbilityApiVO();
             BeanUtil.copyProperties(api, apiVO);
-            apiVO.setAbilityName(abilityMap.get(api.getAbilityId()));
+            apiVO.setAbilityName(abilityMap.get(api.getAbilityId())==null ? null : abilityMap.get(api.getAbilityId()).getAbilityName());
             return apiVO;
         }).toList();
         resPage.setRecords(resRecords);

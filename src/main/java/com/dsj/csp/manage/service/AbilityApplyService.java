@@ -17,4 +17,6 @@ public interface AbilityApplyService extends IService<AbilityApplyEntity> {
 
     // 统计用户申请的能力数
     long countUserApplyAbility(String userId);
+
+    int deleteApplyByAppId(Long appId);
 }

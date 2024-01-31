@@ -11,6 +11,8 @@ public class AbilityDeleteDTO implements Serializable {
 
     private String abilityApplyIds;
 
+    private String apiApplyIds;
+
     private String apiIds;
 
 }

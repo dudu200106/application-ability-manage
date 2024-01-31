@@ -10,8 +10,8 @@ import com.dsj.csp.manage.dto.AbilityApiQueryVO;
 import com.dsj.csp.manage.dto.AbilityApiVO;
 import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.*;
-import com.dsj.csp.manage.util.Sm2;
 import lombok.RequiredArgsConstructor;
+import org.bouncycastle.math.ec.WTauNafMultiplier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +26,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
     private final ManageApplicationService manageApplicationService;
     private final AbilityApplyService abilityApplyService;
+    private final AbilityApiApplyService abilityApiApplyService;
     private final AbilityApiService abilityApiService;
     private final AbilityApiReqService abilityApiReqService;
     private final AbilityApiRespService abilityApiRespService;
@@ -64,9 +65,6 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         AbilityApiEntity api = new AbilityApiEntity();
         try{
             BeanUtil.copyProperties(apiVO, api, true);
-            Map<String, String> sm2Map = Sm2.sm2Test();
-            api.setPublicKey(sm2Map.get("publicEncode"));
-            api.setSecretKey(sm2Map.get("privateEncode"));
             abilityApiService.save(api);
         }catch (Exception e){
             throw new BusinessException("保存api信息出错! 可能存在的异常:输入的URL地址重名");
@@ -217,7 +215,6 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
 
-
     @Override
     public Page pageApplyApis(Long userId, Long appId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime) {
         // 查出符合的接口Id列表, 准备分页
@@ -249,6 +246,37 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 //        Page resPage = new Page(page.getCurrent(), page.getSize());
 //        resPage.setRecords(resRecords);
         return page;
+    }
+
+
+    @Override
+    public Page pageApiList(Boolean onlyPublished, Long userId, Long appId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime) {
+        Set<Long> apiIds = abilityApiApplyService.getApiIds(userId, appId, abilityId, keyword);
+        LambdaQueryWrapper queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)
+                .ge(Objects.nonNull(startTime), AbilityApiEntity::getCreateTime, startTime)
+                .le(Objects.nonNull(endTime), AbilityApiEntity::getCreateTime, endTime)
+                .in(onlyPublished, AbilityApiEntity::getStatus, 3)
+                .in(apiIds.size()>0, AbilityApiEntity::getApiId, apiIds)
+                // 排序
+                .orderByAsc(AbilityApiEntity::getStatus)
+                .orderByDesc(AbilityApiEntity::getCreateTime);
+        Page prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
+        List<AbilityApiEntity> preRecords = prePage.getRecords();
+        Set<Long> abilityIds = preRecords.stream().map(api -> api.getAbilityId()).collect(Collectors.toSet());
+        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
+                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
+                .in(AbilityEntity::getAbilityId, abilityIds));
+        Map<Long, String> abilityMap = abilitys.stream().collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability.getAbilityName()));
+        // 构造返回分页
+        Page resPage = new Page(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
+        List<AbilityApiVO> resRecords = preRecords.stream().map(api -> {
+            AbilityApiVO apiVO = new AbilityApiVO();
+            BeanUtil.copyProperties(api, apiVO);
+            apiVO.setAbilityName(abilityMap.get(api.getAbilityId()));
+            return apiVO;
+        }).toList();
+        resPage.setRecords(resRecords);
+        return resPage;
     }
 
 

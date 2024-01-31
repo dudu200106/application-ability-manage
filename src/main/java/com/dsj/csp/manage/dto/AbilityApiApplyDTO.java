@@ -1,6 +1,8 @@
 package com.dsj.csp.manage.dto;
 
 import com.dsj.csp.manage.entity.AbilityApiEntity;
+import com.dsj.csp.manage.entity.AbilityApiReq;
+import com.dsj.csp.manage.entity.AbilityApiResp;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -68,8 +70,6 @@ public class AbilityApiApplyDTO {
     @Schema(description="创建时间")
     private Date createTime;
 
-    @Schema(description = "申请使用的接口")
-    private AbilityApiEntity api;
 
     @Schema(description = "公司名称")
     @Length(max= 30,message="编码长度不能超过30")
@@ -78,5 +78,20 @@ public class AbilityApiApplyDTO {
     @Schema(description = "政府名称")
     @Length(max= 30,message="编码长度不能超过30")
     private String govName;
+
+    @Schema(description = "申请使用的接口")
+    private AbilityApiEntity api;
+
+    /**
+     * 请求参数列表
+     */
+    @Schema(description = "接口的请求参数")
+    private List<AbilityApiReq> reqParams;
+
+    /**
+     * 相应参数列表
+     */
+    @Schema(description = "接口的响应参数")
+    private List<AbilityApiResp> respParams;
 
 }

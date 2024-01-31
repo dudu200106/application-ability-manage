@@ -1,6 +1,7 @@
 package com.dsj.csp.manage.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dsj.csp.manage.entity.AbilityApplyEntity;
@@ -64,5 +65,12 @@ public class AbilityApplyServiceImpl extends ServiceImpl<AbilityApplyMapper, Abi
                 .select(AbilityApplyEntity::getAbilityId);
         Set<Long> abilityIdSet = this.getBaseMapper().selectList(queryWrapper).stream().map(e-> e.getAbilityId()).collect(Collectors.toSet());
         return abilityIdSet.size();
+    }
+
+    @Override
+    public int deleteApplyByAppId(Long appId) {
+        LambdaUpdateWrapper deleteUW = Wrappers.lambdaUpdate(AbilityApplyEntity.class)
+                .eq(AbilityApplyEntity::getAppId, appId);
+        return this.getBaseMapper().delete(deleteUW);
     }
 }

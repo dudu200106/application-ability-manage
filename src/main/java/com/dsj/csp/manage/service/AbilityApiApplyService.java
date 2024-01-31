@@ -7,9 +7,14 @@ import java.util.Set;
 
 public interface AbilityApiApplyService extends IService<AbilityApiApplyEntity> {
 
-    // 根据条件获取apiID集合
-    Set<Long> getApiIds(Long userId, Long appId, Long abilityId, String keyword);
-
-
+    /**
+     * 根据条件获取， 接口申请审核通过的apiID集合
+     * @param userId
+     * @param appId
+     * @param abilityId
+     * @param keyword
+     * @return 申请审核通过的apiID集合
+     */
+    Set<Long> getPassedApiIds(Long userId, Long appId, Long abilityId, String keyword);
 
 }

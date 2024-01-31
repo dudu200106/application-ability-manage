@@ -84,7 +84,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
 
 
     public String auditApply(AbilityAuditVO auditVO) {
-        AbilityApiApplyEntity apply = abilityApiApplyService.getById(auditVO.getAbilityApplyId());
+        AbilityApiApplyEntity apply = abilityApiApplyService.getById(auditVO.getApiApplyId());
         if (apply==null){
             throw new BusinessException("审核失败! 请刷新页面后重试...");
         }
@@ -106,7 +106,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         abilityApiApplyService.update(updateWrapper);
 
         // 判断是否要生成一对密钥
-        Long appId = abilityApiApplyService.getById(auditVO.getAbilityApplyId()).getAppId();
+        Long appId = abilityApiApplyService.getById(auditVO.getApiApplyId()).getAppId();
         ManageApplicationEntity app = manageApplicationService.getById(appId);
         // 如果申请的appId不存在
         if (app == null){

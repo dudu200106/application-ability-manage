@@ -22,14 +22,16 @@ import java.util.Set;
 public class AbilityApiApplyServiceImpl extends ServiceImpl<AbilityApiApplyMapper, AbilityApiApplyEntity> implements AbilityApiApplyService  {
 
     @Override
-    public Set<Long> getApiIds(Long userId, Long appId, Long abilityId, String keyword) {
+    public Set<Long> getPassedApiIds(Long userId, Long appId, Long abilityId, String keyword) {
         List<Long> apiIdsList = this.getBaseMapper().selectList(Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
+                        .eq(AbilityApiApplyEntity::getStatus, 2)
                         .eq(userId!= null, AbilityApiApplyEntity::getUserId, userId)
                         .eq(appId!= null, AbilityApiApplyEntity::getAppId, appId)
                         .eq(abilityId!= null, AbilityApiApplyEntity::getAbilityId, abilityId)
+                        //接口申请信息关键字模糊查询
                         .and(keyword!=null && !"".equals(keyword),i -> i
-                                .like(AbilityApiApplyEntity::getAbilityName, keyword)
-                                .like(AbilityApiApplyEntity::getAppName, keyword))
+                                .or().like(AbilityApiApplyEntity::getAbilityName, keyword)
+                                .or().like(AbilityApiApplyEntity::getAppName, keyword))
                         .select(AbilityApiApplyEntity::getApiId))
                 .stream().map(e->e.getApiId()).toList();
         // 分割去重得到apiId集合

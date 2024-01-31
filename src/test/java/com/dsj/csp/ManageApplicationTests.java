@@ -54,7 +54,7 @@ class ManageApplicationTests {
 
     @Test
     void testPageApplyApi(){
-        abilityApiBizService.pageApplyApis(null, null,  1749356491904835586L, null, 100, 1, null, null);
+        abilityApiBizService.pagePassedApis(null, null,  1749356491904835586L, null, 100, 1, null, null);
     }
 
 }

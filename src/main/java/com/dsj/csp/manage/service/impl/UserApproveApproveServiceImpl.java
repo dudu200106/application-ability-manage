@@ -51,19 +51,17 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         String responseBody = response.getBody();
         JSONObject responseJson = JSON.parseObject(responseBody);
         JSONObject dataJson = JSON.parseObject(responseJson.getString("data"));
-//        JSONObject dataJson = JSON.parseObject(responseJson.getString("data"));
-        UserApproveRequest userApproveRequest = new UserApproveRequest();
-        try {
-            userApproveRequest.setUserId(dataJson.getString("id"));
-            userApproveRequest.setUserName(dataJson.getString("name"));
-            userApproveRequest.setStatus(dataJson.getInteger("smzt"));
-            userApproveRequest.setPhone(dataJson.getString("phone"));
-            userApproveRequest.setLoginWay(dataJson.getObject("loginWays",AccountLoginWay.class));
-            userApproveRequest.setLoginName(dataJson.getString("loginName"));
-            return userApproveRequest;
-        } catch (Exception e) {
+        String code = responseJson.getString("code");
+        if (code.equals("-1")) {
             throw new FlowException(CodeEnum.TOKEN_ERROR);
         }
+        UserApproveRequest userApproveRequest = new UserApproveRequest();
+        userApproveRequest.setUserId(dataJson.getString("id"));
+        userApproveRequest.setUserName(dataJson.getString("name"));
+        userApproveRequest.setStatus(dataJson.getInteger("smzt"));
+        userApproveRequest.setPhone(dataJson.getString("phone"));
+        userApproveRequest.setLoginName(dataJson.getString("loginName"));
+        return userApproveRequest;
     }
 
     //远程调用用户实名状态更新接口
@@ -78,14 +76,14 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     @Override
     public Result<Boolean> updatePassword(String password, String newPassword, String newPassword2, String accessToken) {
         UserApproveRequest identify = identify(accessToken);
-        UserChangePasswordDTO userChangePasswordDTO=new UserChangePasswordDTO();
-        if(newPassword.equals(newPassword2)){
+        UserChangePasswordDTO userChangePasswordDTO = new UserChangePasswordDTO();
+        if (newPassword.equals(newPassword2)) {
             userChangePasswordDTO.setPassword(password);
             userChangePasswordDTO.setNewPassword(newPassword);
-            userChangePasswordDTO.setLoginWay(identify.getLoginWay());
+            userChangePasswordDTO.setLoginWay(AccountLoginWay.of(2));
             userChangePasswordDTO.setLoginName(identify.getLoginName());
             return rpcUserApi.changePassword(userChangePasswordDTO);
-        }else {
+        } else {
             return Result.failed("两次密码不一致，请重新输入");
         }
     }
@@ -112,7 +110,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
             } else {
                 throw new FlowException(CodeEnum.APPROVE_ERROR);
             }
-        }else {
+        } else {
             approveFeign(user2.getUserId(), UserStatusEnum.WAIT.getStatus());
             user.setStatus(UserStatusEnum.WAIT.getStatus());
             user.setCreateTime(new Date());

@@ -21,6 +21,4 @@ public interface AbilityService extends IService<AbilityEntity> {
     // 审核能力注册
     String auditAbility(AbilityAuditVO auditVO);
 
-
-
 }

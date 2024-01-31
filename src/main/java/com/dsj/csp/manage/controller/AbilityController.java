@@ -100,6 +100,15 @@ public class AbilityController {
         return Result.success("添加接口成功!");
     }
 
+
+    @Operation(summary = "审核接口使用申请", description = "审核接口使用申请")
+    @PostMapping("/audit-api")
+    public Result<?> auditApi(@RequestBody AbilityAuditVO auditVO){
+        String  msg = abilityApiService.auditApi(auditVO);
+        return Result.success(msg);
+    }
+
+
     @Operation(summary = "查询接口信息", description = "查询特定接口的信息")
     @GetMapping("/query-api-info")
     public Result<?> queryApiInfo(@Parameter(description = "接口ID") @RequestParam Long apiId) {
@@ -325,6 +334,7 @@ public class AbilityController {
         Boolean delFlag = abilityApiApplyService.removeBatchByIds(ids);
         return Result.success("删除能力申请完成! ", delFlag);
     }
+
 
 
 }

@@ -2,8 +2,6 @@ package com.dsj.csp.manage.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.Result;
-import com.dsj.csp.manage.biz.AbilityApiBizService;
-import com.dsj.csp.manage.biz.AbilityApplyBizService;
 import com.dsj.csp.manage.dto.ManageApplictionVo;
 import com.dsj.csp.manage.entity.ManageApplicationEntity;
 import com.dsj.csp.manage.service.ManageApplicationService;
@@ -11,13 +9,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Du Shun Chang
@@ -32,8 +27,7 @@ import java.util.Map;
 public class ManageApplicationController {
     //    @Resource
     private final ManageApplicationService manageApplicationService;
-    @Autowired
-    private final AbilityApplyBizService abilityApplyBizService;
+    //    @Autowired
 
 
     /**
@@ -92,7 +86,6 @@ public class ManageApplicationController {
     public Result<?> countAppUser(@Parameter String appUserId) {
         return Result.success(manageApplicationService.countAppUser(appUserId));
     }
-
 
 
 }

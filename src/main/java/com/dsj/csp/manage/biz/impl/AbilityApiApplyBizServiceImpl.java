@@ -169,6 +169,12 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
             return prePage;
         }
         List<AbilityApiApplyEntity> records = prePage.getRecords();
+        // 接口表
+        Set<Long> apiIds = records.stream().map(e->e.getApiId()).collect(Collectors.toSet());
+        List<AbilityApiEntity> apis = abilityApiService.list(Wrappers.lambdaQuery(AbilityApiEntity.class)
+                .select(AbilityApiEntity::getApiId, AbilityApiEntity::getApiName, AbilityApiEntity::getDescription)
+                .in(AbilityApiEntity::getApiId, apiIds));
+        Map<Long, AbilityApiEntity> apiMap = apis.stream().collect(Collectors.toMap(api -> api.getApiId(), api -> api));
         // 用户表 查出企业/政府名称
         Set<Long> userIds = records.stream().map(e->e.getUserId()).collect(Collectors.toSet());
         List<UserApproveEntity> users = userApproveService.list(Wrappers.lambdaQuery(UserApproveEntity.class)
@@ -183,6 +189,8 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
             BeanUtil.copyProperties(apply, applyDTO, true);
             applyDTO.setCompanyName(userMap.get(apply.getUserId())==null ? null : userMap.get(apply.getAbilityId()).getCompanyName());
             applyDTO.setGovName(userMap.get(apply.getUserId())==null ? null : userMap.get(apply.getAbilityId()).getGovName());
+            applyDTO.setApiName(apiMap.get(apply.getApiId())==null ? null : apiMap.get(apply.getApiId()).getApiName());
+            applyDTO.setApiDesc(apiMap.get(apply.getApiId())==null ? null : apiMap.get(apply.getApiId()).getDescription());
             return applyDTO;
         }).toList();
         newPage.setRecords(resRecords);

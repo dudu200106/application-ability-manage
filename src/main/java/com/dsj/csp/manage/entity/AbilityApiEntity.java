@@ -90,11 +90,13 @@ public class AbilityApiEntity extends BaseEntity implements Serializable {
     @Schema(description = "响应状态码")
     private String respStatusCode;
 
-
     @TableField(value = "ZT")
     @Schema(description = "状态")
     private Integer status;
 
+    @TableField(value = "BZ")
+    @Schema(description = "状态")
+    private Integer note;
 
     @TableField(value = "YH_ID")
     @Schema(description = "接口提供者ID")

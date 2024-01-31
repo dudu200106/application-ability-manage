@@ -19,6 +19,10 @@ public class AbilityAuditVO {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long abilityId;
 
+    @Schema(description = "接口ID")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private Long apiId;
+
     @Schema(description = "审核状态", requiredMode = Schema.RequiredMode.REQUIRED)
     @Size(max= 5, min = 0, message="flag范围在0~5")
     private int flag;

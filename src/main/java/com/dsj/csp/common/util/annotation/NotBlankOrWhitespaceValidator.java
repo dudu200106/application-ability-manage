@@ -11,7 +11,7 @@ public class NotBlankOrWhitespaceValidator implements ConstraintValidator<NotBla
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        if (value == null) {
+        if (value == null||value=="") {
             return true; // 字段为null时不进行校验
         }
         return !value.trim().isEmpty(); // 判断字段是否为空或只包含空格

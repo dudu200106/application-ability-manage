@@ -1,6 +1,7 @@
 package com.dsj.csp.manage.controller;
 
 import com.dsj.common.dto.Result;
+import com.dsj.csp.manage.dto.response.UserApproveResponse;
 import com.dsj.csp.manage.entity.UserApproveEntity;
 import com.dsj.csp.manage.service.UserApproveService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,7 +35,7 @@ public class UserApproveController {
 
     @Operation(summary = "用户修改密码")
     @PostMapping("/updatePassword")
-    public Result<?> updatePassword(String password,String newPassword,String newPassword2,@RequestHeader("accessToken") String accessToken){
-        return Result.success(userApproveService.updatePassword(password,newPassword,newPassword2,accessToken));
+    public Result<?> updatePassword(@RequestBody UserApproveResponse userApproveResponse, @RequestHeader("accessToken") String accessToken){
+        return Result.success(userApproveService.updatePassword(userApproveResponse,accessToken));
     }
 }

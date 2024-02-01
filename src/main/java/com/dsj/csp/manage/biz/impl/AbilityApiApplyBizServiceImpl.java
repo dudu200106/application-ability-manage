@@ -187,8 +187,8 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         List<AbilityApiApplyDTO> resRecords = records.stream().map(apply ->{
             AbilityApiApplyDTO applyDTO = new AbilityApiApplyDTO();
             BeanUtil.copyProperties(apply, applyDTO, true);
-            applyDTO.setCompanyName(userMap.get(apply.getUserId())==null ? null : userMap.get(apply.getAbilityId()).getCompanyName());
-            applyDTO.setGovName(userMap.get(apply.getUserId())==null ? null : userMap.get(apply.getAbilityId()).getGovName());
+            applyDTO.setCompanyName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getCompanyName());
+            applyDTO.setGovName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getGovName());
             applyDTO.setApiName(apiMap.get(apply.getApiId())==null ? null : apiMap.get(apply.getApiId()).getApiName());
             applyDTO.setApiDesc(apiMap.get(apply.getApiId())==null ? null : apiMap.get(apply.getApiId()).getApiDesc());
             return applyDTO;

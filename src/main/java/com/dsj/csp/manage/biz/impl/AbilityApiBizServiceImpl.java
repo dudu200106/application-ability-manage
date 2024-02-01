@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
-import com.dsj.csp.manage.dto.AbilityApiQueryVO;
 import com.dsj.csp.manage.dto.AbilityApiVO;
 import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.*;
@@ -107,33 +106,6 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         return res ;
     }
 
-    public Page pageApi(AbilityApiQueryVO apiQueryVO){
-        Page<AbilityApiEntity> page = abilityApiService.page(apiQueryVO.toPage(), apiQueryVO.getQueryWrapper());
-        // 数据条数为空, 直接返回, 避免空指针
-        if (page.getTotal()==0){
-            return page;
-        }
-        // 查出能力ID和能力名称的映射
-        List<AbilityApiEntity> records = page.getRecords();
-        Set<Long> abilityIds = records.stream().map(e->e.getAbilityId()).collect(Collectors.toSet());
-        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
-                .in(AbilityEntity::getAbilityId, abilityIds)
-                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName));
-        Map<Long, String> abilityMap = abilitys.stream()
-                .collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability.getAbilityName()));
-
-        // 构造返回的分页resPage
-        List<AbilityApiVO> newRecords = records.stream().map(api->{
-            AbilityApiVO apiVO = new AbilityApiVO();
-            BeanUtil.copyProperties(api, apiVO, true);
-            apiVO.setAbilityName(abilityMap.get(api.getAbilityId()));
-            return apiVO;
-        }).toList();
-        Page<AbilityApiVO> resPage = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
-        resPage.setRecords(newRecords);
-        return resPage;
-    }
-
     @Override
     public List<AbilityApiEntity> getApplyApiList(Long abilityApplyId) {
         String apiIds = abilityApplyService.getById(abilityApplyId).getApiIds();
@@ -232,8 +204,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                         .or().like(AbilityApiEntity::getApiDesc, keyword)
                         .or().like(AbilityApiEntity::getApiUrl, keyword))
                 // 排序
-                .orderByAsc(AbilityApiEntity::getStatus)
-                .orderByDesc(AbilityApiEntity::getCreateTime);
+                .orderByDesc(AbilityApiEntity::getUpdateTime)
+                .orderByAsc(AbilityApiEntity::getStatus);
         // 主表分页查询
         Page prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
         List<AbilityApiEntity> preRecords = prePage.getRecords();
@@ -259,10 +231,12 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
 
     @Override
-    public Page pageApis(Boolean onlyPublished, Long userId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime) {
+    public Page pageApiCatalog(Boolean onlyPublished, String reqMethod, Integer status, Long userId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime) {
         LambdaQueryWrapper queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)
                 .eq(userId!=null, AbilityApiEntity::getUserId, userId)
-                .eq(userId!=null, AbilityApiEntity::getAbilityId, abilityId)
+                .eq(abilityId!=null, AbilityApiEntity::getAbilityId, abilityId)
+                .eq(reqMethod!=null, AbilityApiEntity::getReqMethod, reqMethod)
+                .eq(status!=null, AbilityApiEntity::getStatus, status)
                 .ge(Objects.nonNull(startTime), AbilityApiEntity::getCreateTime, startTime)
                 .le(Objects.nonNull(endTime), AbilityApiEntity::getCreateTime, endTime)
                 .in(onlyPublished, AbilityApiEntity::getStatus, 3)
@@ -271,7 +245,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                                 .or().like(AbilityApiEntity::getApiDesc, keyword)
                                 .or().like(AbilityApiEntity::getApiUrl, keyword))
                 // 排序
-                .orderByDesc(AbilityApiEntity::getCreateTime)
+                .orderByDesc(AbilityApiEntity::getUpdateTime)
                 .orderByAsc(AbilityApiEntity::getStatus);
         Page prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
         List<AbilityApiEntity> preRecords = prePage.getRecords();

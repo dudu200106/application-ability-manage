@@ -1,7 +1,6 @@
 package com.dsj.csp.manage.biz;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.dsj.csp.manage.dto.AbilityApiQueryVO;
 import com.dsj.csp.manage.dto.AbilityApiVO;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
 
@@ -16,8 +15,6 @@ public interface AbilityApiBizService {
     boolean updateApi(AbilityApiVO apiVO);
 
     AbilityApiVO getApiInfo(Long apiId);
-
-    Page pageApi(AbilityApiQueryVO apiQueryVO);
 
     List<AbilityApiEntity> getApplyApiList(Long abilityApplyId);
 
@@ -55,6 +52,6 @@ public interface AbilityApiBizService {
      * @param endTime
      * @return 接口目录
      */
-    Page pageApis(Boolean onlyPublished, Long userId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime);
+    Page pageApiCatalog(Boolean onlyPublished, String reqMethod, Integer status, Long userId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime);
 
 }

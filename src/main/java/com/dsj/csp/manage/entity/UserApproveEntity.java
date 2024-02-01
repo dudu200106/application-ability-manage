@@ -137,7 +137,7 @@ public class UserApproveEntity implements Serializable {
     @TableField(value = "ZF_MC")
     @Schema(description = "政府部门名称")
     @Size(max = 30,message = "政府名称不能超过30")
-    @NotBlankOrWhitespace
+    @NotBlank
     private String govName;
 
     /**
@@ -146,7 +146,7 @@ public class UserApproveEntity implements Serializable {
     @TableField(value = "ZF_ZCH")
     @Schema(description = "政府营业执照注册号")
     @Size(max = 18,message = "政府营业执照注册号不能超过18")
-    @NotBlankOrWhitespace
+    @NotBlank
     private String govNum;
 
     /**
@@ -155,7 +155,7 @@ public class UserApproveEntity implements Serializable {
     @TableField(value = "ZF_FDDBR")
     @Schema(description = "政府部门法定代表人")
     @Size(max = 30,message = "政府部门法定代表人不能超过30")
-    @NotBlankOrWhitespace
+    @NotBlank
     private String govRepresent;
 
     /**
@@ -163,7 +163,7 @@ public class UserApproveEntity implements Serializable {
      */
     @TableField(value = "ZF_TP")
     @Schema(description = "政府部门营业执照扫描件")
-    @NotBlankOrWhitespace
+    @NotBlank
     private String govImage;
 
     /**
@@ -172,7 +172,7 @@ public class UserApproveEntity implements Serializable {
     @TableField(value = "ZF_LXRXM")
     @Schema(description = "政府部门联系人姓名")
     @Size(max = 30,message = "政府部门联系人姓名不能超过30")
-    @NotBlankOrWhitespace
+    @NotBlank
     private String govUser;
 
     /**
@@ -181,7 +181,7 @@ public class UserApproveEntity implements Serializable {
     @TableField(value = "ZF_SFZH")
     @Schema(description = "政府部门联系人身份证号")
     @Size(max = 18,message = "政府部门联系人身份证号不能超过18")
-    @NotBlankOrWhitespace
+    @NotBlank
     private String govIdnum;
 
     /**
@@ -190,7 +190,7 @@ public class UserApproveEntity implements Serializable {
     @TableField(value = "ZF_DHHM")
     @Schema(description = "政府部门联系人手机号码")
     @Size(max = 11,message = "政府部门联系人手机号码不能超过11")
-    @NotBlankOrWhitespace
+    @NotBlank
     private String govPhone;
 
     /**

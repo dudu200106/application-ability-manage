@@ -14,6 +14,7 @@ import com.dsj.csp.manage.dto.ManageApplictionVo;
 import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.mapper.ManageApplicationMapper;
 import com.dsj.csp.manage.service.*;
+import com.dsj.csp.manage.util.Sm2;
 import com.dsj.csp.manage.util.TimeTolong;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import lombok.RequiredArgsConstructor;
@@ -105,6 +106,26 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
         lambdaUpdateWrapper.set(ManageApplicationEntity::getAppIconpath, manageApplicationEntity.getAppIconpath());
         return baseMapper.update(lambdaUpdateWrapper);
 
+    }
+
+    @Override
+    public int upadataAppKey(ManageApplicationEntity manageApplicationEntity) {
+        LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppId, manageApplicationEntity.getAppId());
+        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, manageApplicationEntity.getAppUserId());
+        Map<String, String> sm2Map = Sm2.sm2Test();
+//        应用key
+        String appKey = sm2Map.get("publicEncode");
+        String secretKey = sm2Map.get("privateEncode");
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppKey, appKey );
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppSecret,secretKey);
+//网关key
+        Map<String, String> sm2Map2 = Sm2.sm2Test();
+        String wgKey = sm2Map2.get("publicEncode");
+        String wgSecre = sm2Map2.get("privateEncode");
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppWgKey, wgKey);
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppWgSecret,wgSecre);
+        return baseMapper.update(lambdaUpdateWrapper);
     }
 
     @Override

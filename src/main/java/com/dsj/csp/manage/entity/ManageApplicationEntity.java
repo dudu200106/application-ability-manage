@@ -36,7 +36,7 @@ public class ManageApplicationEntity implements Serializable {
     @NotEmpty(message = "应用名称不能为空")
     @TableField(value = "YY_MC")
     @Schema(description = "app名称")
-    @Min(value = 50, message = "应用名称不能超过")
+    @Min(value = 50, message = "应用名称不能超过30字")
     private String appName;
 
     /**
@@ -45,7 +45,7 @@ public class ManageApplicationEntity implements Serializable {
     @TableField(value = "YY_JC")
     @Schema(description = "简介")
     @NotEmpty(message = "应用简介不能为空")
-    @Min(value = 500, message = "应用名称不能超过200字")
+    @Min(value = 500, message = "请控制在200字以内")
     private String appSynopsis;
 
     /**

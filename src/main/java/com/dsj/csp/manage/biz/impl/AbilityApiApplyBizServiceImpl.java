@@ -157,6 +157,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                 .and(keyword!=null && !"".equals(keyword),
                         i -> i.like(AbilityApiApplyEntity::getAbilityName, keyword)
                                 .or().like(AbilityApiApplyEntity::getAppName, keyword)
+                                .or().like(AbilityApiApplyEntity::getNote, keyword)
                                 .or().like(AbilityApiApplyEntity::getIllustrate, keyword))
                 // 排序
                 .orderByDesc(AbilityApiApplyEntity::getUpdateTime)

@@ -1,6 +1,5 @@
 package com.dsj.csp.manage.controller;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -304,7 +303,7 @@ public class AbilityController {
                                  @Parameter(description = "分页条数") int size, @Parameter(description = "当前页数") int current,
                                  @Parameter(description = "搜索关键字") String keyword,
                                  @Parameter(description = "开始时间") Date startTime, @Parameter(description = "结束时间") Date endTime) {
-        return Result.success(abilityApiBizService.pageApis(onlyPublished, userId, abilityId, keyword, size, current, startTime, endTime));
+        return Result.success(abilityApiBizService.pageApiCatalog(onlyPublished, userId, abilityId, keyword, size, current, startTime, endTime));
     }
 
     @Operation(summary = "分页查询接口申请列表", description = "分页查询接口申请列表")

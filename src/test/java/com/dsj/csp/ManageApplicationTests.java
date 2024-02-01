@@ -3,7 +3,6 @@ package com.dsj.csp;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
 import com.dsj.csp.manage.service.AbilityApiApplyService;
-import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.AbilityApplyService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +48,7 @@ class ManageApplicationTests {
     }
     @Test
     void testPageApis(){
-        abilityApiBizService.pageApis(true, null,  null, null, 100, 1, null, null);
+        abilityApiBizService.pageApiCatalog(true, null,  null, null, 100, 1, null, null);
     }
 
     @Test

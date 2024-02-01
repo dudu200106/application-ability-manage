@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.csp.manage.dto.AbilityApiQueryVO;
 import com.dsj.csp.manage.dto.AbilityApiVO;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
+import io.swagger.v3.oas.annotations.Parameter;
 
 import java.util.Date;
 import java.util.List;
@@ -55,6 +56,6 @@ public interface AbilityApiBizService {
      * @param endTime
      * @return 接口目录
      */
-    Page pageApiCatalog(Boolean onlyPublished, Long userId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime);
+    Page pageApiCatalog(Boolean onlyPublished, String reqMethod, Integer status, Long userId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime);
 
 }

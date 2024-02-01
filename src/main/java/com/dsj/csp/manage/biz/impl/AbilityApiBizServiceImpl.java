@@ -259,10 +259,12 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
 
     @Override
-    public Page pageApiCatalog(Boolean onlyPublished, Long userId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime) {
+    public Page pageApiCatalog(Boolean onlyPublished, String reqMethod, Integer status, Long userId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime) {
         LambdaQueryWrapper queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)
                 .eq(userId!=null, AbilityApiEntity::getUserId, userId)
-                .eq(userId!=null, AbilityApiEntity::getAbilityId, abilityId)
+                .eq(abilityId!=null, AbilityApiEntity::getAbilityId, abilityId)
+                .eq(reqMethod!=null, AbilityApiEntity::getReqMethod, reqMethod)
+                .eq(status!=null, AbilityApiEntity::getStatus, status)
                 .ge(Objects.nonNull(startTime), AbilityApiEntity::getCreateTime, startTime)
                 .le(Objects.nonNull(endTime), AbilityApiEntity::getCreateTime, endTime)
                 .in(onlyPublished, AbilityApiEntity::getStatus, 3)

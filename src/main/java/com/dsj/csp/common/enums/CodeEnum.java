@@ -17,7 +17,7 @@ public enum CodeEnum {
     APPROVE_ERROR(602,"正在审核中，不可重复提交实名认证申请"),
     //更新异常
     UPDATE_ERROR(603,"更新失败"),
-    APPNAME(611,"应用名已存在"),
+    APPNAME(611,"该用户下已存在应用名"),
     Img_ERROR(612,"图片已破损,请重新上传"),
     //数据格式异常
     BIND_ERROR(650,"数据格式异常"),

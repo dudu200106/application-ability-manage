@@ -41,7 +41,6 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
     AbilityApiApplyService abilityApiApplyService;
 
 
-
     @Override
     public Long countAppUser(String appUserId) {
         LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
@@ -55,15 +54,18 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
         LambdaQueryWrapper<ManageApplicationEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ManageApplicationEntity::getAppIsdelete, 0);
         queryWrapper.eq(ManageApplicationEntity::getAppName, manageApplication.getAppName());
-        if (manageApplication.getAppId() != null) {
-            queryWrapper.ne(ManageApplicationEntity::getAppName, manageApplication.getAppName());
-        }
+        queryWrapper.eq(ManageApplicationEntity::getAppUserId, manageApplication.getAppUserId());
+//        if (manageApplication.getAppId() != null) {
+//            queryWrapper.ne(ManageApplicationEntity::getAppName, manageApplication.getAppName());
+//          )
+//        }
         long count = baseMapper.selectCount(queryWrapper);
         /*对用户名是否重复进行判断，同理其他的也可以这样判断*/
         if (count > 0) {
             throw new FlowException(CodeEnum.APPNAME);
         } else {
             manageApplication.setAppCreatetime(new Date());
+
             manageApplication.setAppUpdatetime(new Date());
             manageApplication.setAppIsdelete(0);
             return baseMapper.insert(manageApplication);
@@ -73,11 +75,13 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
 
 
     @Override
-    public int deleteApp(ManageApplicationEntity manageApplication) {
+    public int deleteApp(ManageApplicationEntity manageApplicationEntity) {
         LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppId, manageApplication.getAppId());
-        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, manageApplication.getAppUserId());
-        System.out.println(abilityApiApplyService.deleteApiApplyByAppId(Long.valueOf(manageApplication.getAppId())));
+        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppId, manageApplicationEntity.getAppId());
+        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, manageApplicationEntity.getAppUserId());
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppUpdatetime, new Date());
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppUpdatename, manageApplicationEntity.getAppUserId());
+        abilityApiApplyService.deleteApiApplyByAppId(Long.valueOf(manageApplicationEntity.getAppId()));
         return baseMapper.delete(lambdaUpdateWrapper);
     }
 
@@ -98,6 +102,7 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
         lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppId, manageApplicationEntity.getAppId());
         lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, manageApplicationEntity.getAppUserId());
         lambdaUpdateWrapper.set(ManageApplicationEntity::getAppUpdatetime, new Date());
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppUpdatename, manageApplicationEntity.getAppUserId());
         lambdaUpdateWrapper.set(ManageApplicationEntity::getAppIsdelete, 0);
         lambdaUpdateWrapper.set(ManageApplicationEntity::getAppName, manageApplicationEntity.getAppName());
         lambdaUpdateWrapper.set(ManageApplicationEntity::getAppSynopsis, manageApplicationEntity.getAppSynopsis());
@@ -116,20 +121,21 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
 //        应用key
         String appKey = sm2Map.get("publicEncode");
         String secretKey = sm2Map.get("privateEncode");
-        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppKey, appKey );
-        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppSecret,secretKey);
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppKey, appKey);
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppSecret, secretKey);
 //网关key
         Map<String, String> sm2Map2 = Sm2.sm2Test();
         String wgKey = sm2Map2.get("publicEncode");
         String wgSecre = sm2Map2.get("privateEncode");
         lambdaUpdateWrapper.set(ManageApplicationEntity::getAppWgKey, wgKey);
-        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppWgSecret,wgSecre);
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppWgSecret, wgSecre);
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppUpdatetime, new Date());
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppUpdatename, manageApplicationEntity.getAppUserId());
         return baseMapper.update(lambdaUpdateWrapper);
     }
 
     @Override
     public Page<ManageApplictionVo> selectPage(String appUserId, String keyword, Date startTime, Date endTime, int pages, int size) {
-
         Page<ManageApplictionVo> userApproveEntityPage = manageApplicationMapper.selectJoinPage(new Page<>(pages, size), ManageApplictionVo.class,
                 new MPJLambdaWrapper<ManageApplicationEntity>()
                         .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), ManageApplicationEntity::getAppCreatetime, startTime, endTime)

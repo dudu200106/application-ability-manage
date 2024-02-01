@@ -1,5 +1,6 @@
 package com.dsj.csp.manage.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
@@ -38,6 +39,13 @@ public class AbilityApiApplyServiceImpl extends ServiceImpl<AbilityApiApplyMappe
         Set<Long> ids = new HashSet<>(apiIdsList);
         System.out.println("apiId集合:====================================: " + ids.toString());
         return ids;
+    }
+
+    @Override
+    public int deleteApiApplyByAppId(Long appId) {
+        LambdaUpdateWrapper deleteUW = Wrappers.lambdaUpdate(AbilityApiApplyEntity.class)
+                .eq(AbilityApiApplyEntity::getAppId, appId);
+        return this.getBaseMapper().delete(deleteUW);
     }
 
 }

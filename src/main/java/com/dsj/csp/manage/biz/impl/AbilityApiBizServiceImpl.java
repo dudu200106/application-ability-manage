@@ -271,8 +271,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                                 .or().like(AbilityApiEntity::getApiDesc, keyword)
                                 .or().like(AbilityApiEntity::getApiUrl, keyword))
                 // 排序
-                .orderByAsc(AbilityApiEntity::getStatus)
-                .orderByDesc(AbilityApiEntity::getCreateTime);
+                .orderByDesc(AbilityApiEntity::getCreateTime)
+                .orderByAsc(AbilityApiEntity::getStatus);
         Page prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
         List<AbilityApiEntity> preRecords = prePage.getRecords();
         if (preRecords.size()==0){

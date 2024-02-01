@@ -20,7 +20,5 @@ public interface AbilityApiApplyBizService {
     // 审核接口申请
     String auditApply(AbilityAuditVO auditVO);
 
-    // 分页获取接口列表
-//    Page pageApiList(Boolean onlyPublished, Long userId, Long appId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime);
 
 }

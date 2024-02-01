@@ -17,4 +17,11 @@ public interface AbilityApiApplyService extends IService<AbilityApiApplyEntity> 
      */
     Set<Long> getPassedApiIds(Long userId, Long appId, Long abilityId, String keyword);
 
+    /**
+     * 根据应用ID, 删除应用关联所有接口申请
+     * @param appId 应用ID
+     * @return
+     */
+    int deleteApiApplyByAppId(Long appId);
+
 }

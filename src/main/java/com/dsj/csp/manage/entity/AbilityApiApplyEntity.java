@@ -3,13 +3,11 @@ package com.dsj.csp.manage.entity;
 import java.io.Serializable;
 import java.sql.Date;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.validator.constraints.Length;
 
 /**
@@ -17,6 +15,7 @@ import org.hibernate.validator.constraints.Length;
 * @TableName GXYYZC_NLJKSQ
 */
 @Data
+@EqualsAndHashCode
 @TableName("GXYYZC_NLJKSQ")
 public class AbilityApiApplyEntity implements Serializable {
 
@@ -106,6 +105,12 @@ public class AbilityApiApplyEntity implements Serializable {
     @TableField("NLSQ_SPSJ")
     @Schema(description="审批时间")
     private java.sql.Date approveTime;
+    /**
+     * 逻辑删除
+     */
+    @TableLogic(value = "0", delval = "1")
+    @TableField(value = "IS_DELETE")
+    private Integer isDelete;
     /**
     * 创建时间
     */

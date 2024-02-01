@@ -5,28 +5,28 @@
 <mapper namespace="com.dsj.csp.manage.mapper.AbilityMapper">
 
     <!-- 结果映射 -->
-    <resultMap id="BaseResultMap" type="com.dsj.csp.manage.entity.AbilityEntity">
-        <id column="ABILITY_ID" property="abilityId" />
-        <result column="ABILITY_NAME" property="abilityName" />
-        <result column="ABILITY_TYPE" property="abilityType" />
-        <result column="USER_ID" property="userId" />
-        <result column="ABILITY_PROVIDER" property="abilityProvider" />
-        <result column="ABILITY_DESC" property="abilityDesc" />
-        <result column="STATUS" property="status" />
-        <result column="NOTE" property="note" />
-        <result column="IS_DELETE" property="isDelete" />
-        <result column="CREATE_TIME" property="createTime" />
-        <result column="UPDATE_TIME" property="updateTime" />
-        <result column="RECALL_LIMIT" property="recallLimit" />
-        <result column="QPS" property="qps" />
+<!--    <resultMap id="BaseResultMap" type="com.dsj.csp.manage.entity.AbilityEntity">-->
+<!--        <id column="ABILITY_ID" property="abilityId" />-->
+<!--        <result column="ABILITY_NAME" property="abilityName" />-->
+<!--        <result column="ABILITY_TYPE" property="abilityType" />-->
+<!--        <result column="USER_ID" property="userId" />-->
+<!--        <result column="ABILITY_PROVIDER" property="abilityProvider" />-->
+<!--        <result column="ABILITY_DESC" property="abilityDesc" />-->
+<!--        <result column="STATUS" property="status" />-->
+<!--        <result column="NOTE" property="note" />-->
+<!--        <result column="IS_DELETE" property="isDelete" />-->
+<!--        <result column="CREATE_TIME" property="createTime" />-->
+<!--        <result column="UPDATE_TIME" property="updateTime" />-->
+<!--        <result column="RECALL_LIMIT" property="recallLimit" />-->
+<!--        <result column="QPS" property="qps" />-->
 
-    </resultMap>
+<!--    </resultMap>-->
 
-    <sql id="Base_Column_List">
-        ABILITY_ID, ABILITY_NAME, ABILITY_TYPE, USER_ID, ABILITY_PROVIDER,
-        ABILITY_DESC, STATUS, ILLUSTRATE, NOTE, APPROVE_TIME, IS_DELETE,
-        CREATE_TIME, UPDATE_TIME, RECALL_LIMIT, QPS
-    </sql>
+<!--    <sql id="Base_Column_List">-->
+<!--        ABILITY_ID, ABILITY_NAME, ABILITY_TYPE, USER_ID, ABILITY_PROVIDER,-->
+<!--        ABILITY_DESC, STATUS, ILLUSTRATE, NOTE, APPROVE_TIME, IS_DELETE,-->
+<!--        CREATE_TIME, UPDATE_TIME, RECALL_LIMIT, QPS-->
+<!--    </sql>-->
 
 
 </mapper>

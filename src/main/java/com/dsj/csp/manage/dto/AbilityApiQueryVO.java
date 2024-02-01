@@ -66,7 +66,7 @@ public class AbilityApiQueryVO implements Serializable {
                 .and(keyword!=null && !"".equals(keyword),
                         i -> i.like(AbilityApiEntity::getApiName, keyword)
                                 .or().like(AbilityApiEntity::getApiUrl, keyword)
-                                .or().like(AbilityApiEntity::getDescription, keyword))
+                                .or().like(AbilityApiEntity::getApiDesc, keyword))
                 // 排序
                 .orderByDesc(AbilityApiEntity::getCreateTime);
         return qw;

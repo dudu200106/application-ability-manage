@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = NotBlankOrWhitespaceValidator.class)
 public @interface NotBlankOrWhitespace {
-    String message() default "字段不能为空或只包含空格";
+    String message() default "字段不能只包含空格";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

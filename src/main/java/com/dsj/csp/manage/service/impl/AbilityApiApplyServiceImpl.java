@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
-import com.dsj.csp.manage.entity.AbilityApplyEntity;
 import com.dsj.csp.manage.mapper.AbilityApiApplyMapper;
 import com.dsj.csp.manage.service.AbilityApiApplyService;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

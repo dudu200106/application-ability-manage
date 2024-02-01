@@ -16,11 +16,11 @@ public interface AbilityApiBizService {
 
     List<AbilityApiEntity> getAbilityApiList(Long abilityId);
 
-//    // 根据appId查询该应用下申请的所有接口
-//    List<AbilityApiVO> getAppApiList(Long appId);
-//
-//    // 根据userId查询该用户
-//    List<AbilityApiVO> getUserApiList(Long userId);
+    // 根据appId查询该应用下申请的所有接口
+    List<AbilityApiVO> getAppApiList(Long appId);
+
+    // 根据userId查询该用户
+    List<AbilityApiVO> getUserApiList(Long userId);
 
     /**
      * 查询申请到的接口列表分页(审核通过的api申请)

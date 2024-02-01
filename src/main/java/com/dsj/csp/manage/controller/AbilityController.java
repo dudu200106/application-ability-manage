@@ -46,11 +46,11 @@ public class AbilityController {
     private final AbilityApiApplyBizService abilityApiApplyBizService;
 
 
-    @Operation(summary = "能力注册", description = "注册一个新的能力")
+    @Operation(summary = "新增能力", description = "新增一个新的能力")
     @PostMapping("/add-login")
     public Result<?> addAbility(@RequestBody AbilityEntity ability) {
         Boolean saveAbility = abilityService.save(ability);
-        return Result.success("能力注册申请成功！等待审核...", saveAbility);
+        return Result.success("能力新增成功!", saveAbility);
     }
 
     @Operation(summary = "获取能力详情", description = "获取特定能力的详细信息")
@@ -60,25 +60,16 @@ public class AbilityController {
         return Result.success(abilityService.getById(abilityId));
     }
 
-    @Operation(summary = "分页查询注册能力列表", description = "分页查询注册能力列表")
+    @Operation(summary = "分页查询注册能力列表", description = "分页查询能力列表")
     @PostMapping ("/page-login")
     public Result<?> queryLoginPage(
             @Valid @RequestBody AbilityQueryVO abilityQuery) {
         return Result.success(abilityService.page(abilityQuery.toPage(), abilityQuery.getQueryWrapper()));
     }
 
-
-    @Operation(summary = "分页查询可调用能力列表", description = "分页查询可调用能力列表")
-    @PostMapping ("/page-available-ability")
-    public Result<?> queryAvailablePage(
-            @Valid @RequestBody AbilityQueryVO abilityQuery) {
-        LambdaQueryWrapper abilityQW = abilityQuery.getQueryWrapper().lambda().in(AbilityEntity::getStatus, 4);
-        return Result.success(abilityService.page(abilityQuery.toPage(), abilityQW));
-    }
-
-    @Operation(summary = "编辑注册的能力")
+    @Operation(summary = "编辑能力")
     @PostMapping("edit-login")
-    public Result<?> updateAbilityLogin(@RequestBody AbilityEntity ability){
+    public Result<?> updateAbility(@RequestBody AbilityEntity ability){
         Boolean editFlag = abilityService.updateById(ability);
         return Result.success("编辑注册能力成功!", editFlag);
     }
@@ -122,13 +113,13 @@ public class AbilityController {
         return Result.success(abilityApiService.count());
     }
 
-    @Operation(summary = "统计用户能力数量")
+    @Operation(summary = "统计用户申请能力数量")
     @GetMapping("/count-user-ability")
     public Result<?> countuserAbility(String userId){
         return Result.success(abilityApiApplyService.countUserAbility(userId));
     }
 
-    @Operation(summary = "统计用户接口数量")
+    @Operation(summary = "统计用户申请接口数量")
     @GetMapping("/count-user-api")
     public Result<?> countUserApi(String userId){
         return Result.success(abilityApiApplyService.countUserApi(userId));
@@ -163,23 +154,25 @@ public class AbilityController {
         return Result.success("删除能力完成! ", delFlag);
     }
 
+
     @Operation(summary = "查询能力的接口列表", description = "查询能力的接口列表")
     @GetMapping("/query-api-list")
     public Result<?> queryApiList(@Parameter(description = "能力ID") @RequestParam Long abilityId) {
         return Result.success(abilityApiBizService.getAbilityApiList(abilityId));
     }
 
-//    @Operation(summary = "查询用户申请到的api列表")
-//    @GetMapping("/query-user-apis")
-//    public Result<?> queryUserApis(@Parameter(description = "用户ID") @RequestParam Long userId) {
-//        return Result.success(abilityApiBizService.getUserApiList(userId));
-//    }
-//
-//    @Operation(summary = "查询应用申请到的api列表")
-//    @GetMapping("/query-app-apis")
-//    public Result<?> queryAppApis(@Parameter(description = "应用ID") @RequestParam Long appId) {
-//        return Result.success(abilityApiBizService.getAppApiList(appId));
-//    }
+    @Operation(summary = "查询用户申请到的api列表")
+    @GetMapping("/query-user-apis")
+    public Result<?> queryUserApis(@Parameter(description = "用户ID") @RequestParam Long userId) {
+        return Result.success(abilityApiBizService.getUserApiList(userId));
+    }
+
+    @Operation(summary = "查询应用申请到的api列表")
+    @GetMapping("/query-app-apis")
+    public Result<?> queryAppApis(@Parameter(description = "应用ID") @RequestParam Long appId) {
+        return Result.success(abilityApiBizService.getAppApiList(appId));
+    }
+
 
 
     @Operation(summary = "新增接口使用申请", description = "申请使用接口")

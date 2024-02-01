@@ -85,68 +85,71 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         return apis;
     }
 
-//    @Override
-//    public List<AbilityApiVO> getAppApiList(Long appId) {
-//        List<String> apiIdsList = abilityApplyService.list(Wrappers.lambdaQuery(AbilityApplyEntity.class)
-//                        .eq(AbilityApplyEntity::getAppId, appId)
-//                        .eq(AbilityApplyEntity::getStatus, 1)
-//                        .select(AbilityApplyEntity::getApiIds))
-//                .stream().map(e->e.getApiIds()).toList();
-//        // 分割去重得到apiId集合
-//        Set<Long> ids = new HashSet<>();
-//        apiIdsList.forEach(apiIds ->{
-//            ids.addAll(Arrays.asList(apiIds.split(",")).stream().map(e->Long.parseLong(e)).toList());
-//        });
-//        if (ids.size()==0){
-//            return null;
-//        }
-//        List<AbilityApiEntity> apis = abilityApiService.listByIds(ids);
-//        // 查询api对应能力id集合, 并查出能力ID对应能力名称
-//        Set<Long> abilityIds = apis.stream().map(e->e.getAbilityId()).collect(Collectors.toSet());
-//        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
-//                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
-//                .in(AbilityEntity::getAbilityId, abilityIds));
-//        // 构造能力ID与能力name映射, 方便查找
-//        Map<Long, String> abilityMap = abilitys.stream().collect(Collectors.toMap(e->e.getAbilityId(), e-> e.getAbilityName()));
-//        // 构造返回值
-//        List<AbilityApiVO> apiVOs = apis.stream().map(api->{
-//            AbilityApiVO apiVO = new AbilityApiVO();
-//            BeanUtil.copyProperties(api, apiVO, true);
-//            apiVO.setAbilityName(abilityMap.get(api.getAbilityId()));
-//            return apiVO;
-//        }).toList();
-//        return apiVOs;
-//    }
-//
-//    @Override
-//    public List<AbilityApiVO> getUserApiList(Long userId) {
-//        List<String> apiIdsList = abilityApplyService.list(Wrappers.lambdaQuery(AbilityApplyEntity.class)
-//                        .eq(AbilityApplyEntity::getUserId, userId)
-//                        .eq(AbilityApplyEntity::getStatus, 1)
-//                        .select(AbilityApplyEntity::getApiIds))
-//                .stream().map(e->e.getApiIds()).toList();
-//        // 分割去重得到apiId集合
-//        Set<Long> ids = new HashSet<>();
-//        apiIdsList.forEach(apiIds ->{
-//            ids.addAll(Arrays.asList(apiIds.split(",")).stream().map(e->Long.parseLong(e)).toList());
-//        });
-//        List<AbilityApiEntity> apis = abilityApiService.listByIds(ids);
-//        // 查询api对应能力id集合, 并查出能力ID对应能力名称
-//        Set<Long> abilityIds = apis.stream().map(e->e.getAbilityId()).collect(Collectors.toSet());
-//        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
-//                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
-//                .in(AbilityEntity::getAbilityId, abilityIds));
-//        // 构造能力ID与能力name映射, 方便查找
-//        Map<Long, String> abilityMap = abilitys.stream().collect(Collectors.toMap(e->e.getAbilityId(), e-> e.getAbilityName()));
-//        // 构造返回值
-//        List<AbilityApiVO> apiVOs = apis.stream().map(api->{
-//            AbilityApiVO apiVO = new AbilityApiVO();
-//            BeanUtil.copyProperties(api, apiVO, true);
-//            apiVO.setAbilityName(abilityMap.get(api.getAbilityId()));
-//            return apiVO;
-//        }).toList();
-//        return apiVOs;
-//    }
+    @Override
+    public List<AbilityApiVO> getAppApiList(Long appId) {
+        // 查询出申请通过的apiId集合
+        Set<Long> apiIds = abilityApiApplyService.getPassedApiIds(null, appId, null, null);
+        if (apiIds.size()==0){
+            return null;
+        }
+        // 构造查询条件
+        LambdaQueryWrapper queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)
+                .in(AbilityApiEntity::getApiId, apiIds)
+                // 排序
+                .orderByDesc(AbilityApiEntity::getUpdateTime)
+                .orderByAsc(AbilityApiEntity::getStatus);
+        // 主表查询
+        List<AbilityApiEntity> apiList = abilityApiService.list(queryWrapper);
+        if (apiList.size()==0){
+            return null;
+        }
+        // 构造返回结果
+        Set<Long> abilityIds = apiList.stream().map(api -> api.getAbilityId()).collect(Collectors.toSet());
+        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
+                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
+                .in(AbilityEntity::getAbilityId, abilityIds));
+        Map<Long, AbilityEntity> abilityMap = abilitys.stream().collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability));
+        List<AbilityApiVO> apiVOs = apiList.stream().map(api->{
+            AbilityApiVO apiVO = new AbilityApiVO();
+            BeanUtil.copyProperties(api, apiVO, true);
+            apiVO.setAbilityName(abilityMap.get(api.getAbilityId())==null ? null : abilityMap.get(api.getAbilityId()).getAbilityName());
+            return apiVO;
+        }).toList();
+        return apiVOs;
+    }
+
+    @Override
+    public List<AbilityApiVO> getUserApiList(Long userId) {
+        // 查询出申请通过的apiId集合
+        Set<Long> apiIds = abilityApiApplyService.getPassedApiIds(userId, null, null, null);
+        if (apiIds.size()==0){
+            return null;
+        }
+        // 构造查询条件
+        LambdaQueryWrapper queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)
+                .in(AbilityApiEntity::getApiId, apiIds)
+                // 排序
+                .orderByDesc(AbilityApiEntity::getUpdateTime)
+                .orderByAsc(AbilityApiEntity::getStatus);
+        // 主表查询
+        List<AbilityApiEntity> apiList = abilityApiService.list(queryWrapper);
+        if (apiList.size()==0){
+            return null;
+        }
+        // 构造返回结果
+        Set<Long> abilityIds = apiList.stream().map(api -> api.getAbilityId()).collect(Collectors.toSet());
+        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
+                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
+                .in(AbilityEntity::getAbilityId, abilityIds));
+        Map<Long, AbilityEntity> abilityMap = abilitys.stream().collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability));
+        List<AbilityApiVO> apiVOs = apiList.stream().map(api->{
+            AbilityApiVO apiVO = new AbilityApiVO();
+            BeanUtil.copyProperties(api, apiVO, true);
+            apiVO.setAbilityName(abilityMap.get(api.getAbilityId())==null ? null : abilityMap.get(api.getAbilityId()).getAbilityName());
+            return apiVO;
+        }).toList();
+        return apiVOs;
+    }
 
 
     @Override

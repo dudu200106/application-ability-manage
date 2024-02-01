@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.biz.AbilityBizService;
 import com.dsj.csp.manage.dto.AbilityDTO;
+import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
 import com.dsj.csp.manage.entity.AbilityApplyEntity;
 import com.dsj.csp.manage.entity.AbilityEntity;
+import com.dsj.csp.manage.service.AbilityApiApplyService;
 import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.AbilityApplyService;
 import com.dsj.csp.manage.service.AbilityService;
@@ -32,7 +34,7 @@ public class AbilityBizServiceImpl implements AbilityBizService {
 
     private final AbilityService abilityService;
     private final AbilityApiService abilityApiService;
-    private final AbilityApplyService abilityApplyService;
+    private final AbilityApiApplyService abilityApiApplyService;
 
     @Override
     public AbilityDTO getAbilityInfo(Long abilityId) {
@@ -49,11 +51,11 @@ public class AbilityBizServiceImpl implements AbilityBizService {
     @Override
     public Boolean removeAbilityByIds(String abilityIds) {
         List<Long> ids = Arrays.asList(abilityIds.split(",")).stream().map(id -> Long.parseLong(id.trim())).toList();
-        long countRelateApply = abilityApplyService.count(Wrappers.lambdaUpdate(AbilityApplyEntity.class).
-                in(AbilityApplyEntity::getAbilityId, ids)
-                .and(apply->apply.eq(AbilityApplyEntity::getIsDelete, 0)));
+        long countRelateApply = abilityApiApplyService.count(Wrappers.lambdaUpdate(AbilityApiApplyEntity.class).
+                in(AbilityApiApplyEntity::getAbilityId, ids)
+                .and(apply->apply.eq(AbilityApiApplyEntity::getIsDelete, 0)));
         if (countRelateApply>0){
-            throw new BusinessException("删除能力失败:能力还在被应用使用!");
+            throw new BusinessException("删除能力失败:该能力存在接口还在被应用使用!");
         }
         Boolean delFlag = abilityService.removeBatchByIds(ids);
         Boolean apiDelFlag = abilityApiService.remove(Wrappers.lambdaUpdate(AbilityApiEntity.class).in(AbilityApiEntity::getAbilityId, ids));

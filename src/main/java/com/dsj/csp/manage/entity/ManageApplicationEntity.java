@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
@@ -31,8 +33,10 @@ public class ManageApplicationEntity implements Serializable {
     /**
      * 应用名称
      */
+    @NotEmpty(message = "应用名称不能为空")
     @TableField(value = "YY_MC")
     @Schema(description = "app名称")
+    @Min(value = 50, message = "应用名称不能超过30字")
     private String appName;
 
     /**
@@ -40,6 +44,8 @@ public class ManageApplicationEntity implements Serializable {
      */
     @TableField(value = "YY_JC")
     @Schema(description = "简介")
+    @NotEmpty(message = "应用简介不能为空")
+    @Min(value = 500, message = "请控制在200字以内")
     private String appSynopsis;
 
     /**

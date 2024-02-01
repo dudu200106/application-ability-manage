@@ -3,26 +3,24 @@ package com.dsj.csp.manage.service.impl;
 import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.dsj.common.dto.BusinessException;
-import com.dsj.common.dto.Result;
 import com.dsj.csp.common.enums.CodeEnum;
 import com.dsj.csp.common.exception.FlowException;
+import com.dsj.csp.manage.biz.AbilityApplyBizService;
 import com.dsj.csp.manage.dto.ManageApplictionVo;
 import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.mapper.ManageApplicationMapper;
 import com.dsj.csp.manage.service.*;
+import com.dsj.csp.manage.util.Sm2;
 import com.dsj.csp.manage.util.TimeTolong;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author DSCBooK
@@ -37,13 +35,12 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
     @Autowired
     private ManageApplicationMapper manageApplicationMapper;
 
-//    private final AbilityApplyBizService abilityApplyBizService;
+    @Autowired
+    AbilityApplyService abilityApplyService;
+    @Autowired
+    AbilityApiApplyService abilityApiApplyService;
 
 
-//    @Autowired
-//    private AbilityApplyBizService abilityApplyBizService;
-
-//    private final AbilityApplyBizService abilityApplyBizService;
 
     @Override
     public Long countAppUser(String appUserId) {
@@ -80,6 +77,7 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
         LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppId, manageApplication.getAppId());
         lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, manageApplication.getAppUserId());
+        System.out.println(abilityApiApplyService.deleteApiApplyByAppId(Long.valueOf(manageApplication.getAppId())));
         return baseMapper.delete(lambdaUpdateWrapper);
     }
 
@@ -110,6 +108,26 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
     }
 
     @Override
+    public int upadataAppKey(ManageApplicationEntity manageApplicationEntity) {
+        LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppId, manageApplicationEntity.getAppId());
+        lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, manageApplicationEntity.getAppUserId());
+        Map<String, String> sm2Map = Sm2.sm2Test();
+//        应用key
+        String appKey = sm2Map.get("publicEncode");
+        String secretKey = sm2Map.get("privateEncode");
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppKey, appKey );
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppSecret,secretKey);
+//网关key
+        Map<String, String> sm2Map2 = Sm2.sm2Test();
+        String wgKey = sm2Map2.get("publicEncode");
+        String wgSecre = sm2Map2.get("privateEncode");
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppWgKey, wgKey);
+        lambdaUpdateWrapper.set(ManageApplicationEntity::getAppWgSecret,wgSecre);
+        return baseMapper.update(lambdaUpdateWrapper);
+    }
+
+    @Override
     public Page<ManageApplictionVo> selectPage(String appUserId, String keyword, Date startTime, Date endTime, int pages, int size) {
 
         Page<ManageApplictionVo> userApproveEntityPage = manageApplicationMapper.selectJoinPage(new Page<>(pages, size), ManageApplictionVo.class,
@@ -134,7 +152,6 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
         });
         return userApproveEntityPage;
     }
-
 
 
 }

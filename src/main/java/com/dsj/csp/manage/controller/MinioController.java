@@ -100,7 +100,6 @@ public class MinioController {
                 if (isImageCorrupted(URl)) {
                     throw new FlowException(CodeEnum.Img_ERROR);
                 } else {
-                    System.out.println("图片正常。");
                     LOGGER.info("文件上传成功!");
                     return Result.success(minioUploadDto);
                 }

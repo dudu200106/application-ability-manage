@@ -30,6 +30,7 @@ import java.util.Map;
 public class ManageApplicationController {
     //    @Resource
     private final ManageApplicationService manageApplicationService;
+    //    @Autowired
 
 
     /**
@@ -88,7 +89,11 @@ public class ManageApplicationController {
     public Result<?> countAppUser(@Parameter String appUserId) {
         return Result.success(manageApplicationService.countAppUser(appUserId));
     }
-
+    @Operation(summary = "修改应用的key")
+    @PostMapping("/upadataAppKey")
+    public Result<?> upadataAppKey(@RequestBody ManageApplicationEntity manageApplication) {
+        return Result.success(manageApplicationService.upadataAppKey(manageApplication));
+    }
 
 
 }

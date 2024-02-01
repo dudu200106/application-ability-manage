@@ -7,6 +7,7 @@ import com.dsj.csp.manage.entity.ManageApplicationEntity;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author DSCBooK
@@ -28,8 +29,12 @@ public interface ManageApplicationService extends IService<ManageApplicationEnti
 
     int upadataAppInfo(ManageApplicationEntity manageApplicationEntity);
 
+    int upadataAppKey(ManageApplicationEntity manageApplicationEntity);
+
 
     Page<ManageApplictionVo> selectPage(String appUserId, String keyword, Date startTime, Date endTime, int pages, int size);
+
+
 
 
 

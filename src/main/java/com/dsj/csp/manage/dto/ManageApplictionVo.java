@@ -47,6 +47,7 @@ public class ManageApplictionVo implements Serializable {
 
     //    @JsonFormat(shape = JsonFormat.Shape.STRING)
 //    @JsonProperty
+    @JsonSerialize(using = ToStringSerializer.class)
     private String appId;
 
     /**
@@ -65,15 +66,13 @@ public class ManageApplictionVo implements Serializable {
     private String appIconpath;
     //应用簡介
     private String appSynopsis;
-    private  Long apptime;
+
+    private Long apptime;
 
     private String appUserId;
 
 
     private Long abilityApplyId;
-
-
-
 
 
 }

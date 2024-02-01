@@ -101,9 +101,19 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         user.setUserId(user2.getUserId());
         user.setUserName(user2.getUserName());
         UserApproveEntity userApproveEntity = baseMapper.selectById(user);
+        if(user.getUserType()==2){
+            user.setCompanyName(null);
+            user.setCompanyNum(null);
+            user.setCompanyRepresent(null);
+            user.setCompanyImage(null);
+            user.setAuthorization(null);
+            user.setCompanyUser(null);
+            user.setCompanyIdnum(null);
+            user.setCompanyPhone(null);
+        }
         if (userApproveEntity != null) {
             Integer status = user2.getStatus();
-            if (status.equals(UserStatusEnum.NOAPPROVE.getStatus()) || status.equals(UserStatusEnum.SUCCESS.getStatus()) || status.equals(UserStatusEnum.FAIL.getStatus())) {
+            if (status.equals(UserStatusEnum.NOAPPROVE.getStatus()) || status.equals(UserStatusEnum.FAIL.getStatus())) {
                 user.setStatus(UserStatusEnum.WAIT.getStatus());
                 user.setNote("审核中");
                 user.setCreateTime(new Date());

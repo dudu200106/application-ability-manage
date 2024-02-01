@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Sean Du
@@ -264,13 +265,15 @@ public class AbilityController {
     }
 
 
-    @Operation(summary = "获取能力目录")
+    @Operation(summary = "获取能力简单信息目录")
     @GetMapping("/get-ability-catalog")
     public Result<?> getAbilityCatalog(){
-        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
-                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName));
-
-        return Result.success(abilitys);
+        List<AbilityApiApplyEntity> abilityInfos = abilityApiApplyService.list(
+                Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
+                        .select(AbilityApiApplyEntity::getAbilityId, AbilityApiApplyEntity::getAbilityName)
+                        .eq(AbilityApiApplyEntity::getStatus, 4)
+        );
+        return Result.success(abilityInfos);
     }
 
 

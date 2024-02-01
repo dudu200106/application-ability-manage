@@ -23,7 +23,7 @@ public class AbilityApiApplyServiceImpl extends ServiceImpl<AbilityApiApplyMappe
 
     @Override
     public Set<Long> getPassedApiIds(Long userId, Long appId, Long abilityId, String keyword) {
-        List<Long> apiIdsList = this.getBaseMapper().selectList(Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
+        Set<Long> apiIdsList = this.getBaseMapper().selectList(Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
                         .eq(AbilityApiApplyEntity::getStatus, 2)
                         .eq(userId!= null, AbilityApiApplyEntity::getUserId, userId)
                         .eq(appId!= null, AbilityApiApplyEntity::getAppId, appId)
@@ -33,11 +33,10 @@ public class AbilityApiApplyServiceImpl extends ServiceImpl<AbilityApiApplyMappe
                                 .or().like(AbilityApiApplyEntity::getAbilityName, keyword)
                                 .or().like(AbilityApiApplyEntity::getAppName, keyword))
                         .select(AbilityApiApplyEntity::getApiId))
-                .stream().map(e->e.getApiId()).toList();
+                .stream().map(e->e.getApiId()).collect(Collectors.toSet());
         // 分割去重得到apiId集合
-        Set<Long> ids = new HashSet<>(apiIdsList);
-        System.out.println("apiId集合:====================================: " + ids.toString());
-        return ids;
+        System.out.println("apiId集合:====================================: " + apiIdsList.toString());
+        return apiIdsList;
     }
 
     @Override

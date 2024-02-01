@@ -1,9 +1,11 @@
 package com.dsj.csp.manage.service.impl;
 
 import cn.hutool.core.date.DateTime;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.dto.AbilityAuditVO;
@@ -15,6 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Sean Du
@@ -73,6 +78,22 @@ public class AbilityServiceImpl extends ServiceImpl<AbilityMapper, AbilityEntity
                                                 "能力下线完毕!";
         return auditMsg;
 
+    }
+
+    @Override
+    public Page<AbilityEntity> pageAbilitys(Long userId, String keyword, Date startTime, Date endTime, int current, int size) {
+        LambdaQueryWrapper<AbilityEntity> qw = Wrappers.lambdaQuery();
+        qw
+                .eq(userId != null, AbilityEntity::getUserId, userId)
+                .ge(Objects.nonNull(startTime), AbilityEntity::getCreateTime, startTime)
+                .le(Objects.nonNull(endTime), AbilityEntity::getCreateTime, endTime)
+                .and(keyword!=null && !"".equals(keyword), i -> i
+                        .like(AbilityEntity::getAbilityName, keyword)
+                        .or().like(AbilityEntity::getAbilityProvider, keyword)
+                        .or().like(AbilityEntity::getAbilityDesc, keyword))
+                .orderByDesc(AbilityEntity::getUpdateTime)
+                .orderByAsc(AbilityEntity::getStatus);
+        return this.page(new Page<>(current, size), qw);
     }
 
 

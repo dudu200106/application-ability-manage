@@ -67,6 +67,26 @@ public class AbilityController {
         return Result.success(abilityService.page(abilityQuery.toPage(), abilityQuery.getQueryWrapper()));
     }
 
+    @Operation(summary = "分页查询可调用能力列表", description = "分页查询可调用能力列表")
+    @PostMapping ("/page-available-ability")
+    public Result<?> queryAvailablePage(
+            @Valid @RequestBody AbilityQueryVO abilityQuery) {
+        return Result.success(abilityService.page(abilityQuery.toPage(), abilityQuery.getQueryWrapper()));
+    }
+
+    @Operation(summary = "分页查询能力目录列表", description = "分页查询能力目录列表")
+    @GetMapping ("/page-ability-catalog")
+    public Result<?> queryAbilityCatalog(@Parameter(description = "用户ID") Long userId,
+                                         @Parameter(description = "分页条数") int size,
+                                         @Parameter(description = "当前页数") int current,
+                                         @Parameter(description = "搜索关键字") String keyword,
+                                         @Parameter(description = "开始时间") Date startTime,
+                                         @Parameter(description = "结束时间") Date endTime) {
+        return Result.success(abilityService.pageAbilitys(userId, keyword, startTime, endTime, current, size));
+    }
+
+
+
     @Operation(summary = "编辑能力")
     @PostMapping("edit-login")
     public Result<?> updateAbility(@RequestBody AbilityEntity ability){
@@ -202,10 +222,13 @@ public class AbilityController {
     public Result<?> pageApiList(@Parameter(description = "是否过滤未发布的接口") Boolean onlyPublished,
                                  @Parameter(description = "请求方式") String reqMethod,
                                  @Parameter(description = "状态") Integer status,
-                                 @Parameter(description = "用户ID") Long userId, @Parameter(description = "能力ID") Long abilityId,
-                                 @Parameter(description = "分页条数") int size, @Parameter(description = "当前页数") int current,
+                                 @Parameter(description = "用户ID") Long userId,
+                                 @Parameter(description = "能力ID") Long abilityId,
+                                 @Parameter(description = "分页条数") int size,
+                                 @Parameter(description = "当前页数") int current,
                                  @Parameter(description = "搜索关键字") String keyword,
-                                 @Parameter(description = "开始时间") Date startTime, @Parameter(description = "结束时间") Date endTime) {
+                                 @Parameter(description = "开始时间") Date startTime,
+                                 @Parameter(description = "结束时间") Date endTime) {
         return Result.success(abilityApiBizService.pageApiCatalog(onlyPublished, reqMethod, status, userId, abilityId, keyword, size, current, startTime, endTime));
     }
 

@@ -7,6 +7,6 @@ import com.dsj.csp.manage.entity.AbilityApiResp;
 import java.util.List;
 
 public interface AbilityApiRespService extends IService<AbilityApiResp> {
-    Boolean saveRespList(List<AbilityApiResp> resps, Long apiId);
+    Boolean saveRespList(List<AbilityApiResp> respParams, Long apiId);
 
 }

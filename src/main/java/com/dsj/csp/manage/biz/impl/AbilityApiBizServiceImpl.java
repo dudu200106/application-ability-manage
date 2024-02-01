@@ -30,16 +30,18 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
     @Override
     public void saveApi(AbilityApiVO apiVO) {
+        long cnt = abilityApiService.count(Wrappers.lambdaQuery(AbilityApiEntity.class)
+                .or().and(i->i.eq(AbilityApiEntity::getAbilityId, apiVO.getAbilityId())
+                        .eq(AbilityApiEntity::getApiName, apiVO.getApiName()))
+                .or().eq(AbilityApiEntity::getApiUrl, apiVO.getApiUrl()));
+        if (cnt>0) {
+            throw new BusinessException("保存api信息出错! 可能存在的异常: 接口URL地址重名或者能力下已存在同名接口");
+        }
         // 插入能力基本信息
         AbilityApiEntity api = new AbilityApiEntity();
-        try{
-            BeanUtil.copyProperties(apiVO, api, true);
-            abilityApiService.save(api);
-        }catch (Exception e){
-            throw new BusinessException("保存api信息出错! 可能存在的异常:输入的URL地址重名");
-        }
-
-        // 插入接口的出参入参
+        BeanUtil.copyProperties(apiVO, api, true);
+        abilityApiService.save(api);
+        // 插入接口的出参入参列表
         abilityApiReqService.saveReqList(apiVO.getReqList(), api.getApiId());
         abilityApiRespService.saveRespList(apiVO.getRespList(), api.getApiId());
     }
@@ -137,22 +139,15 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
             return null;
         }
         // 构造返回结果
-//        Set<Long> abilityIds = apiList.stream().map(api -> api.getAbilityId()).collect(Collectors.toSet());
-//        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
-//                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
-//                .in(AbilityEntity::getAbilityId, abilityIds));
-//        Map<Long, AbilityEntity> abilityMap = abilitys.stream().collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability));
-
         Set<Long> abilityIds = apiList.stream().map(api -> api.getAbilityId()).collect(Collectors.toSet());
-        Map<String, Object> map = abilityService.getMap(Wrappers.lambdaQuery(AbilityEntity.class)
+        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
                 .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
                 .in(AbilityEntity::getAbilityId, abilityIds));
-        System.out.println("-=-=-=--=---==-==-=-=-=======-===================" + map);
-
+        Map<Long, AbilityEntity> abilityMap = abilitys.stream().collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability));
         List<AbilityApiVO> apiVOs = apiList.stream().map(api->{
             AbilityApiVO apiVO = new AbilityApiVO();
             BeanUtil.copyProperties(api, apiVO, true);
-            apiVO.setAbilityName(map.get(api.getAbilityId())==null ? null : ((AbilityEntity)map.get(api.getAbilityId())).getAbilityName());
+            apiVO.setAbilityName(abilityMap.get(api.getAbilityId())==null ? null : abilityMap.get(api.getAbilityId()).getAbilityName());
             return apiVO;
         }).toList();
         return apiVOs;
@@ -171,6 +166,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                 .ge(Objects.nonNull(startTime), AbilityApiEntity::getCreateTime, startTime)
                 .le(Objects.nonNull(endTime), AbilityApiEntity::getCreateTime, endTime)
                 .in(AbilityApiEntity::getApiId, apiIds)
+                .eq(AbilityApiEntity::getStatus, 4)
                 // 接口信息关键字模糊查询
                 .and(keyword!=null && !"".equals(keyword),i -> i
                         .like(AbilityApiEntity::getApiName, keyword)

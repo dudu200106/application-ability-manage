@@ -65,6 +65,12 @@ public class AbilityApiApplyDTO {
     @Schema(description="状态")
     private Integer status;
 
+    @Schema(description="调用量限制")
+    private Integer recallLimit;
+
+    @Schema(description="并发数限制")
+    private Integer qps;
+
     @Schema(description="备注")
     @Length(max= 300,message="编码长度不能超过300")
     private String note;

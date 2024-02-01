@@ -268,12 +268,14 @@ public class AbilityController {
     @Operation(summary = "获取能力简单信息目录")
     @GetMapping("/get-ability-catalog")
     public Result<?> getAbilityCatalog(){
-        List<AbilityApiApplyEntity> abilityInfos = abilityApiApplyService.list(
-                Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
-                        .select(AbilityApiApplyEntity::getAbilityId, AbilityApiApplyEntity::getAbilityName)
-                        .eq(AbilityApiApplyEntity::getStatus, 4)
-        );
-        return Result.success(abilityInfos);
+        List<Long> abilityIds = abilityApiService.list(Wrappers.lambdaQuery(AbilityApiEntity.class)
+                        .select(AbilityApiEntity::getAbilityId)
+                        .eq(AbilityApiEntity::getStatus, 4))
+                .stream().map(e->e.getAbilityId()).toList();
+        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
+                        .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
+                .in(AbilityEntity::getAbilityId, abilityIds));
+        return Result.success(abilitys);
     }
 
 

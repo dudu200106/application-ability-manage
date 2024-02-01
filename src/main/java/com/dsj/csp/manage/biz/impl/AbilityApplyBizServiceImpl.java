@@ -2,17 +2,12 @@ package com.dsj.csp.manage.biz.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
-import cn.hutool.log.Log;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.biz.AbilityApplyBizService;
-import com.dsj.csp.manage.dto.AbilityApplyAuditVO;
-import com.dsj.csp.manage.dto.AbilityApplyDTO;
-import com.dsj.csp.manage.dto.AbilityApplyQueryVO;
-import com.dsj.csp.manage.dto.AbilityApplyVO;
+import com.dsj.csp.manage.dto.*;
 import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.*;
 import com.dsj.csp.manage.util.Sm2;
@@ -89,7 +84,7 @@ public class AbilityApplyBizServiceImpl implements AbilityApplyBizService {
         return resApply;
     }
 
-    public String auditApply(AbilityApplyAuditVO auditVO) {
+    public String auditApply(AbilityAuditVO auditVO) {
         AbilityApplyEntity apply = abilityApplyService.getById(auditVO.getAbilityApplyId());
         if (apply==null){
             throw new BusinessException("审核失败! 请刷新页面后重试...");

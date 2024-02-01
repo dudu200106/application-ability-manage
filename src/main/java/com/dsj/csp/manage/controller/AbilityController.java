@@ -7,9 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
-import com.dsj.csp.manage.biz.AbilityApplyBizService;
 import com.dsj.csp.manage.biz.AbilityBizService;
-import com.dsj.csp.manage.dto.AbilityApplyVO;
 import com.dsj.csp.manage.dto.*;
 import com.dsj.csp.manage.entity.*;
 
@@ -46,7 +44,6 @@ public class AbilityController {
     private final AbilityApplyService abilityApplyService;
     private final AbilityBizService abilityBizService;
     private final AbilityApiBizService abilityApiBizService;
-    private final AbilityApplyBizService abilityApplyBizService;
     private final AbilityApiApplyService abilityApiApplyService;
     private final AbilityApiApplyBizService abilityApiApplyBizService;
 
@@ -81,12 +78,12 @@ public class AbilityController {
         return Result.success(abilityService.page(abilityQuery.toPage(), abilityQW));
     }
 
-    @Operation(summary = "审核能力注册", description = "审核能力注册申请")
-    @PostMapping("/audit-login")
-    public Result<?> auditAbility(@RequestBody AbilityAuditVO auditVO) {
-        String msg = abilityService.auditAbility(auditVO);
-        return Result.success(msg);
-    }
+//    @Operation(summary = "审核能力注册", description = "审核能力注册申请")
+//    @PostMapping("/audit-login")
+//    public Result<?> auditAbility(@RequestBody AbilityAuditVO auditVO) {
+//        String msg = abilityService.auditAbility(auditVO);
+//        return Result.success(msg);
+//    }
 
     @Operation(summary = "编辑注册的能力")
     @PostMapping("edit-login")
@@ -95,6 +92,46 @@ public class AbilityController {
         return Result.success("编辑注册能力成功!", editFlag);
     }
 
+
+
+
+
+//    @Operation(summary = "新增能力使用申请", description = "申请使用能力")
+//    @PostMapping("/add-apply")
+//    public Result<?> applyAbility(@RequestBody AbilityApplyVO applyVO) {
+//        abilityApplyBizService.saveAbilityApply(applyVO);
+//        return Result.success("能力申请完毕！请等待审核...");
+//    }
+//
+//    @Operation(summary = "查看能力申请详情", description = "获取特定申请的能力详细信息")
+//    @GetMapping("/info-apply")
+//    public Result<?> getApplyInfoById(@Parameter(
+//            description = "能力申请ID") @RequestParam Long abilityApplyId) {
+//        return Result.success(abilityApplyBizService.getApplyInfo(abilityApplyId));
+//    }
+//
+//
+//    @Operation(summary = "审核能力使用申请", description = "审核能力使用申请")
+//    @PostMapping("/audit-apply")
+//    public Result<?> auditAbilityApply(@RequestBody AbilityAuditVO auditVO){
+//        String  msg = abilityApplyBizService.auditApply(auditVO);
+//        return Result.success(msg);
+//    }
+//
+//    @Operation(summary = "分页查询申请能力列表", description = "分页查询申请能力列表")
+//    @PostMapping("/page-apply")
+//    public Result<?> queryApplyPage(
+//            @Valid @RequestBody AbilityApplyQueryVO abilityApplyQueryVO) {
+//        return Result.success(abilityApplyBizService.pageApply(abilityApplyQueryVO));
+//    }
+
+    @Operation(summary = "编辑能力使用申请", description = "编辑能力使用申请")
+    @PostMapping("/edit-apply")
+    public Result<?> editAbilityApply(@RequestBody AbilityApplyEntity abilityApply){
+        UpdateWrapper<AbilityApplyEntity> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.lambda().eq(AbilityApplyEntity::getAbilityApplyId, abilityApply.getAbilityApplyId());
+        return Result.success(abilityApplyService.update(abilityApply, updateWrapper));
+    }
 
 
     @Operation(summary = "新增接口")
@@ -117,58 +154,11 @@ public class AbilityController {
         return Result.success(abilityApiBizService.getApiInfo(apiId));
     }
 
-    @Operation(summary = "分页查询接口列表", description = "查询接口分页列表")
-    @PostMapping("/page-api")
-    public Result<?> pageApi(
-            @Valid @RequestBody AbilityApiQueryVO apiQueryVO ){
-        return Result.success(abilityApiBizService.pageApi(apiQueryVO));
-    }
-
-
-
     @Operation(summary = "更新接口")
     @PostMapping("edit-api")
     public Result<?> editApi(@RequestBody AbilityApiVO apiVO){
         Boolean editApiflag = abilityApiBizService.updateApi(apiVO);
         return Result.success("已修改接口完毕! ", editApiflag);
-    }
-
-
-    @Operation(summary = "新增能力使用申请", description = "申请使用能力")
-    @PostMapping("/add-apply")
-    public Result<?> applyAbility(@RequestBody AbilityApplyVO applyVO) {
-        abilityApplyBizService.saveAbilityApply(applyVO);
-        return Result.success("能力申请完毕！请等待审核...");
-    }
-
-    @Operation(summary = "查看能力申请详情", description = "获取特定申请的能力详细信息")
-    @GetMapping("/info-apply")
-    public Result<?> getApplyInfoById(@Parameter(
-            description = "能力申请ID") @RequestParam Long abilityApplyId) {
-        return Result.success(abilityApplyBizService.getApplyInfo(abilityApplyId));
-    }
-
-
-    @Operation(summary = "审核能力使用申请", description = "审核能力使用申请")
-    @PostMapping("/audit-apply")
-    public Result<?> auditAbilityApply(@RequestBody AbilityApplyAuditVO auditVO){
-        String  msg = abilityApplyBizService.auditApply(auditVO);
-        return Result.success(msg);
-    }
-
-    @Operation(summary = "分页查询申请能力列表", description = "分页查询申请能力列表")
-    @PostMapping("/page-apply")
-    public Result<?> queryApplyPage(
-            @Valid @RequestBody AbilityApplyQueryVO abilityApplyQueryVO) {
-        return Result.success(abilityApplyBizService.pageApply(abilityApplyQueryVO));
-    }
-
-    @Operation(summary = "编辑能力使用申请", description = "编辑能力使用申请")
-    @PostMapping("/edit-apply")
-    public Result<?> editAbilityApply(@RequestBody AbilityApplyEntity abilityApply){
-        UpdateWrapper<AbilityApplyEntity> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.lambda().eq(AbilityApplyEntity::getAbilityApplyId, abilityApply.getAbilityApplyId());
-        return Result.success(abilityApplyService.update(abilityApply, updateWrapper));
     }
 
     @Operation(summary = "统计能力数")

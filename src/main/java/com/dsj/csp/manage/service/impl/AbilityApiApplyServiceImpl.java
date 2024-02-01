@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +47,24 @@ public class AbilityApiApplyServiceImpl extends ServiceImpl<AbilityApiApplyMappe
         LambdaUpdateWrapper deleteUW = Wrappers.lambdaUpdate(AbilityApiApplyEntity.class)
                 .eq(AbilityApiApplyEntity::getAppId, appId);
         return this.getBaseMapper().delete(deleteUW);
+    }
+
+    @Override
+    public long countUserAbility(String userId) {
+        Set<Long> abilityIds = this.list( Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
+                        .select(AbilityApiApplyEntity::getAbilityId)
+                        .eq(AbilityApiApplyEntity::getUserId, userId)
+                        .eq(AbilityApiApplyEntity::getStatus, 2))
+                .stream().map(e->e.getAbilityId()).collect(Collectors.toSet());
+        return abilityIds.size();
+    }
+
+    @Override
+    public long countUserApi(String userId) {
+        long cnt = this.count(Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
+                .eq(AbilityApiApplyEntity::getUserId, userId)
+                .eq(AbilityApiApplyEntity::getStatus, 2));
+        return cnt;
     }
 
 }

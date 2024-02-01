@@ -13,7 +13,6 @@ import com.dsj.csp.manage.entity.*;
 
 import com.dsj.csp.manage.service.AbilityApiApplyService;
 import com.dsj.csp.manage.service.AbilityApiService;
-import com.dsj.csp.manage.service.AbilityApplyService;
 import com.dsj.csp.manage.service.AbilityService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,7 +40,6 @@ public class AbilityController {
 
     private final AbilityService abilityService;
     private final AbilityApiService abilityApiService;
-    private final AbilityApplyService abilityApplyService;
     private final AbilityBizService abilityBizService;
     private final AbilityApiBizService abilityApiBizService;
     private final AbilityApiApplyService abilityApiApplyService;
@@ -78,61 +76,12 @@ public class AbilityController {
         return Result.success(abilityService.page(abilityQuery.toPage(), abilityQW));
     }
 
-//    @Operation(summary = "审核能力注册", description = "审核能力注册申请")
-//    @PostMapping("/audit-login")
-//    public Result<?> auditAbility(@RequestBody AbilityAuditVO auditVO) {
-//        String msg = abilityService.auditAbility(auditVO);
-//        return Result.success(msg);
-//    }
-
     @Operation(summary = "编辑注册的能力")
     @PostMapping("edit-login")
     public Result<?> updateAbilityLogin(@RequestBody AbilityEntity ability){
         Boolean editFlag = abilityService.updateById(ability);
         return Result.success("编辑注册能力成功!", editFlag);
     }
-
-
-
-
-
-//    @Operation(summary = "新增能力使用申请", description = "申请使用能力")
-//    @PostMapping("/add-apply")
-//    public Result<?> applyAbility(@RequestBody AbilityApplyVO applyVO) {
-//        abilityApplyBizService.saveAbilityApply(applyVO);
-//        return Result.success("能力申请完毕！请等待审核...");
-//    }
-//
-//    @Operation(summary = "查看能力申请详情", description = "获取特定申请的能力详细信息")
-//    @GetMapping("/info-apply")
-//    public Result<?> getApplyInfoById(@Parameter(
-//            description = "能力申请ID") @RequestParam Long abilityApplyId) {
-//        return Result.success(abilityApplyBizService.getApplyInfo(abilityApplyId));
-//    }
-//
-//
-//    @Operation(summary = "审核能力使用申请", description = "审核能力使用申请")
-//    @PostMapping("/audit-apply")
-//    public Result<?> auditAbilityApply(@RequestBody AbilityAuditVO auditVO){
-//        String  msg = abilityApplyBizService.auditApply(auditVO);
-//        return Result.success(msg);
-//    }
-//
-//    @Operation(summary = "分页查询申请能力列表", description = "分页查询申请能力列表")
-//    @PostMapping("/page-apply")
-//    public Result<?> queryApplyPage(
-//            @Valid @RequestBody AbilityApplyQueryVO abilityApplyQueryVO) {
-//        return Result.success(abilityApplyBizService.pageApply(abilityApplyQueryVO));
-//    }
-
-    @Operation(summary = "编辑能力使用申请", description = "编辑能力使用申请")
-    @PostMapping("/edit-apply")
-    public Result<?> editAbilityApply(@RequestBody AbilityApplyEntity abilityApply){
-        UpdateWrapper<AbilityApplyEntity> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.lambda().eq(AbilityApplyEntity::getAbilityApplyId, abilityApply.getAbilityApplyId());
-        return Result.success(abilityApplyService.update(abilityApply, updateWrapper));
-    }
-
 
     @Operation(summary = "新增接口")
     @PostMapping("add-api")
@@ -176,13 +125,13 @@ public class AbilityController {
     @Operation(summary = "统计用户能力数量")
     @GetMapping("/count-user-ability")
     public Result<?> countuserAbility(String userId){
-        return Result.success(abilityApplyService.countUserApplyAbility(userId));
+        return Result.success(abilityApiApplyService.countUserAbility(userId));
     }
 
     @Operation(summary = "统计用户接口数量")
     @GetMapping("/count-user-api")
     public Result<?> countUserApi(String userId){
-        return Result.success(abilityApplyService.countUserApplyApi(userId));
+        return Result.success(abilityApiApplyService.countUserApi(userId));
     }
 
 //    @Operation(summary = "统计能力数量")
@@ -196,22 +145,6 @@ public class AbilityController {
 //    }
 
 
-
-    /**
-     * 根据 app-code 获取 可访问路径
-     *
-     * @return 可访问路径
-     */
-    @GetMapping("/get-auth-api")
-    public Result<List<String>> getAuthApi(String appCode) {
-        // 返回可访问路径
-        // 最终返回的路径看你并不支持通配符，而是每一个路径都需要在管理端授权
-
-        System.out.println("收到请求，appcode：" + appCode);
-
-        return Result.success(abilityApiBizService.getApiList( appCode));
-    }
-
     @Operation(summary = "删除能力")
     @PostMapping("/delete-ability-api")
     public Result<?> removeAbility(@Parameter(description = "能力id列表") @RequestBody AbilityDeleteDTO deleteDTO){
@@ -220,14 +153,6 @@ public class AbilityController {
         return Result.success("删除能力及其接口完成! ", delFlag);
     }
 
-    @Operation(summary = "删除能力申请")
-    @PostMapping("/delete-apply")
-    public Result<?> removeApply(@RequestBody AbilityDeleteDTO deleteDTO){
-        String applyIds = deleteDTO.getAbilityApplyIds();
-        List<Long> ids = Arrays.asList(applyIds.split(",")).stream().map(id -> Long.parseLong(id)).toList();
-        Boolean delFlag = abilityApplyService.removeBatchByIds(ids);
-        return Result.success("删除能力申请完成! ", delFlag);
-    }
 
     @Operation(summary = "删除能力接口")
     @PostMapping("/delete-api")
@@ -238,30 +163,23 @@ public class AbilityController {
         return Result.success("删除能力完成! ", delFlag);
     }
 
-
-    @Operation(summary = "查询申请的接口列表", description = "查询申请的接口列表")
-    @GetMapping("/query-apply-api")
-    public Result<?> queryApplyApiList(@Parameter(description = "能力申请ID") @RequestParam Long abilityApplyId) {
-        return Result.success(abilityApiBizService.getApplyApiList(abilityApplyId));
-    }
-
     @Operation(summary = "查询能力的接口列表", description = "查询能力的接口列表")
     @GetMapping("/query-api-list")
     public Result<?> queryApiList(@Parameter(description = "能力ID") @RequestParam Long abilityId) {
         return Result.success(abilityApiBizService.getAbilityApiList(abilityId));
     }
 
-    @Operation(summary = "查询用户申请到的api列表")
-    @GetMapping("/query-user-apis")
-    public Result<?> queryUserApis(@Parameter(description = "用户ID") @RequestParam Long userId) {
-        return Result.success(abilityApiBizService.getUserApiList(userId));
-    }
-
-    @Operation(summary = "查询应用申请到的api列表")
-    @GetMapping("/query-app-apis")
-    public Result<?> queryAppApis(@Parameter(description = "应用ID") @RequestParam Long appId) {
-        return Result.success(abilityApiBizService.getAppApiList(appId));
-    }
+//    @Operation(summary = "查询用户申请到的api列表")
+//    @GetMapping("/query-user-apis")
+//    public Result<?> queryUserApis(@Parameter(description = "用户ID") @RequestParam Long userId) {
+//        return Result.success(abilityApiBizService.getUserApiList(userId));
+//    }
+//
+//    @Operation(summary = "查询应用申请到的api列表")
+//    @GetMapping("/query-app-apis")
+//    public Result<?> queryAppApis(@Parameter(description = "应用ID") @RequestParam Long appId) {
+//        return Result.success(abilityApiBizService.getAppApiList(appId));
+//    }
 
 
     @Operation(summary = "新增接口使用申请", description = "申请使用接口")

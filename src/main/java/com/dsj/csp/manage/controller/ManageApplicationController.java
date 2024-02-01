@@ -2,8 +2,6 @@ package com.dsj.csp.manage.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.Result;
-import com.dsj.csp.manage.biz.AbilityApiBizService;
-import com.dsj.csp.manage.biz.AbilityApplyBizService;
 import com.dsj.csp.manage.dto.ManageApplictionVo;
 import com.dsj.csp.manage.entity.ManageApplicationEntity;
 import com.dsj.csp.manage.service.ManageApplicationService;
@@ -32,8 +30,6 @@ import java.util.Map;
 public class ManageApplicationController {
     //    @Resource
     private final ManageApplicationService manageApplicationService;
-    @Autowired
-    private final AbilityApplyBizService abilityApplyBizService;
 
 
     /**

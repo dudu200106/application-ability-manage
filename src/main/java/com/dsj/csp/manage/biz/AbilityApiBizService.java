@@ -8,23 +8,19 @@ import java.util.Date;
 import java.util.List;
 
 public interface AbilityApiBizService {
-    List<String> getApiList(String appCode);
-
     void saveApi(AbilityApiVO apiVO);
 
     boolean updateApi(AbilityApiVO apiVO);
 
     AbilityApiVO getApiInfo(Long apiId);
 
-    List<AbilityApiEntity> getApplyApiList(Long abilityApplyId);
-
     List<AbilityApiEntity> getAbilityApiList(Long abilityId);
 
-    // 根据appId查询该应用下申请的所有接口
-    List<AbilityApiVO> getAppApiList(Long appId);
-
-    // 根据userId查询该用户
-    List<AbilityApiVO> getUserApiList(Long userId);
+//    // 根据appId查询该应用下申请的所有接口
+//    List<AbilityApiVO> getAppApiList(Long appId);
+//
+//    // 根据userId查询该用户
+//    List<AbilityApiVO> getUserApiList(Long userId);
 
     /**
      * 查询申请到的接口列表分页(审核通过的api申请)

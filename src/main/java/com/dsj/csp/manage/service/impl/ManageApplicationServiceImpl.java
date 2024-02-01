@@ -37,6 +37,8 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
 
     @Autowired
     AbilityApplyService abilityApplyService;
+    @Autowired
+    AbilityApiApplyService abilityApiApplyService;
 
 
 
@@ -75,7 +77,7 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
         LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppId, manageApplication.getAppId());
         lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, manageApplication.getAppUserId());
-        System.out.println(abilityApplyService.deleteApplyByAppId(Long.valueOf(manageApplication.getAppId())));
+        System.out.println(abilityApiApplyService.deleteApiApplyByAppId(Long.valueOf(manageApplication.getAppId())));
         return baseMapper.delete(lambdaUpdateWrapper);
     }
 

@@ -299,11 +299,13 @@ public class AbilityController {
     @Operation(summary = "分页查询api目录列表")
     @GetMapping("page-api-catalog")
     public Result<?> pageApiList(@Parameter(description = "是否过滤未发布的接口") Boolean onlyPublished,
+                                 @Parameter(description = "请求方式") String reqMethod,
+                                 @Parameter(description = "状态") Integer status,
                                  @Parameter(description = "用户ID") Long userId, @Parameter(description = "能力ID") Long abilityId,
                                  @Parameter(description = "分页条数") int size, @Parameter(description = "当前页数") int current,
                                  @Parameter(description = "搜索关键字") String keyword,
                                  @Parameter(description = "开始时间") Date startTime, @Parameter(description = "结束时间") Date endTime) {
-        return Result.success(abilityApiBizService.pageApiCatalog(onlyPublished, userId, abilityId, keyword, size, current, startTime, endTime));
+        return Result.success(abilityApiBizService.pageApiCatalog(onlyPublished, reqMethod, status, userId, abilityId, keyword, size, current, startTime, endTime));
     }
 
     @Operation(summary = "分页查询接口申请列表", description = "分页查询接口申请列表")
@@ -315,7 +317,7 @@ public class AbilityController {
                                   @Parameter(description = "分页条数") int size,
                                   @Parameter(description = "当前页数") int current,
                                   @Parameter(description = "搜索关键字") String keyword,
-                                  @Parameter(description = "搜索关键字") Integer status,
+                                  @Parameter(description = "状态") Integer status,
                                   @Parameter(description = "开始时间") Date startTime,
                                   @Parameter(description = "结束时间") Date endTime) {
         return Result.success(abilityApiApplyBizService.pageApiApply(onlySubmitted, appId, userId, abilityId, keyword, status, startTime, endTime, current, size));

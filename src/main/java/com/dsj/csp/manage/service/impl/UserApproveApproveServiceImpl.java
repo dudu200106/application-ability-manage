@@ -103,7 +103,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         UserApproveEntity userApproveEntity = baseMapper.selectById(user);
         if (userApproveEntity != null) {
             Integer status = user2.getStatus();
-            if (status.equals(UserStatusEnum.NOAPPROVE.getStatus()) || status.equals(UserStatusEnum.SUCCESS.getStatus()) || status.equals(UserStatusEnum.FAIL.getStatus())) {
+            if (status.equals(UserStatusEnum.NOAPPROVE.getStatus()) || status.equals(UserStatusEnum.FAIL.getStatus())) {
                 user.setStatus(UserStatusEnum.WAIT.getStatus());
                 user.setNote("审核中");
                 user.setCreateTime(new Date());

@@ -9,7 +9,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 @MapperScan("com.dsj.csp.manage.mapper")
 public class ManageApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(ManageApplication.class, args);
     }

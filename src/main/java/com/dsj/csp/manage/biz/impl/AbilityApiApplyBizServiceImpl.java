@@ -1,6 +1,7 @@
 package com.dsj.csp.manage.biz.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -104,7 +105,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         abilityApiApplyService.update(updateWrapper);
 
         // 判断是否要生成一对密钥
-        Long appId = abilityApiApplyService.getById(auditVO.getApiApplyId()).getAppId();
+        Long appId = apply.getAppId();
         ManageApplicationEntity app = manageApplicationService.getById(appId);
         // 如果申请的appId不存在
         if (app == null){
@@ -112,10 +113,8 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         }
         String appSecretKey =  app.getAppSecret();
         String appAppKey =  app.getAppSecret();
-        // 如果审核结果不通过 或者应用的公钥私钥有一个不为空, 就不用生成密钥了
-        if (auditVO.getFlag() == 1
-                && (appSecretKey==null || "".equals(appSecretKey))
-                && (appAppKey==null || "".equals(appAppKey))){
+        // 如果审核通过, 判断是否为应用生成密钥
+        if (auditVO.getFlag() == 2 && ObjectUtil.isEmpty(appSecretKey) && ObjectUtil.isEmpty(appAppKey)){
             Map<String, String> sm2Map = Sm2.sm2Test();
             String appKey = sm2Map.get("publicEncode");
             String secretKey = sm2Map.get("privateEncode");

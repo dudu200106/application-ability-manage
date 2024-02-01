@@ -143,12 +143,13 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
 
 
     @Override
-    public Page<AbilityApiApplyDTO> pageApiApply(Boolean onlySubmitted, Long appId, Long userId, Long abilityId, String keyword, Date startTime, Date endTime, int current, int size) {
+    public Page<AbilityApiApplyDTO> pageApiApply(Boolean onlySubmitted, Long appId, Long userId, Long abilityId, String keyword, Integer status, Date startTime, Date endTime, int current, int size) {
         // 分页条件构造器
         LambdaQueryWrapper<AbilityApiApplyEntity> qw = Wrappers.lambdaQuery();
         qw.eq(appId != null, AbilityApiApplyEntity::getAppId, appId)
                 .eq(userId != null, AbilityApiApplyEntity::getUserId, userId)
                 .eq(abilityId != null, AbilityApiApplyEntity::getAbilityId, abilityId)
+                .eq(status != null, AbilityApiApplyEntity::getStatus, status)
                 // 如果过滤未提交状态
                 .notIn(onlySubmitted, AbilityApiApplyEntity::getStatus, 0)
                 .ge(Objects.nonNull(startTime), AbilityApiApplyEntity::getCreateTime, startTime)
@@ -168,6 +169,12 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
             return prePage;
         }
         List<AbilityApiApplyEntity> records = prePage.getRecords();
+        // 接口表
+        Set<Long> apiIds = records.stream().map(e->e.getApiId()).collect(Collectors.toSet());
+        List<AbilityApiEntity> apis = abilityApiService.list(Wrappers.lambdaQuery(AbilityApiEntity.class)
+                .select(AbilityApiEntity::getApiId, AbilityApiEntity::getApiName, AbilityApiEntity::getApiDesc)
+                .in(AbilityApiEntity::getApiId, apiIds));
+        Map<Long, AbilityApiEntity> apiMap = apis.stream().collect(Collectors.toMap(api -> api.getApiId(), api -> api));
         // 用户表 查出企业/政府名称
         Set<Long> userIds = records.stream().map(e->e.getUserId()).collect(Collectors.toSet());
         List<UserApproveEntity> users = userApproveService.list(Wrappers.lambdaQuery(UserApproveEntity.class)
@@ -182,6 +189,8 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
             BeanUtil.copyProperties(apply, applyDTO, true);
             applyDTO.setCompanyName(userMap.get(apply.getUserId())==null ? null : userMap.get(apply.getAbilityId()).getCompanyName());
             applyDTO.setGovName(userMap.get(apply.getUserId())==null ? null : userMap.get(apply.getAbilityId()).getGovName());
+            applyDTO.setApiName(apiMap.get(apply.getApiId())==null ? null : apiMap.get(apply.getApiId()).getApiName());
+            applyDTO.setApiDesc(apiMap.get(apply.getApiId())==null ? null : apiMap.get(apply.getApiId()).getApiDesc());
             return applyDTO;
         }).toList();
         newPage.setRecords(resRecords);

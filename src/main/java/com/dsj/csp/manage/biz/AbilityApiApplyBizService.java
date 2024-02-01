@@ -15,7 +15,7 @@ public interface AbilityApiApplyBizService {
     AbilityApiApplyDTO getApplyInfo(Long apiApplyId);
 
     //分页获取接口申请列表
-    Page<AbilityApiApplyDTO> pageApiApply(Boolean onlySubmitted, Long appId, Long userId, Long abilityId, String keyword, Date startTime, Date endTime, int current, int size);
+    Page<AbilityApiApplyDTO> pageApiApply(Boolean onlySubmitted, Long appId, Long userId, Long abilityId, String keyword, Integer status, Date startTime, Date endTime, int current, int size);
 
     // 审核接口申请
     String auditApply(AbilityAuditVO auditVO);

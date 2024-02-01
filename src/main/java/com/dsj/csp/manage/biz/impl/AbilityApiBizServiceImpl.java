@@ -215,7 +215,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
 
     @Override
-    public Page pageApplyApis(Long userId, Long appId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime) {
+    public Page pagePassedApis(Long userId, Long appId, Long abilityId, String keyword, int current, int size, Date startTime, Date endTime) {
         // 查询出申请通过的apiId集合
         Set<Long> apiIds = abilityApiApplyService.getPassedApiIds(userId, appId, abilityId, keyword);
         if (apiIds.size()==0){
@@ -229,7 +229,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                 // 接口信息关键字模糊查询
                 .and(keyword!=null && !"".equals(keyword),i -> i
                         .like(AbilityApiEntity::getApiName, keyword)
-                        .or().like(AbilityApiEntity::getDescription, keyword)
+                        .or().like(AbilityApiEntity::getApiDesc, keyword)
                         .or().like(AbilityApiEntity::getApiUrl, keyword))
                 // 排序
                 .orderByAsc(AbilityApiEntity::getStatus)
@@ -245,12 +245,12 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
                 .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
                 .in(AbilityEntity::getAbilityId, abilityIds));
-        Map<Long, String> abilityMap = abilitys.stream().collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability.getAbilityName()));
+        Map<Long, AbilityEntity> abilityMap = abilitys.stream().collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability));
         Page resPage = new Page(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         List<AbilityApiVO> resRecords = preRecords.stream().map(api -> {
             AbilityApiVO apiVO = new AbilityApiVO();
             BeanUtil.copyProperties(api, apiVO);
-            apiVO.setAbilityName(abilityMap.get(api.getAbilityId()));
+            apiVO.setAbilityName(abilityMap.get(api.getAbilityId())==null ? null : abilityMap.get(api.getAbilityId()).getAbilityName());
             return apiVO;
         }).toList();
         resPage.setRecords(resRecords);
@@ -268,7 +268,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                 .in(onlyPublished, AbilityApiEntity::getStatus, 3)
                 .and(keyword!=null && !"".equals(keyword),
                         i -> i.like(AbilityApiEntity::getApiName, keyword)
-                                .or().like(AbilityApiEntity::getDescription, keyword)
+                                .or().like(AbilityApiEntity::getApiDesc, keyword)
                                 .or().like(AbilityApiEntity::getApiUrl, keyword))
                 // 排序
                 .orderByAsc(AbilityApiEntity::getStatus)

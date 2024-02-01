@@ -1,5 +1,6 @@
 package com.dsj.csp.manage.controller;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -50,6 +51,7 @@ public class AbilityController {
     private final AbilityApiApplyService abilityApiApplyService;
     private final AbilityApiApplyBizService abilityApiApplyBizService;
 
+
     @Operation(summary = "能力注册", description = "注册一个新的能力")
     @PostMapping("/add-login")
     public Result<?> addAbility(@RequestBody AbilityEntity ability) {
@@ -70,6 +72,7 @@ public class AbilityController {
             @Valid @RequestBody AbilityQueryVO abilityQuery) {
         return Result.success(abilityService.page(abilityQuery.toPage(), abilityQuery.getQueryWrapper()));
     }
+
 
     @Operation(summary = "分页查询可调用能力列表", description = "分页查询可调用能力列表")
     @PostMapping ("/page-available-ability")
@@ -93,6 +96,8 @@ public class AbilityController {
         return Result.success("编辑注册能力成功!", editFlag);
     }
 
+
+
     @Operation(summary = "新增接口")
     @PostMapping("add-api")
     public Result<?> addApiA(@RequestBody AbilityApiVO apiVO){
@@ -100,21 +105,18 @@ public class AbilityController {
         return Result.success("添加接口成功!");
     }
 
-
-    @Operation(summary = "审核接口使用申请", description = "审核接口使用申请")
+    @Operation(summary = "审核接口注册", description = "审核接口注册")
     @PostMapping("/audit-api")
     public Result<?> auditApi(@RequestBody AbilityAuditVO auditVO){
         String  msg = abilityApiService.auditApi(auditVO);
         return Result.success(msg);
     }
 
-
     @Operation(summary = "查询接口信息", description = "查询特定接口的信息")
     @GetMapping("/query-api-info")
     public Result<?> queryApiInfo(@Parameter(description = "接口ID") @RequestParam Long apiId) {
         return Result.success(abilityApiBizService.getApiInfo(apiId));
     }
-
 
     @Operation(summary = "分页查询接口列表", description = "查询接口分页列表")
     @PostMapping("/page-api")
@@ -123,16 +125,7 @@ public class AbilityController {
         return Result.success(abilityApiBizService.pageApi(apiQueryVO));
     }
 
-    @Operation(summary = "分页查询api目录列表")
-    @GetMapping("page-api-catalog")
-    public Result<?> pageApiList(@Parameter(description = "是否过滤未发布的接口") Boolean onlyPublished,
-                                 @Parameter(description = "用户ID") Long userId, @Parameter(description = "能力ID") Long abilityId,
-                                 @Parameter(description = "分页条数") int size, @Parameter(description = "当前页数") int current,
-                                 @Parameter(description = "搜索关键字") String keyword,
-                                 @Parameter(description = "开始时间") Date startTime, @Parameter(description = "结束时间") Date endTime) {
-        return Result.success(abilityApiBizService.pageApis(onlyPublished, userId, abilityId, keyword, size, current, startTime, endTime));
 
-    }
 
     @Operation(summary = "更新接口")
     @PostMapping("edit-api")
@@ -155,6 +148,7 @@ public class AbilityController {
             description = "能力申请ID") @RequestParam Long abilityApplyId) {
         return Result.success(abilityApplyBizService.getApplyInfo(abilityApplyId));
     }
+
 
     @Operation(summary = "审核能力使用申请", description = "审核能力使用申请")
     @PostMapping("/audit-apply")
@@ -201,7 +195,6 @@ public class AbilityController {
     public Result<?> countUserApi(String userId){
         return Result.success(abilityApplyService.countUserApplyApi(userId));
     }
-
 
 //    @Operation(summary = "统计能力数量")
 //    @GetMapping("/count-ability")
@@ -303,7 +296,18 @@ public class AbilityController {
         return Result.success(msg);
     }
 
-    @Operation(summary = "分页查询所有接口申请列表", description = "分页查询接口申请列表")
+
+    @Operation(summary = "分页查询api目录列表")
+    @GetMapping("page-api-catalog")
+    public Result<?> pageApiList(@Parameter(description = "是否过滤未发布的接口") Boolean onlyPublished,
+                                 @Parameter(description = "用户ID") Long userId, @Parameter(description = "能力ID") Long abilityId,
+                                 @Parameter(description = "分页条数") int size, @Parameter(description = "当前页数") int current,
+                                 @Parameter(description = "搜索关键字") String keyword,
+                                 @Parameter(description = "开始时间") Date startTime, @Parameter(description = "结束时间") Date endTime) {
+        return Result.success(abilityApiBizService.pageApis(onlyPublished, userId, abilityId, keyword, size, current, startTime, endTime));
+    }
+
+    @Operation(summary = "分页查询接口申请列表", description = "分页查询接口申请列表")
     @GetMapping("/page-api-apply")
     public Result<?> pageApiApply(@Parameter(description = "是否屏蔽'未提交'状态申请") Boolean onlySubmitted,
                                   @Parameter(description = "用户ID") Long userId,
@@ -312,9 +316,23 @@ public class AbilityController {
                                   @Parameter(description = "分页条数") int size,
                                   @Parameter(description = "当前页数") int current,
                                   @Parameter(description = "搜索关键字") String keyword,
+                                  @Parameter(description = "搜索关键字") Integer status,
                                   @Parameter(description = "开始时间") Date startTime,
                                   @Parameter(description = "结束时间") Date endTime) {
-        return Result.success(abilityApiApplyBizService.pageApiApply(onlySubmitted, appId, userId, abilityId, keyword, startTime, endTime, current, size));
+        return Result.success(abilityApiApplyBizService.pageApiApply(onlySubmitted, appId, userId, abilityId, keyword, status, startTime, endTime, current, size));
+    }
+
+    @Operation(summary = "分页查询申请通过的接口列表", description = "分页查询申请通过的接口列表")
+    @GetMapping("/page-passed-apis")
+    public Result<?> pagePassedApi(@Parameter(description = "用户ID") Long userId,
+                                  @Parameter(description = "应用ID") Long appId,
+                                  @Parameter(description = "能力ID") Long abilityId,
+                                  @Parameter(description = "分页条数", required = true) int size,
+                                  @Parameter(description = "当前页数", required = true) int current,
+                                  @Parameter(description = "搜索关键字") String keyword,
+                                  @Parameter(description = "开始时间") Date startTime,
+                                  @Parameter(description = "结束时间") Date endTime) {
+        return Result.success(abilityApiBizService.pagePassedApis(userId, appId, abilityId, keyword, current, size, startTime, endTime));
     }
 
 
@@ -336,6 +354,15 @@ public class AbilityController {
         return Result.success("删除能力申请完成! ", delFlag);
     }
 
+
+    @Operation(summary = "获取能力目录")
+    @GetMapping("/get-ability-catalog")
+    public Result<?> getAbilityCatalog(){
+        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
+                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName));
+
+        return Result.success(abilitys);
+    }
 
 
 }

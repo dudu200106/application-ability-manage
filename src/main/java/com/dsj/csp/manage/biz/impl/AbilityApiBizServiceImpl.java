@@ -137,15 +137,22 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
             return null;
         }
         // 构造返回结果
+//        Set<Long> abilityIds = apiList.stream().map(api -> api.getAbilityId()).collect(Collectors.toSet());
+//        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
+//                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
+//                .in(AbilityEntity::getAbilityId, abilityIds));
+//        Map<Long, AbilityEntity> abilityMap = abilitys.stream().collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability));
+
         Set<Long> abilityIds = apiList.stream().map(api -> api.getAbilityId()).collect(Collectors.toSet());
-        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
+        Map<String, Object> map = abilityService.getMap(Wrappers.lambdaQuery(AbilityEntity.class)
                 .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
                 .in(AbilityEntity::getAbilityId, abilityIds));
-        Map<Long, AbilityEntity> abilityMap = abilitys.stream().collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability));
+        System.out.println("-=-=-=--=---==-==-=-=-=======-===================" + map);
+
         List<AbilityApiVO> apiVOs = apiList.stream().map(api->{
             AbilityApiVO apiVO = new AbilityApiVO();
             BeanUtil.copyProperties(api, apiVO, true);
-            apiVO.setAbilityName(abilityMap.get(api.getAbilityId())==null ? null : abilityMap.get(api.getAbilityId()).getAbilityName());
+            apiVO.setAbilityName(map.get(api.getAbilityId())==null ? null : ((AbilityEntity)map.get(api.getAbilityId())).getAbilityName());
             return apiVO;
         }).toList();
         return apiVOs;
@@ -205,7 +212,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                 .eq(status!=null, AbilityApiEntity::getStatus, status)
                 .ge(Objects.nonNull(startTime), AbilityApiEntity::getCreateTime, startTime)
                 .le(Objects.nonNull(endTime), AbilityApiEntity::getCreateTime, endTime)
-                .in(onlyPublished, AbilityApiEntity::getStatus, 3)
+                .in(onlyPublished, AbilityApiEntity::getStatus, 4)
                 .and(keyword!=null && !"".equals(keyword),
                         i -> i.like(AbilityApiEntity::getApiName, keyword)
                                 .or().like(AbilityApiEntity::getApiDesc, keyword)

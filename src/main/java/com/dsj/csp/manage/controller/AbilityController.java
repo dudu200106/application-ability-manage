@@ -60,20 +60,6 @@ public class AbilityController {
         return Result.success(abilityService.getById(abilityId));
     }
 
-    @Operation(summary = "分页查询注册能力列表", description = "分页查询能力列表")
-    @PostMapping ("/page-login")
-    public Result<?> queryLoginPage(
-            @Valid @RequestBody AbilityQueryVO abilityQuery) {
-        return Result.success(abilityService.page(abilityQuery.toPage(), abilityQuery.getQueryWrapper()));
-    }
-
-    @Operation(summary = "分页查询可调用能力列表", description = "分页查询可调用能力列表")
-    @PostMapping ("/page-available-ability")
-    public Result<?> queryAvailablePage(
-            @Valid @RequestBody AbilityQueryVO abilityQuery) {
-        return Result.success(abilityService.page(abilityQuery.toPage(), abilityQuery.getQueryWrapper()));
-    }
-
     @Operation(summary = "分页查询能力目录列表", description = "分页查询能力目录列表")
     @GetMapping ("/page-ability-catalog")
     public Result<?> queryAbilityCatalog(@Parameter(description = "用户ID") Long userId,
@@ -84,8 +70,6 @@ public class AbilityController {
                                          @Parameter(description = "结束时间") Date endTime) {
         return Result.success(abilityService.pageAbilitys(userId, keyword, startTime, endTime, current, size));
     }
-
-
 
     @Operation(summary = "编辑能力")
     @PostMapping("edit-login")

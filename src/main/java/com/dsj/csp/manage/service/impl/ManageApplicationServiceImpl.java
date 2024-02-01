@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dsj.csp.common.enums.CodeEnum;
 import com.dsj.csp.common.exception.FlowException;
-import com.dsj.csp.manage.biz.AbilityApplyBizService;
 import com.dsj.csp.manage.dto.ManageApplictionVo;
 import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.mapper.ManageApplicationMapper;
@@ -34,9 +33,6 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
         implements ManageApplicationService {
     @Autowired
     private ManageApplicationMapper manageApplicationMapper;
-
-    @Autowired
-    AbilityApplyService abilityApplyService;
     @Autowired
     AbilityApiApplyService abilityApiApplyService;
 

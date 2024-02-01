@@ -12,11 +12,13 @@ import java.sql.Date;
 import java.util.Objects;
 
 @Data
-public class AbilityQueryVO extends PageQuery<AbilityEntity> implements Serializable {
+public class AbilityQueryVO implements Serializable {
     /**
      * 查询的实体
      */
     private AbilityEntity entity;
+    private int current;
+    private int size;
 
     /**
      * 创建时间范围--开始时间

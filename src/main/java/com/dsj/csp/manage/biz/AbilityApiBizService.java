@@ -8,15 +8,11 @@ import java.util.Date;
 import java.util.List;
 
 public interface AbilityApiBizService {
-    List<String> getApiList(String appCode);
-
     void saveApi(AbilityApiVO apiVO);
 
     boolean updateApi(AbilityApiVO apiVO);
 
     AbilityApiVO getApiInfo(Long apiId);
-
-    List<AbilityApiEntity> getApplyApiList(Long abilityApplyId);
 
     List<AbilityApiEntity> getAbilityApiList(Long abilityId);
 

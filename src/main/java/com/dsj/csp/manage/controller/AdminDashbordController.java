@@ -32,9 +32,7 @@ public class AdminDashbordController {
     @Autowired
     private AbilityService abilityService;
     @Autowired
-    private AbilityBizService abilityBizService;
-    @Autowired
-    private AbilityApplyService abilityApplyService;
+    private AbilityApiApplyService abilityApiApplyService;
 
 
 
@@ -57,8 +55,8 @@ public class AdminDashbordController {
     @GetMapping("/getKztTotal")
     public Object kzinfo(@Parameter(description = "用户Id") String appUserId) {
         Long appTotal = manageApplicationService.countAppUser(appUserId);
-        Long apiTotal=  abilityApplyService.countUserApplyApi(appUserId);
-        Long abilityTotal= abilityApplyService.countUserApplyAbility(appUserId);
+        Long apiTotal=  abilityApiApplyService.countUserApi(appUserId);
+        Long abilityTotal= abilityApiApplyService.countUserAbility(appUserId);
         Map<String, Integer> data = new HashMap<>();
         data.put("appTotal", Math.toIntExact(appTotal));
         data.put("apiTotal", Math.toIntExact(apiTotal));

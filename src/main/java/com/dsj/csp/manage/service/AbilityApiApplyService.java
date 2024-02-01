@@ -24,4 +24,7 @@ public interface AbilityApiApplyService extends IService<AbilityApiApplyEntity> 
      */
     int deleteApiApplyByAppId(Long appId);
 
+    long countUserAbility(String userId);
+
+    long countUserApi(String userId);
 }

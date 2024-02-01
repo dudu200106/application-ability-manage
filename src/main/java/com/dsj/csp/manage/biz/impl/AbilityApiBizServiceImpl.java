@@ -232,8 +232,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                         .or().like(AbilityApiEntity::getApiDesc, keyword)
                         .or().like(AbilityApiEntity::getApiUrl, keyword))
                 // 排序
-                .orderByAsc(AbilityApiEntity::getStatus)
-                .orderByDesc(AbilityApiEntity::getCreateTime);
+                .orderByDesc(AbilityApiEntity::getUpdateTime)
+                .orderByAsc(AbilityApiEntity::getStatus);
         // 主表分页查询
         Page prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
         List<AbilityApiEntity> preRecords = prePage.getRecords();
@@ -259,7 +259,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
 
     @Override
-    public Page pageApis(Boolean onlyPublished, Long userId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime) {
+    public Page pageApiCatalog(Boolean onlyPublished, Long userId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime) {
         LambdaQueryWrapper queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)
                 .eq(userId!=null, AbilityApiEntity::getUserId, userId)
                 .eq(userId!=null, AbilityApiEntity::getAbilityId, abilityId)
@@ -271,7 +271,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                                 .or().like(AbilityApiEntity::getApiDesc, keyword)
                                 .or().like(AbilityApiEntity::getApiUrl, keyword))
                 // 排序
-                .orderByDesc(AbilityApiEntity::getCreateTime)
+                .orderByDesc(AbilityApiEntity::getUpdateTime)
                 .orderByAsc(AbilityApiEntity::getStatus);
         Page prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
         List<AbilityApiEntity> preRecords = prePage.getRecords();

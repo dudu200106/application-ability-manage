@@ -55,6 +55,6 @@ public interface AbilityApiBizService {
      * @param endTime
      * @return 接口目录
      */
-    Page pageApis(Boolean onlyPublished, Long userId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime);
+    Page pageApiCatalog(Boolean onlyPublished, Long userId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime);
 
 }

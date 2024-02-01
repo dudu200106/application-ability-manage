@@ -1,8 +1,12 @@
 package com.dsj.csp.manage.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.dsj.csp.manage.dto.AbilityAuditVO;
 import com.dsj.csp.manage.entity.AbilityEntity;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Sean Du
@@ -21,4 +25,5 @@ public interface AbilityService extends IService<AbilityEntity> {
     // 审核能力注册
     String auditAbility(AbilityAuditVO auditVO);
 
+    Page<AbilityEntity> pageAbilitys(Long userId, String keyword, Date startTime, Date endTime, int current, int size);
 }

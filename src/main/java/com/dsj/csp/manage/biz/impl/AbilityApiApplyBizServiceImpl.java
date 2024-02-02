@@ -41,7 +41,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                 .eq(AbilityApiApplyEntity::getApiId,applyEntity.getApiId())
                 .in(AbilityApiApplyEntity::getStatus, 0, 1, 2));
         if (cnt!=0){
-            throw new BusinessException("接口申请失败!! 请检查是否已存在未提交/待审核/审核通过状态的接口申请记录");
+            throw new BusinessException("接口申请失败！所选应用已申请过该能力接口");
         }
         // 以下信息直接存入能力申请记录信息数据库, 方便查询
         ManageApplicationEntity app = manageApplicationService.getById(applyEntity.getAppId());
@@ -144,8 +144,8 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     @Override
     public Page<AbilityApiApplyDTO> pageApiApply(Boolean onlySubmitted, Long appId, Long userId, Long abilityId, String keyword, Integer status, Date startTime, Date endTime, int current, int size) {
         // 分页条件构造器
-        LambdaQueryWrapper<AbilityApiApplyEntity> qw = Wrappers.lambdaQuery();
-        qw.eq(appId != null, AbilityApiApplyEntity::getAppId, appId)
+        LambdaQueryWrapper<AbilityApiApplyEntity> qw = Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
+                .eq(appId != null, AbilityApiApplyEntity::getAppId, appId)
                 .eq(userId != null, AbilityApiApplyEntity::getUserId, userId)
                 .eq(abilityId != null, AbilityApiApplyEntity::getAbilityId, abilityId)
                 .eq(status != null, AbilityApiApplyEntity::getStatus, status)
@@ -162,7 +162,6 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                 // 排序
                 .orderByDesc(AbilityApiApplyEntity::getUpdateTime)
                 .orderByAsc(AbilityApiApplyEntity::getStatus);
-
         // 主表分页, 并单表查询从表信息, 构造分页返回结果
         Page prePage = abilityApiApplyService.page(new Page<>(current, size), qw);
         if (prePage.getTotal()==0){

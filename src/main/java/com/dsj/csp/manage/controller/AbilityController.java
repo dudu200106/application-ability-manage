@@ -1,9 +1,8 @@
 package com.dsj.csp.manage.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
@@ -18,7 +17,6 @@ import com.dsj.csp.manage.service.AbilityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Sean Du
@@ -50,6 +47,11 @@ public class AbilityController {
     @Operation(summary = "新增能力", description = "新增一个新的能力")
     @PostMapping("/add-login")
     public Result<?> addAbility(@RequestBody AbilityEntity ability) {
+        long cnt = abilityService.count(Wrappers.lambdaQuery(AbilityEntity.class)
+                .eq(AbilityEntity::getAbilityName, ability.getAbilityName()));
+        if (cnt>0){
+            throw new BusinessException("新增能力名称已存在! ");
+        }
         Boolean saveAbility = abilityService.save(ability);
         return Result.success("能力新增成功!", saveAbility);
     }

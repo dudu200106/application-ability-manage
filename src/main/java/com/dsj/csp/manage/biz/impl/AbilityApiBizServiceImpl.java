@@ -162,7 +162,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                 .in(apiIds.size()>0, AbilityApiEntity::getApiId, apiIds)
                 .eq(AbilityApiEntity::getStatus, 4)
                 // 排序
-                .orderByDesc(AbilityApiEntity::getUpdateTime)
+                .orderByDesc(AbilityApiEntity::getCreateTime)
                 .orderByAsc(AbilityApiEntity::getStatus);
         // 关键字
         if (ObjectUtil.isEmpty(keyword)){

@@ -18,6 +18,8 @@ public enum CodeEnum {
     //更新异常
     UPDATE_ERROR(603,"更新失败"),
     APPNAME(611,"该用户下已存在应用名"),
+    //密码格式错误
+    PASSWORD_FORMAT_ERROR(604,"密码格式异常，必须包含字母、数字和符号"),
     Img_ERROR(612,"图片已破损,请重新上传"),
     //数据格式异常
     BIND_ERROR(650,"数据格式异常"),

@@ -35,7 +35,7 @@ public class UserApproveController {
 
     @Operation(summary = "用户修改密码")
     @PostMapping("/updatePassword")
-    public Result<?> updatePassword(@RequestBody UserApproveResponse userApproveResponse, @RequestHeader("accessToken") String accessToken){
+    public Result<?> updatePassword(@RequestBody @Valid UserApproveResponse userApproveResponse, @RequestHeader("accessToken") String accessToken){
         return userApproveService.updatePassword(userApproveResponse,accessToken);
     }
 }

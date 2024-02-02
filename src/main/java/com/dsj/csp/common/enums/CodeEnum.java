@@ -17,6 +17,8 @@ public enum CodeEnum {
     APPROVE_ERROR(602,"正在审核中，不可重复提交实名认证申请"),
     //更新异常
     UPDATE_ERROR(603,"更新失败"),
+    //密码格式错误
+    PASSWORD_FORMAT_ERROR(604,"密码格式异常，必须包含字母、数字和符号"),
     APPNAME(611,"应用名已存在"),
     Img_ERROR(612,"图片已破损,请重新上传"),
     //数据格式异常

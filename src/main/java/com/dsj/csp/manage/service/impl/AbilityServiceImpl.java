@@ -106,6 +106,9 @@ public class AbilityServiceImpl extends ServiceImpl<AbilityMapper, AbilityEntity
 
     @Override
     public Map<Long, AbilityEntity> getAbilityMap(Collection<Long> ids) {
+        if (ids.size()==0){
+            return new HashMap<>();
+        }
         List<AbilityEntity> abiltiys = this.list(Wrappers.lambdaQuery(AbilityEntity.class)
                 .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName, AbilityEntity::getAbilityDesc)
                 .in(AbilityEntity::getAbilityId, ids));

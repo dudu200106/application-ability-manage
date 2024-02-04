@@ -105,9 +105,6 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                 .orderByAsc(AbilityApiEntity::getStatus);
         // 主表查询
         List<AbilityApiEntity> apiList = abilityApiService.list(queryWrapper);
-        if (apiList.size()==0){
-            return null;
-        }
         // 构造返回结果
         Set<Long> abilityIds = apiList.stream().map(api -> api.getAbilityId()).collect(Collectors.toSet());
         Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
@@ -135,9 +132,6 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                 .orderByAsc(AbilityApiEntity::getStatus);
         // 主表查询
         List<AbilityApiEntity> apiList = abilityApiService.list(queryWrapper);
-        if (apiList.size()==0){
-            return null;
-        }
         // 构造返回结果
         Set<Long> abilityIds = apiList.stream().map(api -> api.getAbilityId()).collect(Collectors.toSet());
         Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
@@ -155,17 +149,20 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     public Page pagePassedApis(Long userId, Long appId, Long abilityId, String keyword, int current, int size, Date startTime, Date endTime) {
         // 查询出申请通过的apiId集合
         Set<Long> apiIds = abilityApiApplyService.getPassedApiIds(userId, appId, abilityId, keyword);
+        if (apiIds.size()==0){
+            return new Page(current,size,0);
+        }
         // 构造分页条件
         LambdaQueryWrapper<AbilityApiEntity> queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)
                 .ge(Objects.nonNull(startTime), AbilityApiEntity::getCreateTime, startTime)
                 .le(Objects.nonNull(endTime), AbilityApiEntity::getCreateTime, endTime)
-                .in(apiIds.size()>0, AbilityApiEntity::getApiId, apiIds)
+                .in( AbilityApiEntity::getApiId, apiIds)
                 .eq(AbilityApiEntity::getStatus, 4)
                 // 排序
                 .orderByDesc(AbilityApiEntity::getCreateTime)
                 .orderByAsc(AbilityApiEntity::getStatus);
-        // 关键字
-        if (ObjectUtil.isEmpty(keyword)){
+        // 关键字不为空
+        if (!ObjectUtil.isEmpty(keyword)){
             // 获取符合关键字模糊查询的能力ID集合
             List<Long> abiltiyIds = abilityService.getAbilityIds(keyword);
             queryWrapper.and(keyword!=null && !"".equals(keyword),i -> i
@@ -208,8 +205,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                 .in(onlyPublished, AbilityApiEntity::getStatus, 4)
                 // 排序
                 .orderByDesc(AbilityApiEntity::getCreateTime);
-//                .orderByAsc(AbilityApiEntity::getStatus);
-        // 关键字
+        // 关键字不为空
         if (!ObjectUtil.isEmpty(keyword)){
             // 获取符合关键字模糊查询的能力ID集合
             List<Long> abiltiyIds = abilityService.getAbilityIds(keyword);

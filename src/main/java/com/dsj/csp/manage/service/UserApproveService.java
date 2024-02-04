@@ -26,7 +26,7 @@ public interface UserApproveService extends IService<UserApproveEntity> {
     //用户修改实名认证信息
 
     //远程调用用户接口，根据token识别用户
-//    UserApproveRequest identify(String accessToken);
+    UserApproveRequest identify(String accessToken);
     //远程调用用户实名状态更新接口
     void approveFeign(String userId,Integer status);
     //用户修改密码

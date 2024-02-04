@@ -43,6 +43,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     private RpcUserApi rpcUserApi;
 
     //远程调用用户接口，根据token识别用户
+    @Override
     public UserApproveRequest identify(String accessToken) throws RuntimeException {
         RestTemplate restTemplate = new RestTemplate();
         String serverURL = "http://106.227.94.62:8001";

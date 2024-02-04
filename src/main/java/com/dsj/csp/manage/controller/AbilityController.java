@@ -1,5 +1,6 @@
 package com.dsj.csp.manage.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.common.dto.BusinessException;
@@ -132,17 +133,6 @@ public class AbilityController {
         return Result.success(abilityApiApplyService.countUserApi(userId));
     }
 
-//    @Operation(summary = "统计能力数量")
-//    @GetMapping("/count-ability")
-//    public Result<?> countAbility(@Parameter(description = "能力状态") @RequestParam Integer status){
-//        QueryWrapper<AbilityEntity> abilityQW = new QueryWrapper<>();
-//        // 4:已发布能力
-//        abilityQW.lambda().eq(AbilityEntity::getStatus, status);
-//        return Result.success(abilityService.count(abilityQW));
-//
-//    }
-
-
     @Operation(summary = "删除能力")
     @PostMapping("/delete-ability-api")
     public Result<?> removeAbility(@Parameter(description = "能力id列表") @RequestBody AbilityDeleteDTO deleteDTO){
@@ -249,7 +239,7 @@ public class AbilityController {
 
 
 
-    @Operation(summary = "编辑能力使用申请", description = "编辑能力使用申请")
+    @Operation(summary = "编辑接口使用申请", description = "编辑接口使用申请")
     @PostMapping("/edit-api-apply")
     public Result<?> editApiApply(@RequestBody AbilityApiApplyEntity apiApplyEntity){
         LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate(AbilityApiApplyEntity.class)

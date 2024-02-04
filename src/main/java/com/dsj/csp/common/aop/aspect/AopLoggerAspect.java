@@ -22,7 +22,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.lang.reflect.Method;
 import java.util.Date;
 
-import static com.dsj.csp.manage.util.IP.getRemoteIP;
+import static com.dsj.csp.manage.util.IP.getIpAddress;
 
 /**
  * @author Du Shun Chang
@@ -92,7 +92,7 @@ public class AopLoggerAspect {
         // 打印请求的 IP
         logger.info("IP             : {}", request.getRemoteAddr());
 
-        logEntity.setIp(getRemoteIP(request));
+        logEntity.setIp(getIpAddress(request));
         // 打印请求入参
         logger.info("Request Args   : {}", point.getArgs());
         // 打印请求出参

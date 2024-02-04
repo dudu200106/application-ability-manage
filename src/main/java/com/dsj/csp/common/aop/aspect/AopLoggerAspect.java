@@ -93,6 +93,7 @@ public class AopLoggerAspect {
         logger.info("IP             : {}", request.getRemoteAddr());
 
         logEntity.setIp(getIpAddress(request));
+        System.out.println(getIpAddress(request));
         // 打印请求入参
         logger.info("Request Args   : {}", point.getArgs());
         // 打印请求出参

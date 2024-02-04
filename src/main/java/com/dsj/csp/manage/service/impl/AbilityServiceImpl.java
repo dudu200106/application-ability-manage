@@ -99,7 +99,7 @@ public class AbilityServiceImpl extends ServiceImpl<AbilityMapper, AbilityEntity
     public List<Long> getAbilityIds(String keyword) {
         List<Long> ids = this.list(Wrappers.lambdaQuery(AbilityEntity.class)
                         .select(AbilityEntity::getAbilityId)
-                        .like(AbilityEntity::getAbilityName, keyword))
+                        .like(AbilityEntity::getAbilityName, keyword.trim()))
                 .stream().map(e->e.getAbilityId()).toList();
         return ids;
     }

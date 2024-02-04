@@ -32,7 +32,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     private final AbilityService abilityService;
 
     @Override
-    public void saveApi(AbilityApiVO apiVO) {
+    public void saveApi(AbilityApiVO apiVO, String accessToken) {
         long cnt = abilityApiService.count(Wrappers.lambdaQuery(AbilityApiEntity.class)
                 .or().and(i->i.eq(AbilityApiEntity::getAbilityId, apiVO.getAbilityId())
                         .eq(AbilityApiEntity::getApiName, apiVO.getApiName()))
@@ -169,7 +169,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                     .like(AbilityApiEntity::getApiName, keyword)
                     .or().like(AbilityApiEntity::getApiDesc, keyword)
                     .or().like(AbilityApiEntity::getApiUrl, keyword)
-                    .in(AbilityApiEntity::getAbilityId, abiltiyIds));
+                    .in(AbilityApiEntity::getAbilityId, abiltiyIds.size()>0 ? abiltiyIds : -1));
         }
         // 主表分页查询
         Page prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
@@ -193,7 +193,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
 
     @Override
-    public Page pageApiCatalog(Boolean onlyPublished, String reqMethod, Integer status, Long userId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime) {
+    public Page pageApiCatalog(Boolean onlyPublished, String reqMethod, Integer status, Long userId, Long abilityId, String keyword, int current, int size, Date startTime, Date endTime) {
         // 构造分页条件构造器
         LambdaQueryWrapper<AbilityApiEntity> queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)
                 .eq(userId!=null, AbilityApiEntity::getUserId, userId)
@@ -213,7 +213,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                     i -> i.like(AbilityApiEntity::getApiName, keyword)
                             .or().like(AbilityApiEntity::getApiDesc, keyword)
                             .or().like(AbilityApiEntity::getApiUrl, keyword)
-                            .or().in(AbilityApiEntity::getAbilityId, abiltiyIds));
+                            .in(AbilityApiEntity::getAbilityId, abiltiyIds.size()>0 ? abiltiyIds : -1));
         }
         Page prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
         List<AbilityApiEntity> preRecords = prePage.getRecords();

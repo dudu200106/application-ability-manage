@@ -28,9 +28,9 @@ public class AbilityApiController {
     private final AbilityApiApplyService abilityApiApplyService;
 
     @Operation(summary = "新增接口")
-    @PostMapping("add")
-    public Result<?> addApiA(@RequestBody AbilityApiVO apiVO){
-        abilityApiBizService.saveApi(apiVO);
+    @PostMapping("add-api")
+    public Result<?> addApi(@RequestBody AbilityApiVO apiVO, @RequestHeader("accessToken") String accessToken){
+        abilityApiBizService.saveApi(apiVO, accessToken);
         return Result.success("添加接口成功!");
     }
 

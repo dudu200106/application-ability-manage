@@ -160,7 +160,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                                 .or().like(AbilityApiApplyEntity::getNote, keyword)
                                 .or().like(AbilityApiApplyEntity::getIllustrate, keyword))
                 // 排序
-                .orderByDesc(AbilityApiApplyEntity::getUpdateTime)
+                .orderByDesc(AbilityApiApplyEntity::getCreateTime)
                 .orderByAsc(AbilityApiApplyEntity::getStatus);
         // 主表分页, 并单表查询从表信息, 构造分页返回结果
         Page prePage = abilityApiApplyService.page(new Page<>(current, size), qw);

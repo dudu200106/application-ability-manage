@@ -84,8 +84,8 @@ public class AbilityController {
 
     @Operation(summary = "新增接口")
     @PostMapping("add-api")
-    public Result<?> addApiA(@RequestBody AbilityApiVO apiVO){
-        abilityApiBizService.saveApi(apiVO);
+    public Result<?> addApi(@RequestBody AbilityApiVO apiVO, @RequestHeader("accessToken") String accessToken){
+        abilityApiBizService.saveApi(apiVO, accessToken);
         return Result.success("添加接口成功!");
     }
 
@@ -170,8 +170,6 @@ public class AbilityController {
         return Result.success(abilityApiBizService.getAppApiList(appId));
     }
 
-
-
     @Operation(summary = "新增接口使用申请", description = "申请使用接口")
     @PostMapping("/add-api-apply")
     public Result<?> applyApi(@RequestBody AbilityApiApplyEntity apply) {
@@ -206,7 +204,7 @@ public class AbilityController {
                                  @Parameter(description = "搜索关键字") String keyword,
                                  @Parameter(description = "开始时间") Date startTime,
                                  @Parameter(description = "结束时间") Date endTime) {
-        return Result.success(abilityApiBizService.pageApiCatalog(onlyPublished, reqMethod, status, userId, abilityId, keyword, size, current, startTime, endTime));
+        return Result.success(abilityApiBizService.pageApiCatalog(onlyPublished, reqMethod, status, userId, abilityId, keyword, current, size, startTime, endTime));
     }
 
     @Operation(summary = "分页查询接口申请列表", description = "分页查询接口申请列表")

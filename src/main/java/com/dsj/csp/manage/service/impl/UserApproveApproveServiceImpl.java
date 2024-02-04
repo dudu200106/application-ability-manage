@@ -43,6 +43,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     private RpcUserApi rpcUserApi;
 
     //远程调用用户接口，根据token识别用户
+    @Override
     public UserApproveRequest identify(String accessToken) throws RuntimeException {
         RestTemplate restTemplate = new RestTemplate();
         String serverURL = "http://106.227.94.62:8001";
@@ -80,7 +81,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     //判断密码是否符合规范
     public static boolean isPasswordValid(String password) {
         // 密码格式要求：包含至少一个数字、一个字母和一个符号
-        String pattern = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^&*()-+=]).*$";
+        String pattern = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^&*()+=]).*$";
         return Pattern.matches(pattern, password);
     }
 

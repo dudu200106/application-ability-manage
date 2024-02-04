@@ -28,6 +28,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * @author Stars
@@ -76,9 +77,20 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         rpcUserApi.updateSmztById(userSmztDTO);
     }
 
+    //判断密码是否符合规范
+    public static boolean isPasswordValid(String password) {
+        // 密码格式要求：包含至少一个数字、一个字母和一个符号
+        String pattern = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^&*()-+=]).*$";
+        return Pattern.matches(pattern, password);
+    }
+
     @Override
     public Result<Boolean> updatePassword(UserApproveResponse userApproveResponse, String accessToken) {
         UserApproveRequest identify = identify(accessToken);
+        // 密码格式要求：包含至少一个数字、一个字母和一个符号
+        if(!isPasswordValid(userApproveResponse.getNewPassword()) && !isPasswordValid(userApproveResponse.getNewPassword2())){
+            throw new FlowException(CodeEnum.PASSWORD_FORMAT_ERROR);
+        }
         UserChangePasswordDTO userChangePasswordDTO = new UserChangePasswordDTO();
         if (!userApproveResponse.getNewPassword().equals(userApproveResponse.getNewPassword2())) {
             return Result.failed("两次密码不一致，请重新输入");
@@ -101,7 +113,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         user.setUserId(user2.getUserId());
         user.setUserName(user2.getUserName());
         UserApproveEntity userApproveEntity = baseMapper.selectById(user);
-        if(user.getUserType()==2){
+        if (user.getUserType() == 2) {
             user.setCompanyName(null);
             user.setCompanyNum(null);
             user.setCompanyRepresent(null);

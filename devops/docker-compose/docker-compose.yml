@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  application-ability-manage:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "11004:11004"
+    volumes:
+      - ./logs:/logs
+    restart: always

@@ -17,9 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Sean Du
@@ -94,6 +93,27 @@ public class AbilityServiceImpl extends ServiceImpl<AbilityMapper, AbilityEntity
                 .orderByDesc(AbilityEntity::getUpdateTime)
                 .orderByAsc(AbilityEntity::getStatus);
         return this.page(new Page<>(current, size), qw);
+    }
+
+    @Override
+    public List<Long> getAbilityIds(String keyword) {
+        List<Long> ids = this.list(Wrappers.lambdaQuery(AbilityEntity.class)
+                        .select(AbilityEntity::getAbilityId)
+                        .like(AbilityEntity::getAbilityName, keyword.trim()))
+                .stream().map(e->e.getAbilityId()).toList();
+        return ids;
+    }
+
+    @Override
+    public Map<Long, AbilityEntity> getAbilityMap(Collection<Long> ids) {
+        if (ids.size()==0){
+            return new HashMap<>();
+        }
+        List<AbilityEntity> abiltiys = this.list(Wrappers.lambdaQuery(AbilityEntity.class)
+                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName, AbilityEntity::getAbilityDesc)
+                .in(AbilityEntity::getAbilityId, ids));
+        Map<Long, AbilityEntity> map = abiltiys.stream().collect(Collectors.toMap(ability->ability.getAbilityId(), ability->ability));
+        return map;
     }
 
 

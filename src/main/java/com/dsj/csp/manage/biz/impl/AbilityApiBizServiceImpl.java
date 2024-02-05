@@ -1,15 +1,18 @@
 package com.dsj.csp.manage.biz.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.toolkit.SimpleQuery;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.dto.AbilityApiVO;
 import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.*;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +32,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     private final AbilityService abilityService;
 
     @Override
-    public void saveApi(AbilityApiVO apiVO) {
+    public void saveApi(AbilityApiVO apiVO, String accessToken) {
         long cnt = abilityApiService.count(Wrappers.lambdaQuery(AbilityApiEntity.class)
                 .or().and(i->i.eq(AbilityApiEntity::getAbilityId, apiVO.getAbilityId())
                         .eq(AbilityApiEntity::getApiName, apiVO.getApiName()))
@@ -102,15 +105,9 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                 .orderByAsc(AbilityApiEntity::getStatus);
         // 主表查询
         List<AbilityApiEntity> apiList = abilityApiService.list(queryWrapper);
-        if (apiList.size()==0){
-            return null;
-        }
         // 构造返回结果
         Set<Long> abilityIds = apiList.stream().map(api -> api.getAbilityId()).collect(Collectors.toSet());
-        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
-                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
-                .in(AbilityEntity::getAbilityId, abilityIds));
-        Map<Long, AbilityEntity> abilityMap = abilitys.stream().collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability));
+        Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
         List<AbilityApiVO> apiVOs = apiList.stream().map(api->{
             AbilityApiVO apiVO = new AbilityApiVO();
             BeanUtil.copyProperties(api, apiVO, true);
@@ -135,15 +132,9 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                 .orderByAsc(AbilityApiEntity::getStatus);
         // 主表查询
         List<AbilityApiEntity> apiList = abilityApiService.list(queryWrapper);
-        if (apiList.size()==0){
-            return null;
-        }
         // 构造返回结果
         Set<Long> abilityIds = apiList.stream().map(api -> api.getAbilityId()).collect(Collectors.toSet());
-        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
-                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
-                .in(AbilityEntity::getAbilityId, abilityIds));
-        Map<Long, AbilityEntity> abilityMap = abilitys.stream().collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability));
+        Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
         List<AbilityApiVO> apiVOs = apiList.stream().map(api->{
             AbilityApiVO apiVO = new AbilityApiVO();
             BeanUtil.copyProperties(api, apiVO, true);
@@ -159,22 +150,27 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         // 查询出申请通过的apiId集合
         Set<Long> apiIds = abilityApiApplyService.getPassedApiIds(userId, appId, abilityId, keyword);
         if (apiIds.size()==0){
-            return new Page(1,0,0);
+            return new Page(current,size,0);
         }
         // 构造分页条件
-        LambdaQueryWrapper queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)
+        LambdaQueryWrapper<AbilityApiEntity> queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)
                 .ge(Objects.nonNull(startTime), AbilityApiEntity::getCreateTime, startTime)
                 .le(Objects.nonNull(endTime), AbilityApiEntity::getCreateTime, endTime)
-                .in(AbilityApiEntity::getApiId, apiIds)
+                .in( AbilityApiEntity::getApiId, apiIds)
                 .eq(AbilityApiEntity::getStatus, 4)
-                // 接口信息关键字模糊查询
-                .and(keyword!=null && !"".equals(keyword),i -> i
-                        .like(AbilityApiEntity::getApiName, keyword)
-                        .or().like(AbilityApiEntity::getApiDesc, keyword)
-                        .or().like(AbilityApiEntity::getApiUrl, keyword))
                 // 排序
-                .orderByDesc(AbilityApiEntity::getUpdateTime)
+                .orderByDesc(AbilityApiEntity::getCreateTime)
                 .orderByAsc(AbilityApiEntity::getStatus);
+        // 关键字不为空
+        if (!ObjectUtil.isEmpty(keyword)){
+            // 获取符合关键字模糊查询的能力ID集合
+            List<Long> abiltiyIds = abilityService.getAbilityIds(keyword);
+            queryWrapper.and(keyword!=null && !"".equals(keyword),i -> i
+                    .like(AbilityApiEntity::getApiName, keyword)
+                    .or().like(AbilityApiEntity::getApiDesc, keyword)
+                    .or().like(AbilityApiEntity::getApiUrl, keyword)
+                    .in(AbilityApiEntity::getAbilityId, abiltiyIds.size()>0 ? abiltiyIds : -1));
+        }
         // 主表分页查询
         Page prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
         List<AbilityApiEntity> preRecords = prePage.getRecords();
@@ -183,10 +179,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         }
         // 构造返回分页
         Set<Long> abilityIds = preRecords.stream().map(api -> api.getAbilityId()).collect(Collectors.toSet());
-        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
-                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
-                .in(AbilityEntity::getAbilityId, abilityIds));
-        Map<Long, AbilityEntity> abilityMap = abilitys.stream().collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability));
+        Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
         Page resPage = new Page(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         List<AbilityApiVO> resRecords = preRecords.stream().map(api -> {
             AbilityApiVO apiVO = new AbilityApiVO();
@@ -200,8 +193,9 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
 
     @Override
-    public Page pageApiCatalog(Boolean onlyPublished, String reqMethod, Integer status, Long userId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime) {
-        LambdaQueryWrapper queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)
+    public Page pageApiCatalog(Boolean onlyPublished, String reqMethod, Integer status, Long userId, Long abilityId, String keyword, int current, int size, Date startTime, Date endTime) {
+        // 构造分页条件构造器
+        LambdaQueryWrapper<AbilityApiEntity> queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)
                 .eq(userId!=null, AbilityApiEntity::getUserId, userId)
                 .eq(abilityId!=null, AbilityApiEntity::getAbilityId, abilityId)
                 .eq(reqMethod!=null, AbilityApiEntity::getReqMethod, reqMethod)
@@ -209,30 +203,32 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                 .ge(Objects.nonNull(startTime), AbilityApiEntity::getCreateTime, startTime)
                 .le(Objects.nonNull(endTime), AbilityApiEntity::getCreateTime, endTime)
                 .in(onlyPublished, AbilityApiEntity::getStatus, 4)
-                .and(keyword!=null && !"".equals(keyword),
-                        i -> i.like(AbilityApiEntity::getApiName, keyword)
-                                .or().like(AbilityApiEntity::getApiDesc, keyword)
-                                .or().like(AbilityApiEntity::getApiUrl, keyword))
                 // 排序
-                .orderByDesc(AbilityApiEntity::getUpdateTime)
-                .orderByAsc(AbilityApiEntity::getStatus);
+                .orderByDesc(AbilityApiEntity::getCreateTime);
+        // 关键字不为空
+        if (!ObjectUtil.isEmpty(keyword)){
+            // 获取符合关键字模糊查询的能力ID集合
+            List<Long> abiltiyIds = abilityService.getAbilityIds(keyword);
+            queryWrapper.and(keyword!=null && !"".equals(keyword),
+                    i -> i.like(AbilityApiEntity::getApiName, keyword)
+                            .or().like(AbilityApiEntity::getApiDesc, keyword)
+                            .or().like(AbilityApiEntity::getApiUrl, keyword)
+                            .in(AbilityApiEntity::getAbilityId, abiltiyIds.size()>0 ? abiltiyIds : -1));
+        }
         Page prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
         List<AbilityApiEntity> preRecords = prePage.getRecords();
         if (preRecords.size()==0){
             return prePage;
         }
-        Set<Long> abilityIds = preRecords.stream().map(api -> api.getAbilityId()).collect(Collectors.toSet());
-        List<AbilityEntity> abilitys = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
-                .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName)
-                .in(AbilityEntity::getAbilityId, abilityIds));
-        Map<Long, String> abilityMap = abilitys.stream().collect(Collectors.toMap(ability -> ability.getAbilityId(), ability -> ability.getAbilityName()));
 
+        Set<Long> abilityIds = preRecords.stream().map(api -> api.getAbilityId()).collect(Collectors.toSet());
+        Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
         // 构造返回分页
         Page resPage = new Page(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         List<AbilityApiVO> resRecords = preRecords.stream().map(api -> {
             AbilityApiVO apiVO = new AbilityApiVO();
             BeanUtil.copyProperties(api, apiVO);
-            apiVO.setAbilityName(abilityMap.get(api.getAbilityId()));
+            apiVO.setAbilityName(abilityMap.get(api.getAbilityId())==null ? null : abilityMap.get(api.getAbilityId()).getAbilityName());
             return apiVO;
         }).toList();
         resPage.setRecords(resRecords);

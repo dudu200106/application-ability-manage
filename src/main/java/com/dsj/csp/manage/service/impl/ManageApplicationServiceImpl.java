@@ -65,7 +65,6 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
             throw new FlowException(CodeEnum.APPNAME);
         } else {
             manageApplication.setAppCreatetime(new Date());
-
             manageApplication.setAppUpdatetime(new Date());
             manageApplication.setAppIsdelete(0);
             return baseMapper.insert(manageApplication);

@@ -2,8 +2,8 @@ package com.dsj.csp.manage.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
@@ -18,7 +18,6 @@ import com.dsj.csp.manage.service.AbilityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Sean Du
@@ -50,6 +48,11 @@ public class AbilityController {
     @Operation(summary = "新增能力", description = "新增一个新的能力")
     @PostMapping("/add-login")
     public Result<?> addAbility(@RequestBody AbilityEntity ability) {
+        long cnt = abilityService.count(Wrappers.lambdaQuery(AbilityEntity.class)
+                .eq(AbilityEntity::getAbilityName, ability.getAbilityName()));
+        if (cnt>0){
+            throw new BusinessException("新增能力名称已存在! ");
+        }
         Boolean saveAbility = abilityService.save(ability);
         return Result.success("能力新增成功!", saveAbility);
     }
@@ -81,8 +84,8 @@ public class AbilityController {
 
     @Operation(summary = "新增接口")
     @PostMapping("add-api")
-    public Result<?> addApiA(@RequestBody AbilityApiVO apiVO){
-        abilityApiBizService.saveApi(apiVO);
+    public Result<?> addApi(@RequestBody AbilityApiVO apiVO, @RequestHeader("accessToken") String accessToken){
+        abilityApiBizService.saveApi(apiVO, accessToken);
         return Result.success("添加接口成功!");
     }
 
@@ -130,17 +133,6 @@ public class AbilityController {
         return Result.success(abilityApiApplyService.countUserApi(userId));
     }
 
-//    @Operation(summary = "统计能力数量")
-//    @GetMapping("/count-ability")
-//    public Result<?> countAbility(@Parameter(description = "能力状态") @RequestParam Integer status){
-//        QueryWrapper<AbilityEntity> abilityQW = new QueryWrapper<>();
-//        // 4:已发布能力
-//        abilityQW.lambda().eq(AbilityEntity::getStatus, status);
-//        return Result.success(abilityService.count(abilityQW));
-//
-//    }
-
-
     @Operation(summary = "删除能力")
     @PostMapping("/delete-ability-api")
     public Result<?> removeAbility(@Parameter(description = "能力id列表") @RequestBody AbilityDeleteDTO deleteDTO){
@@ -178,8 +170,6 @@ public class AbilityController {
         return Result.success(abilityApiBizService.getAppApiList(appId));
     }
 
-
-
     @Operation(summary = "新增接口使用申请", description = "申请使用接口")
     @PostMapping("/add-api-apply")
     public Result<?> applyApi(@RequestBody AbilityApiApplyEntity apply) {
@@ -214,7 +204,7 @@ public class AbilityController {
                                  @Parameter(description = "搜索关键字") String keyword,
                                  @Parameter(description = "开始时间") Date startTime,
                                  @Parameter(description = "结束时间") Date endTime) {
-        return Result.success(abilityApiBizService.pageApiCatalog(onlyPublished, reqMethod, status, userId, abilityId, keyword, size, current, startTime, endTime));
+        return Result.success(abilityApiBizService.pageApiCatalog(onlyPublished, reqMethod, status, userId, abilityId, keyword, current, size, startTime, endTime));
     }
 
     @Operation(summary = "分页查询接口申请列表", description = "分页查询接口申请列表")
@@ -247,7 +237,7 @@ public class AbilityController {
 
 
 
-    @Operation(summary = "编辑能力使用申请", description = "编辑能力使用申请")
+    @Operation(summary = "编辑接口使用申请", description = "编辑接口使用申请")
     @PostMapping("/edit-api-apply")
     public Result<?> editApiApply(@RequestBody AbilityApiApplyEntity apiApplyEntity){
         LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate(AbilityApiApplyEntity.class)

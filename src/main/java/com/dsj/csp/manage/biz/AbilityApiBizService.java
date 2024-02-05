@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface AbilityApiBizService {
-    void saveApi(AbilityApiVO apiVO);
+    void saveApi(AbilityApiVO apiVO, String accessToken);
 
     boolean updateApi(AbilityApiVO apiVO);
 
@@ -48,6 +48,6 @@ public interface AbilityApiBizService {
      * @param endTime
      * @return 接口目录
      */
-    Page pageApiCatalog(Boolean onlyPublished, String reqMethod, Integer status, Long userId, Long abilityId, String keyword, int size, int current, Date startTime, Date endTime);
+    Page pageApiCatalog(Boolean onlyPublished, String reqMethod, Integer status, Long userId, Long abilityId, String keyword, int current, int size, Date startTime, Date endTime);
 
 }

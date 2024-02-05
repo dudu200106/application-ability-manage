@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
 import com.dsj.csp.manage.dto.*;
+import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.*;
 import com.dsj.csp.manage.util.Sm2;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,8 +36,8 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     private final AbilityApiRespService abilityApiRespService;
 
     @Override
-    public void saveApiApply(AbilityApiApplyEntity applyEntity) {
-        // 查询是否已存在未提交/待审核/审核通过的接口申请记录
+    public void saveApiApply(AbilityApiApplyEntity applyEntity, String accessToken) {
+        // 判断是否已存在未提交/待审核/审核通过的接口申请记录
         long cnt =abilityApiApplyService.count(Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
                 .eq(AbilityApiApplyEntity::getAppId, applyEntity.getAppId())
                 .eq(AbilityApiApplyEntity::getApiId,applyEntity.getApiId())
@@ -43,15 +45,21 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         if (cnt!=0){
             throw new BusinessException("接口申请失败！所选应用已申请过该能力接口");
         }
+        // 判断调用接口是否已下线
+        if (abilityApiService.getById(applyEntity.getApiId()).getStatus()!=4){
+            throw new BusinessException("申请使用的接口已下线！");
+        }
         // 以下信息直接存入能力申请记录信息数据库, 方便查询
+        // todo 取消对用户、应用和能力信息的存储, 该用连表查询同步编辑后的状态
+        UserApproveRequest userApproveRequest = userApproveService.identify(accessToken);
         ManageApplicationEntity app = manageApplicationService.getById(applyEntity.getAppId());
         AbilityEntity ability = abilityService.getById(applyEntity.getAbilityId());
         if (app==null || ability==null){
             throw new BusinessException("申请接口异常! 请确保相关的用户应用、能力数据信息正常!");
         }
-        applyEntity.setAppName(app.getAppName());
-//        applyEntity.setUserId(Long.parseLong(app.getAppUserId()));
-        applyEntity.setAbilityName(ability.getAbilityName());
+        applyEntity.setUserId(Long.parseLong(userApproveRequest.getUserId()));
+//        applyEntity.setAppName(app.getAppName());
+//        applyEntity.setAbilityName(ability.getAbilityName());
         abilityApiApplyService.save(applyEntity);
     }
 
@@ -93,7 +101,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                 || (auditVO.getFlag() == 2 && !(apply.getStatus() == 1 || apply.getStatus() == 4))
                 || (auditVO.getFlag() == 3 && apply.getStatus() != 1)
                 || (auditVO.getFlag() == 4 && apply.getStatus() != 2)) {
-            throw new BusinessException("审核失败! 请刷新页面后重试...");
+            throw new BusinessException("申请状态以改变! 请刷新页面后重试...");
         }
         // 创建更新条件构造器
         LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate();

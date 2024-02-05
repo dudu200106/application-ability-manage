@@ -128,25 +128,34 @@
         </rollingPolicy>
     </appender>
 
-    <!--开发环境:打印控制台 -->
-    <springProfile name="local,dev,gov,test">
-        <root level="debug">
-            <!--        <appender-ref ref="console_log"/>-->
-            <appender-ref ref="ASYNC"/>
-            <appender-ref ref="grpc-log"/>
-            <appender-ref ref="info_log" />
-            <appender-ref ref="error_log" />
-        </root>
-    </springProfile>
 
-    <springProfile name="poc,pre,pro">
-        <root level="info">
-            <!--        <appender-ref ref="console_log"/>-->
-            <appender-ref ref="ASYNC"/>
-            <appender-ref ref="grpc-log"/>
-            <appender-ref ref="info_log" />
-            <appender-ref ref="error_log" />
-        </root>
-    </springProfile>
+    <root level="debug">
+        <appender-ref ref="console_log"/>
+        <appender-ref ref="ASYNC"/>
+        <appender-ref ref="grpc-log"/>
+        <appender-ref ref="info_log"/>
+        <appender-ref ref="error_log"/>
+    </root>
+
+    <!--开发环境:打印控制台 -->
+<!--    <springProfile name="local,dev,gov,test">-->
+<!--        <root level="debug">-->
+<!--            &lt;!&ndash;        <appender-ref ref="console_log"/>&ndash;&gt;-->
+<!--            <appender-ref ref="ASYNC"/>-->
+<!--            <appender-ref ref="grpc-log"/>-->
+<!--            <appender-ref ref="info_log" />-->
+<!--            <appender-ref ref="error_log" />-->
+<!--        </root>-->
+<!--    </springProfile>-->
+
+<!--    <springProfile name="poc,pre,pro">-->
+<!--        <root level="info">-->
+<!--            &lt;!&ndash;        <appender-ref ref="console_log"/>&ndash;&gt;-->
+<!--            <appender-ref ref="ASYNC"/>-->
+<!--            <appender-ref ref="grpc-log"/>-->
+<!--            <appender-ref ref="info_log" />-->
+<!--            <appender-ref ref="error_log" />-->
+<!--        </root>-->
+<!--    </springProfile>-->
 
 </configuration>

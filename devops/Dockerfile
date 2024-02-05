@@ -15,5 +15,5 @@ EXPOSE ${port}
 
 #CMD ["sh", "-ec", "exec java $JAVA_OPTS -jar $APP_OPTS horae-admin-api.jar"]
 #CMD ["sh", "-ec", "exec java -Xms512m -Xmx1024m -jar application-ability-manage.jar"]
-ENTRYPOINT [ "sh", "-c", "java -javaagent:/usr/local/agent/skywalking-agent.jar -Dskywalking.agent.service_name= application-ability-manage -Dskywalking.collector.backend_service=106.227.94.62:11800 -jar  application-ability-manage.jar" ]
+ENTRYPOINT [ "sh", "-c", "java -javaagent:/usr/local/agent/skywalking-agent.jar -Dskywalking.agent.service_name=application-ability-manage -Dskywalking.collector.backend_service=106.227.94.62:11800 -jar application-ability-manage.jar" ]
 

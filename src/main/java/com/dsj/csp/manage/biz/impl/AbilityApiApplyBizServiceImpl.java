@@ -49,17 +49,8 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         if (abilityApiService.getById(applyEntity.getApiId()).getStatus()!=4){
             throw new BusinessException("申请的接口已下线！");
         }
-        // 以下信息直接存入能力申请记录信息数据库, 方便查询
-        // todo 取消对用户、应用和能力信息的存储, 该用连表查询同步编辑后的状态
         UserApproveRequest userApproveRequest = userApproveService.identify(accessToken);
-        ManageApplicationEntity app = manageApplicationService.getById(applyEntity.getAppId());
-        AbilityEntity ability = abilityService.getById(applyEntity.getAbilityId());
-        if (app==null || ability==null){
-            throw new BusinessException("申请接口异常! 请确保相关的用户应用、能力数据信息正常!");
-        }
         applyEntity.setUserId(Long.parseLong(userApproveRequest.getUserId()));
-        applyEntity.setAppName(app.getAppName());
-        applyEntity.setAbilityName(ability.getAbilityName());
         abilityApiApplyService.save(applyEntity);
     }
 

@@ -76,13 +76,6 @@ public class AbilityApiApplyEntity implements Serializable {
     @TableField("NLJK_MC")
     private String apiName;
     /**
-    * 应用名称
-    */
-    @Length(max= 30,message="编码长度不能超过30")
-    @Schema(description = "用户名称")
-    @TableField("YH_MC")
-    private String userName;
-    /**
     * 调用量限制
     */
     @TableField("DYLXZ")

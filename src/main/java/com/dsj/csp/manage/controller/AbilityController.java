@@ -44,7 +44,6 @@ public class AbilityController {
     private final AbilityApiApplyService abilityApiApplyService;
     private final AbilityApiApplyBizService abilityApiApplyBizService;
 
-
     @Operation(summary = "新增能力", description = "新增一个新的能力")
     @PostMapping("/add-login")
     public Result<?> addAbility(@RequestBody AbilityEntity ability) {
@@ -67,8 +66,8 @@ public class AbilityController {
     @Operation(summary = "分页查询能力目录列表", description = "分页查询能力目录列表")
     @GetMapping ("/page-ability-catalog")
     public Result<?> queryAbilityCatalog(@Parameter(description = "用户ID") Long userId,
-                                         @Parameter(description = "分页条数") int size,
-                                         @Parameter(description = "当前页数") int current,
+                                         @Parameter(description = "分页条数", required = true) int size,
+                                         @Parameter(description = "当前页数", required = true) int current,
                                          @Parameter(description = "搜索关键字") String keyword,
                                          @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
                                              @Parameter(description = "开始时间") Date startTime,
@@ -195,13 +194,13 @@ public class AbilityController {
 
     @Operation(summary = "分页查询api目录列表")
     @GetMapping("page-api-catalog")
-    public Result<?> pageApiList(@Parameter(description = "是否过滤未发布的接口") Boolean onlyPublished,
+    public Result<?> pageApiList(@Parameter(description = "是否过滤未发布的接口", required = true) Boolean onlyPublished,
                                  @Parameter(description = "请求方式") String reqMethod,
                                  @Parameter(description = "状态") Integer status,
                                  @Parameter(description = "用户ID") Long userId,
                                  @Parameter(description = "能力ID") Long abilityId,
-                                 @Parameter(description = "分页条数") int size,
-                                 @Parameter(description = "当前页数") int current,
+                                 @Parameter(description = "分页条数", required = true) int size,
+                                 @Parameter(description = "当前页数", required = true) int current,
                                  @Parameter(description = "搜索关键字") String keyword,
                                  @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
                                      @Parameter(description = "开始时间") Date startTime,
@@ -212,12 +211,12 @@ public class AbilityController {
 
     @Operation(summary = "分页查询接口申请列表", description = "分页查询接口申请列表")
     @GetMapping("/page-api-apply")
-    public Result<?> pageApiApply(@Parameter(description = "是否屏蔽'未提交'状态申请") Boolean onlySubmitted,
+    public Result<?> pageApiApply(@Parameter(description = "是否屏蔽'未提交'状态申请", required = true) Boolean onlySubmitted,
                                   @Parameter(description = "用户ID") Long userId,
                                   @Parameter(description = "应用ID") Long appId,
                                   @Parameter(description = "能力ID") Long abilityId,
-                                  @Parameter(description = "分页条数") int size,
-                                  @Parameter(description = "当前页数") int current,
+                                  @Parameter(description = "分页条数", required = true) int size,
+                                  @Parameter(description = "当前页数", required = true) int current,
                                   @Parameter(description = "搜索关键字") String keyword,
                                   @Parameter(description = "状态") Integer status,
                                   @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
@@ -234,13 +233,11 @@ public class AbilityController {
                                   @Parameter(description = "能力ID") Long abilityId,
                                   @Parameter(description = "分页条数", required = true) int size,
                                   @Parameter(description = "当前页数", required = true) int current,
-                                  @Parameter(description = "搜索关键字") String keyword,
+                                  @Parameter(description = "搜索关键字(匹配接口名称/描述/路径)") String keyword,
                                   @Parameter(description = "开始时间") Date startTime,
                                   @Parameter(description = "结束时间") Date endTime) {
         return Result.success(abilityApiBizService.pagePassedApis(userId, appId, abilityId, keyword, current, size, startTime, endTime));
     }
-
-
 
     @Operation(summary = "编辑接口使用申请", description = "编辑接口使用申请")
     @PostMapping("/edit-api-apply")

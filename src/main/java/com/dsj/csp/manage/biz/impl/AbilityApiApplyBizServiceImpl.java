@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.toolkit.SimpleQuery;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
 import com.dsj.csp.manage.dto.*;
@@ -17,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -71,9 +71,11 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         }
         // 查询需要返回的申请的其他信息
         AbilityApiEntity api = abilityApiService.getById(apply.getApiId());
+        AbilityEntity ability = abilityService.getById(apply.getAbilityId());
+        ManageApplicationEntity app = manageApplicationService.getById(apply.getAppId());
         UserApproveEntity user = userApproveService.getById(apply.getUserId());
-        if (api==null || user==null){
-            throw new BusinessException("申请接口状态异常! 请确保相关申请的应用、接口数据信息正常!");
+        if (api==null || ability==null || user==null){
+            throw new BusinessException("接口申请异常! 请确认申请相关的用户、应用、能力、接口是否存在!");
         }
         List<AbilityApiReq> reqParams = abilityApiReqService.list(Wrappers.lambdaQuery(AbilityApiReq.class).eq(AbilityApiReq::getApiId, api.getApiId()));
         List<AbilityApiResp> respParams = abilityApiRespService.list(Wrappers.lambdaQuery(AbilityApiResp.class).eq(AbilityApiResp::getApiId, api.getApiId()));
@@ -81,11 +83,12 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         AbilityApiApplyDTO resApply = new AbilityApiApplyDTO();
         BeanUtil.copyProperties(apply, resApply,true);
         resApply.setApi(api);
-        resApply.setReqParams(reqParams);
-        resApply.setRespParams(respParams);
-        resApply.setApi(api);
+        resApply.setAbilityName(ability.getAbilityName());
         resApply.setCompanyName(user.getCompanyName());
         resApply.setGovName(user.getGovName());
+        resApply.setAppName(app.getAppName());
+        resApply.setReqParams(reqParams);
+        resApply.setRespParams(respParams);
         return resApply;
     }
 
@@ -93,7 +96,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     public String auditApply(AbilityAuditVO auditVO) {
         AbilityApiApplyEntity apply = abilityApiApplyService.getById(auditVO.getApiApplyId());
         if (apply==null){
-            throw new BusinessException("审核失败! 请刷新页面后重试...");
+            throw new BusinessException("找不到该申请记录! 请刷新页面后重试...");
         }
         // 审核流程限制: 状态(0待提交 1待审核 2审核通过 3审核不通过 4已停用 )
         if ((auditVO.getFlag() == 0 && apply.getStatus() != 1)
@@ -101,7 +104,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                 || (auditVO.getFlag() == 2 && !(apply.getStatus() == 1 || apply.getStatus() == 4))
                 || (auditVO.getFlag() == 3 && apply.getStatus() != 1)
                 || (auditVO.getFlag() == 4 && apply.getStatus() != 2)) {
-            throw new BusinessException("申请状态以改变! 请刷新页面后重试...");
+            throw new BusinessException("申请状态已发生改变! 请刷新页面后重试...");
         }
         // 创建更新条件构造器
         LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
@@ -147,11 +150,33 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         return auditMsg;
     }
 
+    @Override
+    public Set<String> getUserIds(String keyword) {
+        Set<String> ids = new HashSet<>();
+        if (!ObjectUtil.isEmpty(keyword)){
+            List<UserApproveEntity> users = userApproveService.list(Wrappers.lambdaQuery(UserApproveEntity.class)
+                    .select(UserApproveEntity::getUserId)
+                    .like(UserApproveEntity::getUserName, keyword)
+//                    .like(UserApproveEntity::getCompanyName, keyword)
+                    .like(UserApproveEntity::getGovName, keyword));
+            ids = users.stream().map(e->e.getUserId()).collect(Collectors.toSet());
+        }
+        return ids;
+    }
 
+    @Override
+    public Set<String> getAppIds(Long userId, String keyword) {
+        Set<String> ids = manageApplicationService.list(Wrappers.lambdaQuery(ManageApplicationEntity.class)
+                        .select(ManageApplicationEntity::getAppId)
+                        .eq(userId!= null, ManageApplicationEntity::getAppUserId, userId)
+                        .like(!ObjectUtil.isEmpty(keyword), ManageApplicationEntity::getAppName, keyword))
+                .stream().map(e->e.getAppId()).collect(Collectors.toSet());
+        return ids;
+    }
 
     @Override
     public Page<AbilityApiApplyDTO> pageApiApply(Boolean onlySubmitted, Long appId, Long userId, Long abilityId, String keyword, Integer status, Date startTime, Date endTime, int current, int size) {
-        // 分页条件构造器
+        // 1.构造分页条件
         LambdaQueryWrapper<AbilityApiApplyEntity> qw = Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
                 .eq(appId != null, AbilityApiApplyEntity::getAppId, appId)
                 .eq(userId != null, AbilityApiApplyEntity::getUserId, userId)
@@ -161,43 +186,57 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                 .notIn(onlySubmitted, AbilityApiApplyEntity::getStatus, 0)
                 .ge(Objects.nonNull(startTime), AbilityApiApplyEntity::getCreateTime, startTime)
                 .le(Objects.nonNull(endTime), AbilityApiApplyEntity::getCreateTime, endTime)
-                // 关键字
-                .and(keyword!=null && !"".equals(keyword),
-                        i -> i.like(AbilityApiApplyEntity::getAbilityName, keyword)
-                                .or().like(AbilityApiApplyEntity::getAppName, keyword)
-                                .or().like(AbilityApiApplyEntity::getNote, keyword)
-                                .or().like(AbilityApiApplyEntity::getIllustrate, keyword))
                 // 排序
                 .orderByDesc(AbilityApiApplyEntity::getCreateTime)
                 .orderByAsc(AbilityApiApplyEntity::getStatus);
+
+        // 关键字
+        if (!ObjectUtil.isEmpty(keyword)){
+            List<Long> abilityIds = abilityService.getAbilityIds(keyword.trim());
+            Set<String> appIds = getAppIds(null, keyword.trim());
+            Set<String> userIds = getUserIds(keyword.trim());
+            qw.and(i -> i.like(AbilityApiApplyEntity::getApiName, keyword)
+                    .or().like(AbilityApiApplyEntity::getNote, keyword)
+                    .or().like(AbilityApiApplyEntity::getIllustrate, keyword)
+                    .or().in(abilityIds.size()>0, AbilityApiApplyEntity::getAbilityId, abilityIds)
+                    .or().in(appIds.size()>0, AbilityApiApplyEntity::getAppId, appIds)
+                    .or().in(userIds.size()>0, AbilityApiApplyEntity::getUserId, userIds)
+            );
+        }
         // 主表分页, 并单表查询从表信息, 构造分页返回结果
         Page prePage = abilityApiApplyService.page(new Page<>(current, size), qw);
         if (prePage.getTotal()==0){
             return prePage;
         }
+        // 2.查出必要的分页返回信息
         List<AbilityApiApplyEntity> records = prePage.getRecords();
-        // 接口表
+//        // 接口表
         Set<Long> apiIds = records.stream().map(e->e.getApiId()).collect(Collectors.toSet());
-        List<AbilityApiEntity> apis = abilityApiService.list(Wrappers.lambdaQuery(AbilityApiEntity.class)
-                .select(AbilityApiEntity::getApiId, AbilityApiEntity::getApiName, AbilityApiEntity::getApiDesc)
-                .in(AbilityApiEntity::getApiId, apiIds));
-        Map<Long, AbilityApiEntity> apiMap = apis.stream().collect(Collectors.toMap(api -> api.getApiId(), api -> api));
-        // 用户表 查出企业/政府名称
+        Map<Long, AbilityApiEntity> apiMap = SimpleQuery.keyMap(Wrappers.lambdaQuery(AbilityApiEntity.class)
+                .in(AbilityApiEntity::getApiId, apiIds), AbilityApiEntity::getApiId);
+        // 能力 查出能力名称
+        Set<Long> abiltiyIds = records.stream().map(e->e.getAbilityId()).collect(Collectors.toSet());
+        Map<Long, AbilityEntity> abilityMap = SimpleQuery.keyMap(Wrappers.lambdaQuery(AbilityEntity.class)
+                .in(AbilityEntity::getAbilityId, abiltiyIds), AbilityEntity::getAbilityId);
+        // 应用 查出应用名称
+        Set<Long> appIds = records.stream().map(e->e.getAppId()).collect(Collectors.toSet());
+        Map<String, ManageApplicationEntity> appMap = SimpleQuery.keyMap(Wrappers.lambdaQuery(ManageApplicationEntity.class)
+                .in(ManageApplicationEntity::getAppId, appIds), ManageApplicationEntity::getAppId);
+        // 用户 查出企业/政府名称
         Set<Long> userIds = records.stream().map(e->e.getUserId()).collect(Collectors.toSet());
-        List<UserApproveEntity> users = userApproveService.list(Wrappers.lambdaQuery(UserApproveEntity.class)
-                .select(UserApproveEntity::getUserId, UserApproveEntity::getCompanyName, UserApproveEntity::getGovName)
-                .in(UserApproveEntity::getUserId, userIds));
-        // 将ID映射到数据上, 方便查找使用
-        Map<String, UserApproveEntity> userMap = users.stream().collect(Collectors.toMap(user -> user.getUserId(), user -> user));
-        // 返回的分页res
+        Map<String, UserApproveEntity> userMap = SimpleQuery.keyMap(Wrappers.lambdaQuery(UserApproveEntity.class)
+                .in(UserApproveEntity::getUserId, userIds), UserApproveEntity::getUserId);
+        // 3.构造返回的分页res
         Page newPage = new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         List<AbilityApiApplyDTO> resRecords = records.stream().map(apply ->{
             AbilityApiApplyDTO applyDTO = new AbilityApiApplyDTO();
             BeanUtil.copyProperties(apply, applyDTO, true);
-            applyDTO.setCompanyName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getCompanyName());
-            applyDTO.setGovName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getGovName());
             applyDTO.setApiName(apiMap.get(apply.getApiId())==null ? null : apiMap.get(apply.getApiId()).getApiName());
             applyDTO.setApiDesc(apiMap.get(apply.getApiId())==null ? null : apiMap.get(apply.getApiId()).getApiDesc());
+            applyDTO.setAbilityName(abilityMap.get(apply.getAbilityId())==null ? null : abilityMap.get(apply.getAbilityId()).getAbilityName());
+            applyDTO.setAppName(appMap.get(apply.getAppId())==null ? null : appMap.get(apply.getAppId()).getAppName());
+            applyDTO.setCompanyName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getCompanyName());
+            applyDTO.setGovName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getGovName());
             return applyDTO;
         }).toList();
         newPage.setRecords(resRecords);

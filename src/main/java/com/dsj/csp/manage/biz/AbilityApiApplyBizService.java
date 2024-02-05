@@ -7,6 +7,7 @@ import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.Date;
+import java.util.Set;
 
 public interface AbilityApiApplyBizService {
 
@@ -20,6 +21,10 @@ public interface AbilityApiApplyBizService {
 
     // 审核接口申请
     String auditApply(AbilityAuditVO auditVO);
+
+    Set<String> getUserIds(String keyword);
+
+    Set<String> getAppIds(Long userId, String keyword);
 
 
 }

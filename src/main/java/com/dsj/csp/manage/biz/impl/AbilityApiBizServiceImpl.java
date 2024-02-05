@@ -168,12 +168,12 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         // 关键字不为空
         if (!ObjectUtil.isEmpty(keyword)){
             // 获取符合关键字模糊查询的能力ID集合
-            List<Long> abiltiyIds = abilityService.getAbilityIds(keyword);
-            queryWrapper.and(keyword!=null && !"".equals(keyword),i -> i
-                    .like(AbilityApiEntity::getApiName, keyword)
+            List<Long> abiltiyIds = abilityService.getAbilityIds(keyword.trim());
+            queryWrapper.and(i -> i.like(AbilityApiEntity::getApiName, keyword)
                     .or().like(AbilityApiEntity::getApiDesc, keyword)
                     .or().like(AbilityApiEntity::getApiUrl, keyword)
-                    .or().in(abiltiyIds.size()>0, AbilityApiEntity::getAbilityId, abiltiyIds));
+                    .or().in(abiltiyIds.size()>0, AbilityApiEntity::getAbilityId, abiltiyIds)
+            );
         }
         // 主表分页查询
         Page prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
@@ -212,9 +212,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         // 关键字不为空
         if (!ObjectUtil.isEmpty(keyword)){
             // 获取符合关键字模糊查询的能力ID集合
-            List<Long> abiltiyIds = abilityService.getAbilityIds(keyword);
-            queryWrapper.and(keyword!=null && !"".equals(keyword),
-                    i -> i.like(AbilityApiEntity::getApiName, keyword)
+            List<Long> abiltiyIds = abilityService.getAbilityIds(keyword.trim());
+            queryWrapper.and(i -> i.like(AbilityApiEntity::getApiName, keyword)
                             .or().like(AbilityApiEntity::getApiDesc, keyword)
                             .or().like(AbilityApiEntity::getApiUrl, keyword)
                             .or().in(abiltiyIds.size()>0, AbilityApiEntity::getAbilityId, abiltiyIds));

@@ -1,6 +1,7 @@
 package com.dsj.csp.manage.service.impl;
 
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -86,11 +87,11 @@ public class AbilityServiceImpl extends ServiceImpl<AbilityMapper, AbilityEntity
                 .eq(userId != null, AbilityEntity::getUserId, userId)
                 .ge(Objects.nonNull(startTime), AbilityEntity::getCreateTime, startTime)
                 .le(Objects.nonNull(endTime), AbilityEntity::getCreateTime, endTime)
-                .and(keyword!=null && !"".equals(keyword), i -> i
+                .and(!ObjectUtil.isEmpty(keyword), i -> i
                         .like(AbilityEntity::getAbilityName, keyword)
                         .or().like(AbilityEntity::getAbilityProvider, keyword)
                         .or().like(AbilityEntity::getAbilityDesc, keyword))
-                .orderByDesc(AbilityEntity::getUpdateTime)
+                .orderByDesc(AbilityEntity::getCreateTime)
                 .orderByAsc(AbilityEntity::getStatus);
         return this.page(new Page<>(current, size), qw);
     }

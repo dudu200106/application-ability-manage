@@ -160,6 +160,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     public Page<UserApproveEntity> select(String status, String keyword, Date startTime, Date endTime, int page, int size) {
         QueryWrapper<UserApproveEntity> wrapper = new QueryWrapper();
         wrapper.lambda()
+                .orderByDesc(UserApproveEntity::getCreateTime)
                 .eq(Objects.nonNull(status), UserApproveEntity::getStatus, status)
                 .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), UserApproveEntity::getCreateTime, startTime, endTime)
                 .and(StringUtils.isNotBlank(keyword), lambdaQuery -> {

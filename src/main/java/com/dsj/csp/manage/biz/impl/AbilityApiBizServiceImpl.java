@@ -173,7 +173,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                     .like(AbilityApiEntity::getApiName, keyword)
                     .or().like(AbilityApiEntity::getApiDesc, keyword)
                     .or().like(AbilityApiEntity::getApiUrl, keyword)
-                    .in(AbilityApiEntity::getAbilityId, abiltiyIds.size()>0 ? abiltiyIds : -1));
+                    .or().in(abiltiyIds.size()>0, AbilityApiEntity::getAbilityId, abiltiyIds));
         }
         // 主表分页查询
         Page prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
@@ -217,7 +217,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                     i -> i.like(AbilityApiEntity::getApiName, keyword)
                             .or().like(AbilityApiEntity::getApiDesc, keyword)
                             .or().like(AbilityApiEntity::getApiUrl, keyword)
-                            .in(AbilityApiEntity::getAbilityId, abiltiyIds.size()>0 ? abiltiyIds : -1));
+                            .or().in(abiltiyIds.size()>0, AbilityApiEntity::getAbilityId, abiltiyIds));
         }
         Page prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
         List<AbilityApiEntity> preRecords = prePage.getRecords();

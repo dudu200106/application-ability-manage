@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.toolkit.SimpleQuery;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.dto.AbilityApiVO;
+import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.*;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     private final AbilityApiReqService abilityApiReqService;
     private final AbilityApiRespService abilityApiRespService;
     private final AbilityService abilityService;
+    private final UserApproveService userApproveService;
 
     @Override
     public void saveApi(AbilityApiVO apiVO, String accessToken) {
@@ -43,6 +45,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         // 插入能力基本信息
         AbilityApiEntity api = new AbilityApiEntity();
         BeanUtil.copyProperties(apiVO, api, true);
+        UserApproveRequest userApprove = userApproveService.identify(accessToken);
+        api.setUserId(Long.parseLong(userApprove.getUserId()));
         abilityApiService.save(api);
         // 插入接口的出参入参列表
         abilityApiReqService.saveReqList(apiVO.getReqList(), api.getApiId());

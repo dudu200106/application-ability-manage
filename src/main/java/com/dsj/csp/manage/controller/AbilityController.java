@@ -1,6 +1,5 @@
 package com.dsj.csp.manage.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.common.dto.BusinessException;
@@ -8,19 +7,20 @@ import com.dsj.common.dto.Result;
 import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.biz.AbilityBizService;
-import com.dsj.csp.manage.dto.*;
-import com.dsj.csp.manage.entity.*;
-
+import com.dsj.csp.manage.dto.AbilityApiVO;
+import com.dsj.csp.manage.dto.AbilityAuditVO;
+import com.dsj.csp.manage.dto.AbilityDeleteDTO;
+import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
+import com.dsj.csp.manage.entity.AbilityEntity;
 import com.dsj.csp.manage.service.AbilityApiApplyService;
 import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.AbilityService;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
 
 import java.util.Arrays;
 import java.util.Date;
@@ -70,8 +70,10 @@ public class AbilityController {
                                          @Parameter(description = "分页条数") int size,
                                          @Parameter(description = "当前页数") int current,
                                          @Parameter(description = "搜索关键字") String keyword,
-                                         @Parameter(description = "开始时间") Date startTime,
-                                         @Parameter(description = "结束时间") Date endTime) {
+                                         @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
+                                             @Parameter(description = "开始时间") Date startTime,
+                                         @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
+                                             @Parameter(description = "结束时间") Date endTime) {
         return Result.success(abilityService.pageAbilitys(userId, keyword, startTime, endTime, current, size));
     }
 
@@ -202,8 +204,10 @@ public class AbilityController {
                                  @Parameter(description = "分页条数") int size,
                                  @Parameter(description = "当前页数") int current,
                                  @Parameter(description = "搜索关键字") String keyword,
-                                 @Parameter(description = "开始时间") Date startTime,
-                                 @Parameter(description = "结束时间") Date endTime) {
+                                 @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
+                                     @Parameter(description = "开始时间") Date startTime,
+                                 @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
+                                     @Parameter(description = "结束时间") Date endTime) {
         return Result.success(abilityApiBizService.pageApiCatalog(onlyPublished, reqMethod, status, userId, abilityId, keyword, current, size, startTime, endTime));
     }
 
@@ -217,8 +221,10 @@ public class AbilityController {
                                   @Parameter(description = "当前页数") int current,
                                   @Parameter(description = "搜索关键字") String keyword,
                                   @Parameter(description = "状态") Integer status,
-                                  @Parameter(description = "开始时间") Date startTime,
-                                  @Parameter(description = "结束时间") Date endTime) {
+                                  @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
+                                      @Parameter(description = "开始时间") Date startTime,
+                                  @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
+                                      @Parameter(description = "结束时间") Date endTime) {
         return Result.success(abilityApiApplyBizService.pageApiApply(onlySubmitted, appId, userId, abilityId, keyword, status, startTime, endTime, current, size));
     }
 

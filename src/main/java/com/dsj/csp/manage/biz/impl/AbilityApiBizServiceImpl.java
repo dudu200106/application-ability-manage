@@ -40,7 +40,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                         .eq(AbilityApiEntity::getApiName, apiVO.getApiName()))
                 .or().eq(AbilityApiEntity::getApiUrl, apiVO.getApiUrl()));
         if (cnt>0) {
-            throw new BusinessException("保存api信息出错! 可能存在的异常: 接口URL地址重名或者能力下已存在同名接口");
+            throw new BusinessException("保存api信息出错! 接口URL重名或者能力下已有同名接口");
         }
         // 插入能力基本信息
         AbilityApiEntity api = new AbilityApiEntity();

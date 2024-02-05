@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.dsj.csp.manage.dto.AbilityAuditVO;
 import com.dsj.csp.manage.entity.AbilityEntity;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Sean Du
@@ -22,8 +19,6 @@ public interface AbilityService extends IService<AbilityEntity> {
     // 统计可用能力数量
     long countAvailAbility();
 
-
-
     // 审核能力注册
     String auditAbility(AbilityAuditVO auditVO);
 
@@ -34,4 +29,6 @@ public interface AbilityService extends IService<AbilityEntity> {
 
     // 根据abilityIds查询出主键(Long)-能力映射集合
     Map<Long, AbilityEntity> getAbilityMap(Collection<Long> collection);
+
+    // 查出符合条件的abilityId集合
 }

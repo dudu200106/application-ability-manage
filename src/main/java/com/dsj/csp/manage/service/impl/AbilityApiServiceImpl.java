@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+
 
 @Transactional(propagation = Propagation.REQUIRED)
 @Service
@@ -42,7 +44,7 @@ public class AbilityApiServiceImpl extends ServiceImpl<AbilityApiMapper, Ability
         updateWrapper.eq(AbilityApiEntity::getApiId, auditVO.getApiId());
         updateWrapper.set(AbilityApiEntity::getStatus, auditVO.getFlag());
         updateWrapper.set(AbilityApiEntity::getNote, auditVO.getNote());
-        updateWrapper.set(AbilityApiEntity::getUpdateTime, DateTime.now());
+        updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
         this.getBaseMapper().update(updateWrapper);
         // 审核成功反馈信息
         String auditMsg = auditVO.getFlag()==0 ? "审核撤回完毕!" :

@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/apiApply")
+@RequestMapping("/api-apply")
 @RequiredArgsConstructor
 @Tag(name = "能力接口申请管理", description = "用于管理接口使用申请")
 public class AbilityApiApplyController {
@@ -28,21 +28,21 @@ public class AbilityApiApplyController {
     private final AbilityApiApplyBizService abilityApiApplyBizService;
 
     @Operation(summary = "新增接口使用申请", description = "新增接口使用申请")
-    @PostMapping("/add-api-apply")
+    @PostMapping("/add")
     public Result<?> applyApi(@RequestBody AbilityApiApplyEntity apply, @RequestHeader("accessToken") String accessToken) {
         abilityApiApplyBizService.saveApiApply(apply, accessToken);
         return Result.success("能力申请完毕！请等待审核...");
     }
 
     @Operation(summary = "查看接口申请详情", description = "获取接口申请详情")
-    @GetMapping("/info-api-apply")
+    @GetMapping("/info")
     public Result<?> getApiApplyInfo(@Parameter(
             description = "能力申请ID") @RequestParam Long apiApplyId) {
         return Result.success(abilityApiApplyBizService.getApplyInfo(apiApplyId));
     }
 
     @Operation(summary = "分页查询接口申请列表", description = "分页查询接口申请列表")
-    @GetMapping("/page-api-apply")
+    @GetMapping("/page")
     public Result<?> pageApiApply(@Parameter(description = "是否屏蔽'未提交'状态申请") Boolean onlySubmitted,
                                   @Parameter(description = "用户ID") Long userId,
                                   @Parameter(description = "应用ID") Long appId,
@@ -57,14 +57,14 @@ public class AbilityApiApplyController {
     }
 
     @Operation(summary = "审核能力使用申请", description = "审核能力使用申请")
-    @PostMapping("/audit-api-apply")
+    @PostMapping("/audit")
     public Result<?> auditApiApply(@RequestBody AbilityAuditVO auditVO){
         String  msg = abilityApiApplyBizService.auditApply(auditVO);
         return Result.success(msg);
     }
 
     @Operation(summary = "编辑接口使用申请", description = "编辑接口使用申请")
-    @PostMapping("/edit-api-apply")
+    @PostMapping("/edit")
     public Result<?> editApiApply(@RequestBody AbilityApiApplyEntity apiApplyEntity){
         LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate(AbilityApiApplyEntity.class)
                 .eq(AbilityApiApplyEntity::getApiApplyId, apiApplyEntity.getApiApplyId());
@@ -72,7 +72,7 @@ public class AbilityApiApplyController {
     }
 
     @Operation(summary = "删除接口申请")
-    @PostMapping("/delete-api-apply")
+    @PostMapping("/delete")
     public Result<?> removeApiApply(@RequestBody AbilityDeleteDTO deleteDTO){
         String apiApplyIds = deleteDTO.getApiApplyIds();
         List<Long> ids = Arrays.asList(apiApplyIds.split(",")).stream().map(id -> Long.parseLong(id)).toList();
@@ -82,13 +82,13 @@ public class AbilityApiApplyController {
 
 
     @Operation(summary = "统计用户申请能力数量")
-    @GetMapping("/count-user-ability")
-    public Result<?> countuserAbility(String userId){
+    @GetMapping("/count-apply-ability")
+    public Result<?> countUserAbility(String userId){
         return Result.success(abilityApiApplyService.countUserAbility(userId));
     }
 
     @Operation(summary = "统计用户申请接口数量")
-    @GetMapping("/count-user-api")
+    @GetMapping("/count-apply-api")
     public Result<?> countUserApi(String userId){
         return Result.success(abilityApiApplyService.countUserApi(userId));
     }

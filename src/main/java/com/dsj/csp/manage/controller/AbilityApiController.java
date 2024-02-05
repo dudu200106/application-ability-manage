@@ -28,7 +28,7 @@ public class AbilityApiController {
     private final AbilityApiApplyService abilityApiApplyService;
 
     @Operation(summary = "新增接口")
-    @PostMapping("add-api")
+    @PostMapping("/add")
     public Result<?> addApi(@RequestBody AbilityApiVO apiVO, @RequestHeader("accessToken") String accessToken){
         abilityApiBizService.saveApi(apiVO, accessToken);
         return Result.success("添加接口成功!");
@@ -48,7 +48,7 @@ public class AbilityApiController {
     }
 
     @Operation(summary = "更新接口")
-    @PostMapping("edit")
+    @PostMapping("/edit")
     public Result<?> editApi(@RequestBody AbilityApiVO apiVO){
         Boolean editApiflag = abilityApiBizService.updateApi(apiVO);
         return Result.success("已修改接口完毕! ", editApiflag);
@@ -90,14 +90,14 @@ public class AbilityApiController {
 
 
     @Operation(summary = "分页查询api目录列表")
-    @GetMapping("page-api-catalog")
-    public Result<?> pageApiList(@Parameter(description = "是否过滤未发布的接口") Boolean onlyPublished,
+    @GetMapping("/page-catalog")
+    public Result<?> pageApiList(@Parameter(description = "是否过滤未发布的接口", required = true) Boolean onlyPublished,
                                  @Parameter(description = "请求方式") String reqMethod,
                                  @Parameter(description = "状态") Integer status,
                                  @Parameter(description = "用户ID") Long userId,
                                  @Parameter(description = "能力ID") Long abilityId,
-                                 @Parameter(description = "分页条数") int size,
-                                 @Parameter(description = "当前页数") int current,
+                                 @Parameter(description = "分页条数", required = true) int size,
+                                 @Parameter(description = "当前页数", required = true) int current,
                                  @Parameter(description = "搜索关键字") String keyword,
                                  @Parameter(description = "开始时间") Date startTime,
                                  @Parameter(description = "结束时间") Date endTime) {
@@ -105,7 +105,7 @@ public class AbilityApiController {
     }
 
     @Operation(summary = "分页查询申请通过的接口列表", description = "分页查询申请通过的接口列表")
-    @GetMapping("/page-passed-apis")
+    @GetMapping("/page-passed")
     public Result<?> pagePassedApi(@Parameter(description = "用户ID") Long userId,
                                    @Parameter(description = "应用ID") Long appId,
                                    @Parameter(description = "能力ID") Long abilityId,

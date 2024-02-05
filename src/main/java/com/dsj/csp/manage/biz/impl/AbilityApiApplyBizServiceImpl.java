@@ -43,11 +43,11 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                 .eq(AbilityApiApplyEntity::getApiId,applyEntity.getApiId())
                 .in(AbilityApiApplyEntity::getStatus, 0, 1, 2));
         if (cnt!=0){
-            throw new BusinessException("接口申请失败！所选应用已申请过该能力接口");
+            throw new BusinessException("操作无效！所选应用已保存或者申请过该能力接口");
         }
         // 判断调用接口是否已下线
         if (abilityApiService.getById(applyEntity.getApiId()).getStatus()!=4){
-            throw new BusinessException("申请使用的接口已下线！");
+            throw new BusinessException("申请的接口已下线！");
         }
         // 以下信息直接存入能力申请记录信息数据库, 方便查询
         // todo 取消对用户、应用和能力信息的存储, 该用连表查询同步编辑后的状态
@@ -58,8 +58,8 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
             throw new BusinessException("申请接口异常! 请确保相关的用户应用、能力数据信息正常!");
         }
         applyEntity.setUserId(Long.parseLong(userApproveRequest.getUserId()));
-//        applyEntity.setAppName(app.getAppName());
-//        applyEntity.setAbilityName(ability.getAbilityName());
+        applyEntity.setAppName(app.getAppName());
+        applyEntity.setAbilityName(ability.getAbilityName());
         abilityApiApplyService.save(applyEntity);
     }
 

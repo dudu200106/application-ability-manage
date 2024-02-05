@@ -10,6 +10,7 @@ import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
 import com.dsj.csp.manage.service.AbilityApiApplyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/apiApply")
 @RequiredArgsConstructor
+@Tag(name = "能力接口申请管理", description = "用于管理接口使用申请")
 public class AbilityApiApplyController {
 
     private final AbilityApiApplyService abilityApiApplyService;

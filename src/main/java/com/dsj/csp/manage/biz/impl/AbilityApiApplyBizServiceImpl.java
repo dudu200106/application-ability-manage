@@ -37,6 +37,10 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
 
     @Override
     public void saveApiApply(AbilityApiApplyEntity applyEntity, String accessToken) {
+        // 判断调用接口是否已下线
+        if (abilityApiService.getById(applyEntity.getApiId()).getStatus()!=4){
+            throw new BusinessException("申请的接口已下线！");
+        }
         // 判断是否已存在未提交/待审核/审核通过的接口申请记录
         long cnt =abilityApiApplyService.count(Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
                 .eq(AbilityApiApplyEntity::getAppId, applyEntity.getAppId())
@@ -44,10 +48,6 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                 .in(AbilityApiApplyEntity::getStatus, 0, 1, 2));
         if (cnt!=0){
             throw new BusinessException("操作无效！所选应用已保存或者申请过该能力接口");
-        }
-        // 判断调用接口是否已下线
-        if (abilityApiService.getById(applyEntity.getApiId()).getStatus()!=4){
-            throw new BusinessException("申请的接口已下线！");
         }
         UserApproveRequest userApproveRequest = userApproveService.identify(accessToken);
         applyEntity.setUserId(Long.parseLong(userApproveRequest.getUserId()));

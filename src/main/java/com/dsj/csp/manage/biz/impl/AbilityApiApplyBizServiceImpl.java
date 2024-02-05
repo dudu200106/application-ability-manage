@@ -74,6 +74,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         AbilityApiApplyDTO resApply = new AbilityApiApplyDTO();
         BeanUtil.copyProperties(apply, resApply,true);
         resApply.setApi(api);
+        resApply.setApiName(api.getApiName());
         resApply.setAbilityName(ability.getAbilityName());
         resApply.setCompanyName(user.getCompanyName());
         resApply.setGovName(user.getGovName());
@@ -225,7 +226,8 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
             applyDTO.setApiName(apiMap.get(apply.getApiId())==null ? null : apiMap.get(apply.getApiId()).getApiName());
             applyDTO.setApiDesc(apiMap.get(apply.getApiId())==null ? null : apiMap.get(apply.getApiId()).getApiDesc());
             applyDTO.setAbilityName(abilityMap.get(apply.getAbilityId())==null ? null : abilityMap.get(apply.getAbilityId()).getAbilityName());
-            applyDTO.setAppName(appMap.get(apply.getAppId())==null ? null : appMap.get(apply.getAppId()).getAppName());
+            applyDTO.setAppName(appMap.get(apply.getAppId() + "")==null ? null : appMap.get(apply.getAppId()).getAppName());
+            applyDTO.setAppName(appMap.get(apply.getAppId() + "")==null ? null : appMap.get(apply.getAppId() + "").getAppName());
             applyDTO.setCompanyName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getCompanyName());
             applyDTO.setGovName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getGovName());
             return applyDTO;

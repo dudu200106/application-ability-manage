@@ -29,8 +29,8 @@ public class AbilityApiApplyController {
 
     @Operation(summary = "新增接口使用申请", description = "新增接口使用申请")
     @PostMapping("/add-api-apply")
-    public Result<?> applyApi(@RequestBody AbilityApiApplyEntity apply) {
-        abilityApiApplyBizService.saveApiApply(apply);
+    public Result<?> applyApi(@RequestBody AbilityApiApplyEntity apply, @RequestHeader("accessToken") String accessToken) {
+        abilityApiApplyBizService.saveApiApply(apply, accessToken);
         return Result.success("能力申请完毕！请等待审核...");
     }
 

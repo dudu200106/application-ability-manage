@@ -174,15 +174,14 @@ public class AbilityController {
 
     @Operation(summary = "新增接口使用申请", description = "申请使用接口")
     @PostMapping("/add-api-apply")
-    public Result<?> applyApi(@RequestBody AbilityApiApplyEntity apply) {
-        abilityApiApplyBizService.saveApiApply(apply);
+    public Result<?> applyApi(@RequestBody AbilityApiApplyEntity apply, @RequestHeader("accessToken") String accessToken) {
+        abilityApiApplyBizService.saveApiApply(apply, accessToken);
         return Result.success("能力申请完毕！请等待审核...");
     }
 
     @Operation(summary = "查看接口申请详情", description = "获取接口申请详情")
     @GetMapping("/info-api-apply")
-    public Result<?> getApiApplyInfo(@Parameter(
-            description = "能力申请ID") @RequestParam Long apiApplyId) {
+    public Result<?> getApiApplyInfo(@Parameter(description = "能力申请ID") @RequestParam Long apiApplyId) {
         return Result.success(abilityApiApplyBizService.getApplyInfo(apiApplyId));
     }
 

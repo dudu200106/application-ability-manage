@@ -84,29 +84,87 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         return resApply;
     }
 
-
     public String auditApply(AbilityAuditVO auditVO) {
-        AbilityApiApplyEntity apply = abilityApiApplyService.getById(auditVO.getApiApplyId());
-        if (apply==null){
-            throw new BusinessException("找不到该申请记录! 请刷新页面后重试...");
+        // 审核
+        Long applyId = auditVO.getApiApplyId();
+        String note = auditVO.getNote();
+        switch(auditVO.getFlag()){
+            case 0:
+                return auditWithdraw(applyId, note);
+            case 1:
+                return auditSubmit(applyId, note);
+            case 2:
+                return auditPass(applyId, note);
+            case 3:
+                return auditNotPass(applyId, note);
+            default:
+                return auditBlockUp(applyId, note);
         }
-        AbilityApiEntity api = abilityApiService.getById(auditVO.getApiId());
+    }
+
+    @Override
+    public String auditWithdraw(Long applyId, String note) {
+        AbilityApiApplyEntity apply = abilityApiApplyService.getById(applyId);
+        if (apply==null){
+            throw new BusinessException("审核通过失败!找不到该申请记录!");
+        }
+        AbilityApiEntity api = abilityApiService.getById(apply.getApiId());
         if (api==null || api.getStatus()!=4){
             throw new BusinessException("申请的接口不存在了，或已下线！");
         }
         // 审核流程限制: 状态(0待提交 1待审核 2审核通过 3审核不通过 4已停用 )
-        if ((auditVO.getFlag() == 0 && apply.getStatus() != 1)
-                || (auditVO.getFlag() == 1 && apply.getStatus() != 0)
-                || (auditVO.getFlag() == 2 && !(apply.getStatus() == 1 || apply.getStatus() == 4))
-                || (auditVO.getFlag() == 3 && apply.getStatus() != 1)
-                || (auditVO.getFlag() == 4 && apply.getStatus() != 2)) {
-            throw new BusinessException("申请状态已发生改变! 请刷新页面后重试...");
+        if (apply.getStatus() != 1) {
+            throw new BusinessException("只有'待审核'的申请才能撤回!请刷新页面后重试");
         }
         // 创建更新条件构造器
         LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
-        updateWrapper.eq(AbilityApiApplyEntity::getApiApplyId, auditVO.getApiApplyId());
-        updateWrapper.set(AbilityApiApplyEntity::getStatus, auditVO.getFlag());
-        updateWrapper.set(AbilityApiApplyEntity::getNote, auditVO.getNote());
+        updateWrapper.eq(AbilityApiApplyEntity::getApiApplyId, applyId);
+        updateWrapper.set(AbilityApiApplyEntity::getStatus, 0);
+        abilityApiApplyService.update(updateWrapper);
+        return "提交完成!";
+    }
+
+    @Override
+    public String auditSubmit(Long applyId, String note) {
+        AbilityApiApplyEntity apply = abilityApiApplyService.getById(applyId);
+        if (apply==null){
+            throw new BusinessException("审核通过失败!找不到该申请记录!");
+        }
+        AbilityApiEntity api = abilityApiService.getById(apply.getApiId());
+        if (api==null || api.getStatus()!=4){
+            throw new BusinessException("申请的接口不存在了，或已下线！");
+        }
+        // 审核流程限制: 状态(0待提交 1待审核 2审核通过 3审核不通过 4已停用 )
+        if (apply.getStatus() != 0) {
+            throw new BusinessException("只有'未提交'的申请才能提交!请刷新页面后重试");
+        }
+        // 创建更新条件构造器
+        LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
+        updateWrapper.eq(AbilityApiApplyEntity::getApiApplyId, applyId);
+        updateWrapper.set(AbilityApiApplyEntity::getStatus, 1);
+        abilityApiApplyService.update(updateWrapper);
+        return "提交完成!";
+    }
+
+    @Override
+    public String auditPass(Long applyId, String note) {
+        AbilityApiApplyEntity apply = abilityApiApplyService.getById(applyId);
+        if (apply==null){
+            throw new BusinessException("审核通过失败!找不到该申请记录!");
+        }
+        AbilityApiEntity api = abilityApiService.getById(apply.getApiId());
+        if (api==null || api.getStatus()!=4){
+            throw new BusinessException("申请的接口不存在了，或已下线！");
+        }
+        // 审核流程限制: 状态(0待提交 1待审核 2审核通过 3审核不通过 4已停用 )
+        if (apply.getStatus() != 1 && apply.getStatus() != 4) {
+            throw new BusinessException("只有'待审核'或者'停用'的申请才能审核通过!请刷新页面后重试");
+        }
+        // 创建更新条件构造器
+        LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
+        updateWrapper.eq(AbilityApiApplyEntity::getApiApplyId, applyId);
+        updateWrapper.set(AbilityApiApplyEntity::getStatus, 2);
+        updateWrapper.set(AbilityApiApplyEntity::getNote, note);
         updateWrapper.set(AbilityApiApplyEntity::getApproveTime, new Date());
         abilityApiApplyService.update(updateWrapper);
 
@@ -120,7 +178,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         String appSecretKey =  app.getAppSecret();
         String appAppKey =  app.getAppSecret();
         // 如果审核通过, 判断是否为应用生成密钥
-        if (auditVO.getFlag() == 2 && ObjectUtil.isEmpty(appSecretKey) && ObjectUtil.isEmpty(appAppKey)){
+        if (ObjectUtil.isEmpty(appSecretKey) && ObjectUtil.isEmpty(appAppKey)){
             Map<String, String> sm2Map = Sm2.sm2Test();
             String appKey = sm2Map.get("publicEncode");
             String secretKey = sm2Map.get("privateEncode");
@@ -136,13 +194,55 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                     .set(ManageApplicationEntity::getAppWgSecret, wgSecre);
             manageApplicationService.update(appUpdateWrapper);
         }
-        // 审核反馈信息
-        String auditMsg = auditVO.getFlag()==0 ? "审核撤回完毕!" :
-                auditVO.getFlag()==1 ? "审核提交完毕, 等待审核..." :
-                        auditVO.getFlag()==2 ? "审核通过完毕!" :
-                                auditVO.getFlag()==3 ? "审核不通过完毕!." :
-                                        "停用完毕!";
-        return auditMsg;
+        return "审核通过完毕!";
+    }
+
+    @Override
+    public String auditNotPass(Long applyId, String note) {
+        AbilityApiApplyEntity apply = abilityApiApplyService.getById(applyId);
+        if (apply==null){
+            throw new BusinessException("审核通过失败!找不到该申请记录!");
+        }
+        AbilityApiEntity api = abilityApiService.getById(apply.getApiId());
+        if (api==null || api.getStatus()!=4){
+            throw new BusinessException("申请的接口不存在了，或已下线！");
+        }
+        // 审核流程限制: 状态(0待提交 1待审核 2审核通过 3审核不通过 4已停用 )
+        if (apply.getStatus() != 1 && apply.getStatus() != 4) {
+            throw new BusinessException("只有'待审核'的申请才能审核不通过!请刷新页面后重试");
+        }
+        // 创建更新条件构造器
+        LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
+        updateWrapper.eq(AbilityApiApplyEntity::getApiApplyId, applyId);
+        updateWrapper.set(AbilityApiApplyEntity::getStatus, 3);
+        updateWrapper.set(AbilityApiApplyEntity::getNote, note);
+        updateWrapper.set(AbilityApiApplyEntity::getApproveTime, new Date());
+        abilityApiApplyService.update(updateWrapper);
+        return "审核不通过完毕!";
+    }
+
+    @Override
+    public String auditBlockUp(Long applyId, String note) {
+        AbilityApiApplyEntity apply = abilityApiApplyService.getById(applyId);
+        if (apply==null){
+            throw new BusinessException("审核通过失败!找不到该申请记录!");
+        }
+        AbilityApiEntity api = abilityApiService.getById(apply.getApiId());
+        if (api==null || api.getStatus()!=4){
+            throw new BusinessException("申请的接口不存在了，或已下线！");
+        }
+        // 审核流程限制: 状态(0待提交 1待审核 2审核通过 3审核不通过 4已停用 )
+        if (apply.getStatus() != 2) {
+            throw new BusinessException("只有'审核通过'的申请才能停用!请刷新页面后重试");
+        }
+        // 创建更新条件构造器
+        LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
+        updateWrapper.eq(AbilityApiApplyEntity::getApiApplyId, applyId);
+        updateWrapper.set(AbilityApiApplyEntity::getStatus, 4);
+        updateWrapper.set(AbilityApiApplyEntity::getNote, note);
+        updateWrapper.set(AbilityApiApplyEntity::getApproveTime, new Date());
+        abilityApiApplyService.update(updateWrapper);
+        return "停用完毕!";
     }
 
     @Override

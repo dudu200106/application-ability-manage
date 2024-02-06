@@ -22,6 +22,12 @@ public interface AbilityApiApplyBizService {
     // 审核接口申请
     String auditApply(AbilityAuditVO auditVO);
 
+    String auditWithdraw(Long applyId, String note);
+    String auditSubmit(Long applyId, String note);
+    String auditPass(Long applyId, String note);
+    String auditNotPass(Long applyId, String note);
+    String auditBlockUp(Long applyId, String note);
+
     Set<String> getUserIds(String keyword);
 
     Set<String> getAppIds(Long userId, String keyword);

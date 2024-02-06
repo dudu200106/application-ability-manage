@@ -103,7 +103,6 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         updateWrapper.eq(AbilityApiApplyEntity::getApiApplyId, auditVO.getApiApplyId());
         updateWrapper.set(AbilityApiApplyEntity::getStatus, auditVO.getFlag());
         updateWrapper.set(AbilityApiApplyEntity::getNote, auditVO.getNote());
-        updateWrapper.set(AbilityApiApplyEntity::getUpdateTime, new Date());
         updateWrapper.set(AbilityApiApplyEntity::getApproveTime, new Date());
         abilityApiApplyService.update(updateWrapper);
 
@@ -176,10 +175,10 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                 .eq(status != null, AbilityApiApplyEntity::getStatus, status)
                 // 如果过滤未提交状态
                 .notIn(onlySubmitted, AbilityApiApplyEntity::getStatus, 0)
-                .ge(Objects.nonNull(startTime), AbilityApiApplyEntity::getCreateTime, startTime)
-                .le(Objects.nonNull(endTime), AbilityApiApplyEntity::getCreateTime, endTime)
+                .ge(Objects.nonNull(startTime), AbilityApiApplyEntity::getUpdateTime, startTime)
+                .le(Objects.nonNull(endTime), AbilityApiApplyEntity::getUpdateTime, endTime)
                 // 排序
-                .orderByDesc(AbilityApiApplyEntity::getCreateTime)
+                .orderByDesc(AbilityApiApplyEntity::getUpdateTime)
                 .orderByAsc(AbilityApiApplyEntity::getStatus);
 
         // 关键字

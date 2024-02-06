@@ -2,6 +2,7 @@ package com.dsj.csp.common.aop.aspect;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.dsj.csp.common.aop.annotation.AopLogger;
+import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.entity.LogEntity;
 import com.dsj.csp.manage.service.LogService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -65,12 +66,13 @@ public class AopLoggerAspect {
         String describe = getAopLoggerDescribe(point);
 //        int operateType=getAopLoggerOperateType(point);
 //        System.out.println("操作类型"+operateType);
-        int logType = getAopLoggerLogType(point);
-        logEntity.setLogType(logType);
-        System.out.println(logType);
-        Integer operateType = getAopLoggerOperateType(point);
-        System.out.println(operateType);
-        logEntity.setOperateType(operateType);
+        LogEnum logType = getAopLoggerLogType(point);
+        logEntity.setLogType(logType.getCode());
+        System.out.println(logType.getCode());
+
+        LogEnum operateType = getAopLoggerOperateType(point);
+        logEntity.setOperateType(operateType.getCode());
+        System.out.println(operateType.getCode());
         if (StringUtils.isBlank(describe)) {
             describe = "-";
         }
@@ -93,7 +95,6 @@ public class AopLoggerAspect {
         logger.info("IP             : {}", request.getRemoteAddr());
 
         logEntity.setIp(getIpAddress(request));
-        System.out.println(getIpAddress(request));
         // 打印请求入参
         logger.info("Request Args   : {}", point.getArgs());
         // 打印请求出参
@@ -147,19 +148,17 @@ public class AopLoggerAspect {
 //        return controllerLog.();
 //    }
 
-    public static Integer getAopLoggerLogType(JoinPoint joinPoint) {
+    public static LogEnum getAopLoggerLogType(JoinPoint joinPoint) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         AopLogger controllerLog = method.getAnnotation(AopLogger.class);
         return controllerLog.logType();
     }
 
-    public static int getAopLoggerOperateType(JoinPoint joinPoint) {
+    public static LogEnum getAopLoggerOperateType(JoinPoint joinPoint) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         AopLogger controllerLog = method.getAnnotation(AopLogger.class);
         return controllerLog.operateType();
     }
-
-
 }

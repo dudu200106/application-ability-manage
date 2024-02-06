@@ -1,5 +1,7 @@
 package com.dsj.csp.common.aop.annotation;
 
+import com.dsj.csp.common.enums.LogEnum;
+
 import java.lang.annotation.*;
 
 /**
@@ -15,10 +17,10 @@ public @interface AopLogger {
     String describe() default "";
 
     //    String logType() default "2";
-    int logType();
+    LogEnum logType();
 
 //    Integer operateType();
 
 
-    int operateType();
+    LogEnum operateType();
 }

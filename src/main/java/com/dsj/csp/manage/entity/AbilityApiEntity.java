@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Date;
 
 @Data
 @TableName("GXYYZC_NLJK")
@@ -104,10 +105,14 @@ public class AbilityApiEntity implements Serializable {
 
     @TableField(value = "NLJK_CJSJ" )
     @Schema(description = "创建时间")
-    private Timestamp createTime;
+    private Date createTime;
 
     @TableField(value = "NLJK_GXSJ")
     @Schema(description = "更新时间")
-    private Timestamp updateTime;
+    private Date updateTime;
+
+    @TableField(value = "NLJK_SPSJ")
+    @Schema(description = "审批时间")
+    private Date approveTime;
 
 }

@@ -79,6 +79,7 @@ public class AbilityController {
     @Operation(summary = "编辑能力")
     @PostMapping("edit-login")
     public Result<?> updateAbility(@RequestBody AbilityEntity ability){
+        ability.setUpdateTime(new Date());
         Boolean editFlag = abilityService.updateById(ability);
         return Result.success("编辑注册能力成功!", editFlag);
     }
@@ -242,6 +243,7 @@ public class AbilityController {
     @Operation(summary = "编辑接口使用申请", description = "编辑接口使用申请")
     @PostMapping("/edit-api-apply")
     public Result<?> editApiApply(@RequestBody AbilityApiApplyEntity apiApplyEntity){
+        apiApplyEntity.setUpdateTime(new Date());
         LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate(AbilityApiApplyEntity.class)
                 .eq(AbilityApiApplyEntity::getApiApplyId, apiApplyEntity.getApiApplyId());
         return Result.success(abilityApiApplyService.update(apiApplyEntity, updateWrapper));

@@ -46,7 +46,7 @@ public class AbilityApiServiceImpl extends ServiceImpl<AbilityApiMapper, Ability
         updateWrapper.eq(AbilityApiEntity::getApiId, auditVO.getApiId());
         updateWrapper.set(AbilityApiEntity::getStatus, auditVO.getFlag());
         updateWrapper.set(AbilityApiEntity::getNote, auditVO.getNote());
-        updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
+        updateWrapper.set(AbilityApiEntity::getApproveTime, new Date());
         this.getBaseMapper().update(updateWrapper);
         // 审核成功反馈信息
         String auditMsg = auditVO.getFlag()==0 ? "审核撤回完毕!" :

@@ -1,7 +1,7 @@
 package com.dsj.csp.manage.entity;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -107,12 +107,6 @@ public class AbilityApiApplyEntity implements Serializable {
     @Schema(description="备注")
     private String note;
     /**
-    * 审批时间
-    */
-    @TableField("NLSQ_SPSJ")
-    @Schema(description="审批时间")
-    private java.sql.Date approveTime;
-    /**
      * 逻辑删除
      */
     @TableLogic(value = "0", delval = "1")
@@ -123,7 +117,13 @@ public class AbilityApiApplyEntity implements Serializable {
     */
     @TableField(value = "NLSQ_CJSJ")
     @Schema(description="创建时间")
-    private java.sql.Date createTime;
+    private Date createTime;
+    /**
+     * 审批时间
+     */
+    @TableField("NLSQ_SPSJ")
+    @Schema(description="审批时间")
+    private Date approveTime;
     /**
     * 更新时间
     */

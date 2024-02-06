@@ -57,6 +57,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     public boolean updateApi(AbilityApiVO apiVO) {
         AbilityApiEntity api = new AbilityApiEntity();
         BeanUtil.copyProperties(apiVO, api, true);
+        api.setUpdateTime(new Date());
 
         // 覆盖参数列表
         LambdaQueryWrapper reqQW = Wrappers.lambdaQuery(AbilityApiReq.class).eq(AbilityApiReq::getApiId, apiVO.getApiId());

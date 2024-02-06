@@ -4,10 +4,9 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -118,6 +117,7 @@ public class LogEntity implements Serializable {
      */
     @TableField(value = "RZ_LX")
     @Schema(description = "日志类型（1登录日志，2操作日志）")
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     private Integer logType;
 
     /**
@@ -125,6 +125,7 @@ public class LogEntity implements Serializable {
      */
     @TableField(value = "RZ_CZLX")
     @Schema(description = "操作类型（1查询，2添加，3修改，4删除,5导入，6导出）")
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     private Integer operateType;
 
 }

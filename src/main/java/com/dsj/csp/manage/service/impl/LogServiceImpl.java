@@ -26,6 +26,7 @@ public class LogServiceImpl extends ServiceImpl<LogMapper, LogEntity> implements
     @Override
     public Page<LogEntity> select(String keyword, Date startTime, Date endTime, int page, int size) {
         QueryWrapper<LogEntity> wrapper = new QueryWrapper();
+        wrapper.lambda().orderByDesc(LogEntity::getCreateTime);
         wrapper.lambda()
                 .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), LogEntity::getCreateTime, startTime, endTime)
                 .and(StringUtils.isNotBlank(keyword), lambdaQuery->{

@@ -94,7 +94,7 @@ public class AbilityController {
     @Operation(summary = "审核接口注册", description = "审核接口注册")
     @PostMapping("/audit-api")
     public Result<?> auditApi(@RequestBody AbilityAuditVO auditVO){
-        String  msg = abilityApiService.auditApi(auditVO);
+        String  msg = abilityApiBizService.auditApi(auditVO);
         return Result.success(msg);
     }
 

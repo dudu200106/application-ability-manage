@@ -3,12 +3,14 @@ package com.dsj.csp.manage.biz.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.toolkit.SimpleQuery;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.dto.AbilityApiVO;
+import com.dsj.csp.manage.dto.AbilityAuditVO;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.*;
@@ -47,11 +49,55 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         BeanUtil.copyProperties(apiVO, api, true);
         UserApproveRequest userApprove = userApproveService.identify(accessToken);
         api.setUserId(Long.parseLong(userApprove.getUserId()));
+        api.setApiDesc(ObjectUtil.isEmpty(apiVO.getApiDesc()) ? apiVO.getApiDesc() : apiVO.getDescription());
         abilityApiService.save(api);
         // 插入接口的出参入参列表
         abilityApiReqService.saveReqList(apiVO.getReqList(), api.getApiId());
         abilityApiRespService.saveRespList(apiVO.getRespList(), api.getApiId());
     }
+
+    @Override
+    public String auditApi(AbilityAuditVO auditVO) {
+        AbilityApiEntity api = abilityApiService.getById(auditVO.getApiId());
+        if (api==null){
+            throw new BusinessException("审核失败! 请刷新页面后重试...");
+        }
+        // 审核流程限制: 状态(0未提交 1待审核 2审核未通过 3未发布 4已发布 5已下线)
+        if ((auditVO.getFlag() == 0 && api.getStatus() != 1)
+                || (auditVO.getFlag() == 1 && api.getStatus() != 0)
+                || (auditVO.getFlag() == 2 && api.getStatus() != 1)
+                || (auditVO.getFlag() == 3 && api.getStatus() != 1)
+                || (auditVO.getFlag() == 4 && !(api.getStatus() == 3 || api.getStatus() == 5))
+                || (auditVO.getFlag() == 5 && api.getStatus() != 4)) {
+            throw new BusinessException("审核失败! 请刷新页面后重试...");
+        }
+        // 下线接口的时候校验是否有用户正在使用着
+        if (auditVO.getFlag() == 5){
+            // 统计该接口下审核通过正在使用的申请数量
+            long cntUsing = abilityApiApplyService.count(Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
+                    .eq(AbilityApiApplyEntity::getApiId, auditVO.getApiId())
+                    .eq(AbilityApiApplyEntity::getStatus, 2));
+            if (cntUsing>0){
+                throw new BusinessException("该接口还有应用正在使用!");
+            }
+        }
+        LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
+        updateWrapper.eq(AbilityApiEntity::getApiId, auditVO.getApiId());
+        updateWrapper.set(AbilityApiEntity::getStatus, auditVO.getFlag());
+        updateWrapper.set(AbilityApiEntity::getNote, auditVO.getNote());
+        updateWrapper.set(AbilityApiEntity::getApproveTime, new Date());
+        abilityApiService.update(updateWrapper);
+        // 审核成功反馈信息
+        String auditMsg = auditVO.getFlag()==0 ? "审核撤回完毕!" :
+                auditVO.getFlag()==1 ? "审核提交完毕, 等待审核..." :
+                        auditVO.getFlag()==2 ? "审核不通过完毕!" :
+                                auditVO.getFlag()==3 ? "审核通过完毕! 等待发布..." :
+                                        auditVO.getFlag()==4 ? "接口发布完毕!" :
+                                                "接口下线完毕!";
+        return auditMsg;
+
+    }
+
 
     @Override
     public boolean updateApi(AbilityApiVO apiVO) {

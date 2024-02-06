@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsj.csp.manage.mapper.DocMapper">
+
+    <resultMap id="BaseResultMap" type="com.dsj.csp.manage.entity.DocEntity">
+            <id property="docId" column="WD_ID" jdbcType="BIGINT"/>
+            <result property="catalogId" column="WDML_ID" jdbcType="BIGINT"/>
+            <result property="docName" column="WD_MC" jdbcType="VARCHAR"/>
+            <result property="docDesc" column="WD_MS" jdbcType="VARCHAR"/>
+            <result property="operator" column="WD_CZR" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="TINYINT"/>
+            <result property="note" column="note" jdbcType="VARCHAR"/>
+            <result property="isDelete" column="IS_DELETE" jdbcType="TINYINT"/>
+            <result property="createTime" column="WD_CJSJ" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="WD_GXSJ" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        WD_ID,WDML_ID,WD_MC,
+        WD_MS,WD_CZR,ZT,
+        BZ,IS_DELETE,WD_CJSJ,
+        WD_GXSJ
+    </sql>
+
+</mapper>

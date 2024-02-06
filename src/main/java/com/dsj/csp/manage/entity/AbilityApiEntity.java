@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
 
 @Data
+@EqualsAndHashCode
 @TableName("GXYYZC_NLJK")
 public class AbilityApiEntity implements Serializable {
     @TableId("NLJK_ID")

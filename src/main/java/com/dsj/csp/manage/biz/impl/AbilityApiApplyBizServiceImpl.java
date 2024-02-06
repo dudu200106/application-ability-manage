@@ -90,6 +90,10 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         if (apply==null){
             throw new BusinessException("找不到该申请记录! 请刷新页面后重试...");
         }
+        AbilityApiEntity api = abilityApiService.getById(auditVO.getApiId());
+        if (api==null || api.getStatus()!=4){
+            throw new BusinessException("申请的接口不存在了，或已下线！");
+        }
         // 审核流程限制: 状态(0待提交 1待审核 2审核通过 3审核不通过 4已停用 )
         if ((auditVO.getFlag() == 0 && apply.getStatus() != 1)
                 || (auditVO.getFlag() == 1 && apply.getStatus() != 0)

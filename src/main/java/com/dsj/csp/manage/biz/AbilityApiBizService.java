@@ -2,6 +2,7 @@ package com.dsj.csp.manage.biz;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.csp.manage.dto.AbilityApiVO;
+import com.dsj.csp.manage.dto.AbilityAuditVO;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
 
 import java.util.Date;
@@ -9,6 +10,9 @@ import java.util.List;
 
 public interface AbilityApiBizService {
     void saveApi(AbilityApiVO apiVO, String accessToken);
+
+
+    String auditApi(AbilityAuditVO auditVO);
 
     boolean updateApi(AbilityApiVO apiVO);
 

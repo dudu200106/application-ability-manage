@@ -9,7 +9,6 @@ import java.util.List;
 public interface AbilityApiService extends IService<AbilityApiEntity> {
 
 
-    String auditApi(AbilityAuditVO auditVO);
 
     List<Long> getApiIds(String keyword);
 

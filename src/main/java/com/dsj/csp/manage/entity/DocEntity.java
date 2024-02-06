@@ -26,14 +26,18 @@ public class DocEntity implements Serializable {
     @TableId(value = "WD_ID", type = IdType.AUTO)
     @Schema(description = "文档ID")
     private Long docId;
-
     /**
      * 文档目录ID
      */
     @TableField(value = "WDML_ID")
     @Schema(description = "文档目录ID")
     private Long catalogId;
-
+    /**
+     * 接口ID
+     */
+    @TableField(value = "接口ID")
+    @Schema(description = "接口ID")
+    private Long apiId;
     /**
      * 文档名称
      */
@@ -89,5 +93,19 @@ public class DocEntity implements Serializable {
     @TableField(value = "WD_GXSJ")
     @Schema(description = "更新时间")
     private Date updateTime;
+    /**
+     * 审批时间
+     */
+    @TableField(value = "WD_SPSJ")
+    @Schema(description = "审批时间")
+    private Date approveTime;
+    /**
+     * 文档内容
+     */
+    @TableField(value = "WD_NR")
+    @Schema(description = "文档内容")
+    private String content;
+
+
 
 }

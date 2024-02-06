@@ -1,8 +1,21 @@
 package com.dsj.csp.manage.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dsj.common.dto.BusinessException;
+import com.dsj.common.dto.Result;
+import com.dsj.csp.manage.entity.DocEntity;
+import com.dsj.csp.manage.service.DocService;
+import com.dsj.csp.manage.service.UserApproveService;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
 
 /**
  * @author SeanDu
@@ -12,25 +25,107 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/doc")
 @Tag(name = "文档管理", description = "用于管理卡法文档")
+@RequiredArgsConstructor
 public class DocController {
 
+    private final DocService docService;
+    private final UserApproveService userApproveService;
 
     // 新增文档
+    @Operation(summary = "新增文档")
+    @PostMapping("/save")
+    public Result<?> add(DocEntity doc){
+        long cnt = docService.count(Wrappers.lambdaQuery(DocEntity.class)
+                .eq(DocEntity::getDocName, doc.getDocName())
+                .eq(DocEntity::getCatalogId, doc.getCatalogId()));
+        if (cnt>0){
+            throw new BusinessException("文档名称在该目录下已存在");
+        }
+        Boolean addFlag = docService.save(doc);
+        return Result.success("文档保存" +(addFlag ? "成功!" : "失败!"));
+    }
 
     // 查看文档
+    @Operation(summary = "查看文档")
+    @PostMapping("/info")
+    public Result<?> info(Long docId){
+        return Result.success(docService.getById(docId));
+    }
 
-    // 分页查询文档
-
-    // 保存文档
+    @Operation(summary = "分页查询文档")
+    @PostMapping("/page")
+    public Result<?> page(@Parameter(description = "是否过滤未上线的文档", required = true) Boolean onlyOnline,
+                          @Parameter(description = "接口ID") Long apiId,
+                          @Parameter(description = "当前页数", required = true) int current,
+                          @Parameter(description = "分页条数", required = true) int size,
+                          @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
+                          @Parameter(description = "开始时间") Date startTime,
+                          @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
+                          @Parameter(description = "结束时间") Date endTime) {
+        // 构造分页条件
+        if(onlyOnline==null){
+            onlyOnline=false;
+        }
+        LambdaQueryWrapper<DocEntity> queryWrapper = Wrappers.lambdaQuery(DocEntity.class)
+                .eq(apiId!=null, DocEntity::getApiId, apiId)
+                .ge(Objects.nonNull(startTime), DocEntity::getCreateTime, startTime)
+                .le(Objects.nonNull(endTime), DocEntity::getCreateTime, endTime)
+                .in(onlyOnline, DocEntity::getStatus, 5)
+                // 排序
+                .orderByDesc(DocEntity::getCreateTime)
+                .orderByAsc(DocEntity::getStatus);
+        // 主表分页查询
+        Page page = docService.page(new Page<>(current, size), queryWrapper);
+        return Result.success(page);
+    }
 
     // 文档审核通过
+    @Operation(summary = "文档审核通过")
+    @PostMapping("/audit-pass")
+    public Result<?> auditPass(@Parameter(description = "文档id") Long docId,
+                             @Parameter(description = "操作备注") String note,
+                             @RequestHeader("accessToken") String accessToken){
+        String operatorName = userApproveService.identify(accessToken).getUserName();
+        docService.auditPass(docId, note, operatorName);
+        return Result.success("文档审核通过!");
+    }
 
     // 文档审核不通过
+    @Operation(summary = "文档审核不通过")
+    @PostMapping("/audit-not-pass")
+    public Result<?> auditNotPass(@Parameter(description = "文档id") Long docId,
+                             @Parameter(description = "操作备注") String note,
+                             @RequestHeader("accessToken") String accessToken){
+        String operatorName = userApproveService.identify(accessToken).getUserName();
+        docService.auditNotPass(docId, note, operatorName);
+        return Result.success("文档审核不通过!");
+    }
 
     // 发布文档
+    @Operation(summary = "发布文档")
+    @PostMapping("/audit-publish")
+    public Result<?> auditPublish(@Parameter(description = "文档id") Long docId,
+                                  @RequestHeader("accessToken") String accessToken){
+        String operatorName = userApproveService.identify(accessToken).getUserName();
+        docService.auditPublish(docId, operatorName);
+        return Result.success("文档发布成功!");
+    }
 
     // 编辑文档
+    @Operation(summary = "发布文档")
+    @PostMapping("/edit")
+    public Result<?> edit(@RequestBody DocEntity docEntity){
+        docEntity.setUpdateTime(new Date());
+        docService.updateById(docEntity);
+        return Result.success("文档审核通过!");
+    }
 
     // 删除文档
+    @Operation(summary = "删除文档")
+    @PostMapping("/delete")
+    public Result<?> delete(@RequestBody DocEntity docEntity){
+        docService.removeById(docEntity);
+        return Result.success("文档审核通过!");
+    }
 
 }

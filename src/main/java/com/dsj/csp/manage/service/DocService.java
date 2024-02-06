@@ -9,4 +9,11 @@ import com.dsj.csp.manage.entity.DocEntity;
  * @date 2024-02-06
  */
 public interface DocService extends IService<DocEntity> {
+    void auditPass(Long docId, String note, String operator);
+
+    void auditNotPass(Long docId, String note, String operatorName);
+
+    void auditPublish(Long docId, String operatorName);
+
+    void auditOnline(Long docId);
 }

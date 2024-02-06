@@ -60,7 +60,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     public String auditApi(AbilityAuditVO auditVO) {
         AbilityApiEntity api = abilityApiService.getById(auditVO.getApiId());
         if (api==null){
-            throw new BusinessException("审核失败! 请刷新页面后重试...");
+            throw new BusinessException("审核失败! 接口不存在,请刷新页面后重试...");
         }
         // 审核流程限制: 状态(0未提交 1待审核 2审核未通过 3未发布 4已发布 5已下线)
         if ((auditVO.getFlag() == 0 && api.getStatus() != 1)

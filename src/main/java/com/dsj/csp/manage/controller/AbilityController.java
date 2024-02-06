@@ -195,7 +195,7 @@ public class AbilityController {
 
     @Operation(summary = "分页查询api目录列表")
     @GetMapping("page-api-catalog")
-    public Result<?> pageApiList(@Parameter(description = "是否过滤未发布的接口", required = true) Boolean onlyPublished,
+    public Result<?> pageApiList(@Parameter(description = "是否过滤未发布的接口") Boolean onlyPublished,
                                  @Parameter(description = "请求方式") String reqMethod,
                                  @Parameter(description = "状态") Integer status,
                                  @Parameter(description = "用户ID") Long userId,
@@ -207,12 +207,15 @@ public class AbilityController {
                                      @Parameter(description = "开始时间") Date startTime,
                                  @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
                                      @Parameter(description = "结束时间") Date endTime) {
+        if(onlyPublished==null){
+            onlyPublished=false;
+        }
         return Result.success(abilityApiBizService.pageApiCatalog(onlyPublished, reqMethod, status, userId, abilityId, keyword, current, size, startTime, endTime));
     }
 
     @Operation(summary = "分页查询接口申请列表", description = "分页查询接口申请列表")
     @GetMapping("/page-api-apply")
-    public Result<?> pageApiApply(@Parameter(description = "是否屏蔽'未提交'状态申请", required = true) Boolean onlySubmitted,
+    public Result<?> pageApiApply(@Parameter(description = "是否屏蔽'未提交'状态申请") Boolean onlySubmitted,
                                   @Parameter(description = "用户ID") Long userId,
                                   @Parameter(description = "应用ID") Long appId,
                                   @Parameter(description = "能力ID") Long abilityId,
@@ -224,6 +227,9 @@ public class AbilityController {
                                       @Parameter(description = "开始时间") Date startTime,
                                   @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
                                       @Parameter(description = "结束时间") Date endTime) {
+        if(onlySubmitted==null){
+            onlySubmitted=false;
+        }
         return Result.success(abilityApiApplyBizService.pageApiApply(onlySubmitted, appId, userId, abilityId, keyword, status, startTime, endTime, current, size));
     }
 

@@ -129,7 +129,7 @@
     </appender>
 
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="console_log"/>
         <appender-ref ref="ASYNC"/>
         <appender-ref ref="grpc-log"/>

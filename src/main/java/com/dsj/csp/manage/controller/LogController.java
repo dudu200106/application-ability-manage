@@ -37,8 +37,9 @@ public class LogController {
     public Result<?> list(
                             @Parameter(description = "名称关键字")String keyword,
                             @Parameter(description = "开始时间") Date startTime,
+                            @Parameter(description = "操作类型")String operateType,
                             @Parameter(description = "最后时间")Date endTime, int page, int size){
-        return Result.success(logService.select(keyword, startTime, endTime,page,size));
+        return Result.success(logService.select(keyword, startTime, endTime,page,size,operateType));
     }
 
     /**

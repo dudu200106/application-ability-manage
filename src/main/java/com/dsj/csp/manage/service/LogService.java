@@ -12,5 +12,5 @@ import java.util.Date;
 public interface LogService extends IService<LogEntity> {
     void removeAll();
 
-    Page<LogEntity> select(String keyword, Date startTime, Date endTime, int page, int size);
+    Page<LogEntity> select(String keyword, Date startTime, Date endTime, int page, int size,String operateType);
 }

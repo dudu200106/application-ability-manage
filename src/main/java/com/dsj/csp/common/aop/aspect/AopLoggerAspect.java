@@ -125,6 +125,8 @@ public class AopLoggerAspect {
         // 记录日志
         System.out.println("Method " + methodSignature.getMethod().getName() +
                 " called with parameters: " + parameters);
+        logEntity.setCreateBy("管理员");
+        logEntity.setUpdateBy("管理员");
         logService.save(logEntity);
         return result;
     }

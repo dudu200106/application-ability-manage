@@ -32,7 +32,6 @@ public class AbilityApiVO implements Serializable {
     @Schema(description="接口描述")
     @Length(max= 300,message="编码长度不能超过300")
     private String apiDesc;
-    private String description;
 
     @Schema(description="调用量限制")
     private Integer recallLimit;
@@ -87,6 +86,12 @@ public class AbilityApiVO implements Serializable {
 
     @Schema(description = "接口提供公司名称")
     private String companyName;
+
+    @Schema(description = "政府名称")
+    private String govName;
+
+    @Schema(description = "备注")
+    private String note;
 
     /**
      * 请求参数列表

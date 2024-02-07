@@ -49,7 +49,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         BeanUtil.copyProperties(apiVO, api, true);
         UserApproveRequest userApprove = userApproveService.identify(accessToken);
         api.setUserId(Long.parseLong(userApprove.getUserId()));
-        api.setApiDesc(ObjectUtil.isEmpty(apiVO.getApiDesc()) ? apiVO.getApiDesc() : apiVO.getDescription());
+        api.setApiDesc(apiVO.getApiDesc());
         abilityApiService.save(api);
         // 插入接口的出参入参列表
         abilityApiReqService.saveReqList(apiVO.getReqList(), api.getApiId());

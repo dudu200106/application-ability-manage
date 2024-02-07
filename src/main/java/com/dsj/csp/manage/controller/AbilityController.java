@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
+import com.dsj.csp.common.aop.annotation.AopLogger;
+import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.biz.AbilityBizService;
@@ -44,6 +46,7 @@ public class AbilityController {
     private final AbilityApiApplyService abilityApiApplyService;
     private final AbilityApiApplyBizService abilityApiApplyBizService;
 
+    @AopLogger(describe = "新增能力", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增能力", description = "新增一个新的能力")
     @PostMapping("/add-login")
     public Result<?> addAbility(@RequestBody AbilityEntity ability) {
@@ -56,6 +59,7 @@ public class AbilityController {
         return Result.success("能力新增成功!", saveAbility);
     }
 
+    @AopLogger(describe = "获取能力详情", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "获取能力详情", description = "获取特定能力的详细信息")
     @GetMapping("/info-ability")
     public Result<?> getAbilityInfoById(
@@ -63,6 +67,7 @@ public class AbilityController {
         return Result.success(abilityService.getById(abilityId));
     }
 
+    @AopLogger(describe = "分页查询能力目录列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询能力目录列表", description = "分页查询能力目录列表")
     @GetMapping ("/page-ability-catalog")
     public Result<?> queryAbilityCatalog(@Parameter(description = "用户ID") Long userId,
@@ -76,6 +81,7 @@ public class AbilityController {
         return Result.success(abilityService.pageAbilitys(userId, keyword, startTime, endTime, current, size));
     }
 
+    @AopLogger(describe = "编辑能力", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "编辑能力")
     @PostMapping("edit-login")
     public Result<?> updateAbility(@RequestBody AbilityEntity ability){
@@ -84,6 +90,7 @@ public class AbilityController {
         return Result.success("编辑注册能力成功!", editFlag);
     }
 
+    @AopLogger(describe = "新增接口", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增接口")
     @PostMapping("add-api")
     public Result<?> addApi(@RequestBody AbilityApiVO apiVO, @RequestHeader("accessToken") String accessToken){
@@ -91,19 +98,14 @@ public class AbilityController {
         return Result.success("添加接口成功!");
     }
 
-    @Operation(summary = "审核接口注册", description = "审核接口注册")
-    @PostMapping("/audit-api")
-    public Result<?> auditApi(@RequestBody AbilityAuditVO auditVO){
-        String  msg = abilityApiBizService.auditApi(auditVO);
-        return Result.success(msg);
-    }
-
+    @AopLogger(describe = "查询接口信息", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查询接口信息", description = "查询特定接口的信息")
     @GetMapping("/query-api-info")
     public Result<?> queryApiInfo(@Parameter(description = "接口ID") @RequestParam Long apiId) {
         return Result.success(abilityApiBizService.getApiInfo(apiId));
     }
 
+    @AopLogger(describe = "更新接口", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "更新接口")
     @PostMapping("edit-api")
     public Result<?> editApi(@RequestBody AbilityApiVO apiVO){
@@ -111,30 +113,43 @@ public class AbilityController {
         return Result.success("已修改接口完毕! ", editApiflag);
     }
 
+    @AopLogger(describe = "审核接口注册", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "审核接口注册", description = "审核接口注册")
+    @PostMapping("/audit-api")
+    public Result<?> auditApi(@RequestBody AbilityAuditVO auditVO){
+        String  msg = abilityApiBizService.auditApi(auditVO);
+        return Result.success(msg);
+    }
+
+    @AopLogger(describe = "统计能力数", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "统计能力数")
     @GetMapping("/count-avail-ability")
     public Result<?> countAvailableAbility(){
         return Result.success(abilityService.count());
     }
 
+    @AopLogger(describe = "统计接口数量", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "统计接口数量")
     @GetMapping("/count-api")
     public Result<?> countApi(){
         return Result.success(abilityApiService.count());
     }
 
+    @AopLogger(describe = "统计用户申请能力数量", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "统计用户申请能力数量")
     @GetMapping("/count-user-ability")
     public Result<?> countuserAbility(String userId){
         return Result.success(abilityApiApplyService.countUserAbility(userId));
     }
 
+    @AopLogger(describe = "统计用户申请接口数量", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "统计用户申请接口数量")
     @GetMapping("/count-user-api")
     public Result<?> countUserApi(String userId){
         return Result.success(abilityApiApplyService.countUserApi(userId));
     }
 
+    @AopLogger(describe = "删除能力", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "删除能力")
     @PostMapping("/delete-ability-api")
     public Result<?> removeAbility(@Parameter(description = "能力id列表") @RequestBody AbilityDeleteDTO deleteDTO){
@@ -144,6 +159,7 @@ public class AbilityController {
     }
 
 
+    @AopLogger(describe = "删除能力接口", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "删除能力接口")
     @PostMapping("/delete-api")
     public Result<?> removeApi(@RequestBody AbilityDeleteDTO deleteDTO){
@@ -154,24 +170,28 @@ public class AbilityController {
     }
 
 
+    @AopLogger(describe = "查询能力的接口列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查询能力的接口列表", description = "查询能力的接口列表")
     @GetMapping("/query-api-list")
     public Result<?> queryApiList(@Parameter(description = "能力ID") @RequestParam Long abilityId) {
         return Result.success(abilityApiBizService.getAbilityApiList(abilityId));
     }
 
+    @AopLogger(describe = "查询用户申请到的api列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查询用户申请到的api列表")
     @GetMapping("/query-user-apis")
     public Result<?> queryUserApis(@Parameter(description = "用户ID") @RequestParam Long userId) {
         return Result.success(abilityApiBizService.getUserApiList(userId));
     }
 
+    @AopLogger(describe = "查询应用申请到的api列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查询应用申请到的api列表")
     @GetMapping("/query-app-apis")
     public Result<?> queryAppApis(@Parameter(description = "应用ID") @RequestParam Long appId) {
         return Result.success(abilityApiBizService.getAppApiList(appId));
     }
 
+    @AopLogger(describe = "新增接口使用申请", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增接口使用申请", description = "申请使用接口")
     @PostMapping("/add-api-apply")
     public Result<?> applyApi(@RequestBody AbilityApiApplyEntity apply, @RequestHeader("accessToken") String accessToken) {
@@ -179,12 +199,14 @@ public class AbilityController {
         return Result.success("能力申请完毕！请等待审核...");
     }
 
+    @AopLogger(describe = "查看接口申请详情", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查看接口申请详情", description = "获取接口申请详情")
     @GetMapping("/info-api-apply")
     public Result<?> getApiApplyInfo(@Parameter(description = "能力申请ID") @RequestParam Long apiApplyId) {
         return Result.success(abilityApiApplyBizService.getApplyInfo(apiApplyId));
     }
 
+    @AopLogger(describe = "审核能力使用申请", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "审核能力使用申请", description = "审核能力使用申请")
     @PostMapping("/audit-api-apply")
     public Result<?> auditApiApply(@RequestBody AbilityAuditVO auditVO){
@@ -193,6 +215,7 @@ public class AbilityController {
     }
 
 
+    @AopLogger(describe = "分页查询api目录列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询api目录列表")
     @GetMapping("page-api-catalog")
     public Result<?> pageApiList(@Parameter(description = "是否过滤未发布的接口") Boolean onlyPublished,
@@ -213,6 +236,7 @@ public class AbilityController {
         return Result.success(abilityApiBizService.pageApiCatalog(onlyPublished, reqMethod, status, userId, abilityId, keyword, current, size, startTime, endTime));
     }
 
+    @AopLogger(describe = "分页查询接口申请列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询接口申请列表", description = "分页查询接口申请列表")
     @GetMapping("/page-api-apply")
     public Result<?> pageApiApply(@Parameter(description = "是否屏蔽'未提交'状态申请") Boolean onlySubmitted,
@@ -233,6 +257,7 @@ public class AbilityController {
         return Result.success(abilityApiApplyBizService.pageApiApply(onlySubmitted, appId, userId, abilityId, keyword, status, startTime, endTime, current, size));
     }
 
+    @AopLogger(describe = "分页查询申请通过的接口列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询申请通过的接口列表", description = "分页查询申请通过的接口列表")
     @GetMapping("/page-passed-apis")
     public Result<?> pagePassedApi(@Parameter(description = "用户ID") Long userId,
@@ -246,6 +271,7 @@ public class AbilityController {
         return Result.success(abilityApiBizService.pagePassedApis(userId, appId, abilityId, keyword, current, size, startTime, endTime));
     }
 
+    @AopLogger(describe = "编辑接口使用申请", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "编辑接口使用申请", description = "编辑接口使用申请")
     @PostMapping("/edit-api-apply")
     public Result<?> editApiApply(@RequestBody AbilityApiApplyEntity apiApplyEntity){
@@ -255,6 +281,7 @@ public class AbilityController {
         return Result.success(abilityApiApplyService.update(apiApplyEntity, updateWrapper));
     }
 
+    @AopLogger(describe = "删除接口申请", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "删除接口申请")
     @PostMapping("/delete-api-apply")
     public Result<?> removeApiApply(@RequestBody AbilityDeleteDTO deleteDTO){
@@ -265,6 +292,7 @@ public class AbilityController {
     }
 
 
+    @AopLogger(describe = "获取能力简单信息目录", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "获取能力简单信息目录")
     @GetMapping("/get-ability-catalog")
     public Result<?> getAbilityCatalog(){

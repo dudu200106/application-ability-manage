@@ -3,7 +3,9 @@ package com.dsj.csp.manage.controller;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.json.JSONUtil;
 import com.dsj.common.dto.Result;
+import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.enums.CodeEnum;
+import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.common.exception.FlowException;
 import com.dsj.csp.manage.dto.BucketPolicyConfigDto;
 import com.dsj.csp.manage.dto.MinioUploadDto;
@@ -52,6 +54,7 @@ public class MinioController {
     @Operation(summary = "文件上传")
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     @ResponseBody
+    @AopLogger(describe = "文件上传",operateType = LogEnum.INSERT,logType=LogEnum.OPERATETYPE)
     public Result upload(@RequestPart("file") MultipartFile file) {
         try {
             //创建一个MinIO的Java客户端
@@ -126,6 +129,7 @@ public class MinioController {
 
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
+    @AopLogger(describe = "文件上传",operateType = LogEnum.DELECT,logType=LogEnum.OPERATETYPE)
     public Result delete(@RequestParam("objectName") String objectName) {
         try {
             MinioClient minioClient = MinioClient.builder()

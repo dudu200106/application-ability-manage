@@ -3,6 +3,7 @@ package com.dsj.csp.manage.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -26,6 +27,7 @@ public class AbilityApiEntity implements Serializable {
 
     @TableField("NLJK_MC")
     @Schema(description = "接口名称")
+    @NotBlank
     private String apiName;
 
     @TableField("NLJK_MS")

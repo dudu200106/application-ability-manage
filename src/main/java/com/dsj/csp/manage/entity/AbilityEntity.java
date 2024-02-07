@@ -3,6 +3,9 @@ package com.dsj.csp.manage.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -43,6 +46,7 @@ public class AbilityEntity implements Serializable {
      */
     @TableField("NL_MC")
     @Schema(description = "名称")
+    @NotBlank
     private String abilityName;
 
     /**

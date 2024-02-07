@@ -25,12 +25,12 @@ public class UserApproveController {
      */
     @Operation(summary = "实名认证申请")
     @PostMapping("/approve")
-    @AopLogger(describe = "实名认证",logType = LogEnum.INSERT,operateType = LogEnum.OPERATETYPE)
+    @AopLogger(describe = "实名认证",operateType = LogEnum.INSERT,logType = LogEnum.OPERATETYPE)
     public Result<?> approve(@RequestBody @Valid UserApproveEntity user, @RequestHeader("accessToken") String accessToken){
         return Result.success(userApproveService.approve(user,accessToken));
     }
 
-    @AopLogger(describe = "根据token获取ID回显用户信息/根据token查看用户实名信息",logType = LogEnum.SELECT,operateType = LogEnum.OPERATETYPE)
+    @AopLogger(describe = "根据token获取ID回显用户信息/根据token查看用户实名信息",operateType = LogEnum.SELECT,logType = LogEnum.OPERATETYPE)
     @Operation(summary = "根据token获取ID回显用户信息/根据token查看用户实名信息")
     @GetMapping("/echo")
     public Result<?> echo(@RequestHeader("accessToken") String accessToken){
@@ -39,7 +39,7 @@ public class UserApproveController {
 
     @Operation(summary = "用户修改密码")
     @PostMapping("/updatePassword")
-    @AopLogger(describe = "用户修改密码",logType = LogEnum.UPDATE,operateType = LogEnum.OPERATETYPE)
+    @AopLogger(describe = "用户修改密码",operateType = LogEnum.UPDATE,logType = LogEnum.OPERATETYPE)
     public Result<?> updatePassword(@RequestBody @Valid UserApproveResponse userApproveResponse, @RequestHeader("accessToken") String accessToken){
         return userApproveService.updatePassword(userApproveResponse,accessToken);
     }

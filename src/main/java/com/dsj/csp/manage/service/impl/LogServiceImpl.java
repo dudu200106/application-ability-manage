@@ -18,22 +18,29 @@ public class LogServiceImpl extends ServiceImpl<LogMapper, LogEntity> implements
 
     @Resource
     private LogMapper logMapper;
+
     @Override
     public void removeAll() {
         logMapper.removeAll();
     }
 
     @Override
-    public Page<LogEntity> select(String keyword, Date startTime, Date endTime, int page, int size) {
+    public Page<LogEntity> select(String keyword, Date startTime, Date endTime, int page, int size, String operateType) {
         QueryWrapper<LogEntity> wrapper = new QueryWrapper();
         wrapper.lambda().orderByDesc(LogEntity::getCreateTime);
         wrapper.lambda()
                 .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), LogEntity::getCreateTime, startTime, endTime)
-                .and(StringUtils.isNotBlank(keyword), lambdaQuery->{
+                .and(StringUtils.isNotBlank(operateType), lambdaQuery -> {
+                    lambdaQuery
+                            .like(StringUtils.isNotBlank(operateType), LogEntity::getOperateType, operateType)
+                    ;
+                })
+                .and(StringUtils.isNotBlank(keyword), lambdaQuery -> {
                     lambdaQuery
                             .like(StringUtils.isNotBlank(keyword), LogEntity::getLogContent, keyword)
                             .or()
-                            .like(StringUtils.isNotBlank(keyword), LogEntity::getUsername, keyword);
+                            .like(StringUtils.isNotBlank(keyword), LogEntity::getUsername, keyword)
+                    ;
                 });
         return baseMapper.selectPage(new Page(page, size), wrapper);
 

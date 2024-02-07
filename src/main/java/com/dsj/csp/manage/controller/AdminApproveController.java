@@ -30,7 +30,7 @@ public class AdminApproveController {
      */
     @Operation(summary = "按条件分页查询实名认证申请")
     @GetMapping("/select")
-    @AopLogger(describe = "按条件分页查询实名认证申请",logType = LogEnum.SELECT,operateType = LogEnum.OPERATETYPE)
+    @AopLogger(describe = "按条件分页查询实名认证申请",operateType = LogEnum.SELECT,logType = LogEnum.OPERATETYPE)
     public Result<Page<UserApproveEntity>> select(@Parameter(description = "实名状态（可为空）")String status, @Parameter(description = "名称关键字（可为空）")String keyword, @Parameter(description = "开始时间（可为空）") Date startTime, @Parameter(description = "最后时间（可为空）")Date endTime, int page, int size){
         return Result.success(userApproveService.select(status,keyword, startTime, endTime,page,size));
     }
@@ -42,7 +42,7 @@ public class AdminApproveController {
      */
     @Operation(summary = "查看实名申请详情")
     @GetMapping("/find")
-    @AopLogger(describe = "查看实名申请详情",logType = LogEnum.SELECT,operateType = LogEnum.OPERATETYPE)
+    @AopLogger(describe = "查看实名申请详情",operateType = LogEnum.SELECT,logType = LogEnum.OPERATETYPE)
     public Result<UserApproveEntity> find(@Parameter(description = "用户ID")String userId){
         return Result.success(userApproveService.find(userId));
     }
@@ -54,7 +54,7 @@ public class AdminApproveController {
      */
     @Operation(summary = "实名认证审核通过")
     @PostMapping("/approveSuccess")
-    @AopLogger(describe = "实名认证审核通过",logType = LogEnum.UPDATE,operateType = LogEnum.OPERATETYPE)
+    @AopLogger(describe = "实名认证审核通过",operateType = LogEnum.UPDATE,logType = LogEnum.OPERATETYPE)
     public Result<String> approveSuccess(@RequestBody UserApproveRequest user,@RequestHeader String accessToken){
         userApproveService.approveSuccess(user,accessToken);
         return Result.success("审核通过");
@@ -72,7 +72,7 @@ public class AdminApproveController {
      */
     @Operation(summary = "实名认证审核未通过")
     @PostMapping("/approveFail")
-    @AopLogger(describe = "实名认证审核通过",logType = LogEnum.UPDATE,operateType = LogEnum.OPERATETYPE)
+    @AopLogger(describe = "实名认证审核通过",operateType = LogEnum.UPDATE,logType = LogEnum.OPERATETYPE)
     public Result<?> approveFail(@RequestBody UserApproveRequest user,@RequestHeader String accessToken){
         userApproveService.approveFail(user,accessToken);
         return Result.success("审核未通过");

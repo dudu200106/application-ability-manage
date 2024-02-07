@@ -10,6 +10,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
@@ -49,8 +50,8 @@ public class AopLoggerAspect {
      * @param point
      * @return
      */
-    @Around("aopLoggerAspect()")
-    public Object doAround(ProceedingJoinPoint point) {
+    @Before("aopLoggerAspect()")
+    public Object doAround(JoinPoint point) {
         LogEntity logEntity = new LogEntity();
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) requestAttributes;
@@ -58,7 +59,9 @@ public class AopLoggerAspect {
         Object result = null;
         long startTime = System.currentTimeMillis();
         try {
-            result = point.proceed();
+            result=point.getSignature();
+            System.out.println(result);
+//            result = point.proceed();
         } catch (Throwable throwable) {
             throwable.printStackTrace();
             logger.error(throwable.getMessage());
@@ -125,6 +128,9 @@ public class AopLoggerAspect {
         // 记录日志
         System.out.println("Method " + methodSignature.getMethod().getName() +
                 " called with parameters: " + parameters);
+        logEntity.setCreateBy("管理员");
+        logEntity.setUpdateBy("管理员");
+        logEntity.setUsername("管理员");
         logService.save(logEntity);
         return result;
     }

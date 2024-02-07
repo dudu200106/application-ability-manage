@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
+import com.dsj.csp.common.aop.annotation.AopLogger;
+import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.entity.DocCatalogEntity;
 import com.dsj.csp.manage.entity.DocEntity;
 import com.dsj.csp.manage.service.DocCatalogService;
@@ -32,6 +34,7 @@ public class DcoCatalogController {
     private final DocCatalogService docCatalogService;
     private final DocService docService;
 
+    @AopLogger(describe = "新增目录", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增目录")
     @PostMapping("/add")
     public Result<?> add(DocCatalogEntity catalogEntity){
@@ -44,18 +47,21 @@ public class DcoCatalogController {
         return Result.success("添加文档目录" + (addFlag ? "成功!" : "失败!"), addFlag);
     }
 
+    @AopLogger(describe = "查看目录详情", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查看目录详情")
     @PostMapping("/info")
     public Result<?> queryinfo(Long catalogId){
         return Result.success(docCatalogService.getById(catalogId));
     }
 
+    @AopLogger(describe = "分页查询目录列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询目录列表")
     @PostMapping("/page")
     public Result<?> page(@Parameter(description = "当前页数") Integer current, @Parameter(description = "分页页数") Integer size){
         return Result.success(docCatalogService.page(new Page<>(current, size), Wrappers.lambdaQuery()));
     }
 
+    @AopLogger(describe = "编辑目录", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "编辑目录")
     @PostMapping("/edit")
     public Result<?> edit(DocCatalogEntity catalogEntity){
@@ -63,6 +69,7 @@ public class DcoCatalogController {
         return Result.success("编辑能力" + (editFlag ? "成功!" : "失败!"), editFlag);
     }
 
+    @AopLogger(describe = "删除目录", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "删除目录")
     @PostMapping("/delete")
     public Result<?> delete(DocCatalogEntity catalogEntity){

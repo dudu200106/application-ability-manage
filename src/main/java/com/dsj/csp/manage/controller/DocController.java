@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
+import com.dsj.csp.common.aop.annotation.AopLogger;
+import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.entity.DocEntity;
 import com.dsj.csp.manage.service.DocService;
 import com.dsj.csp.manage.service.UserApproveService;
@@ -31,7 +33,7 @@ public class DocController {
     private final DocService docService;
     private final UserApproveService userApproveService;
 
-    // 新增文档
+    @AopLogger(describe = "新增文档", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增文档")
     @PostMapping("/save")
     public Result<?> add(DocEntity doc){
@@ -45,13 +47,14 @@ public class DocController {
         return Result.success("文档保存" +(addFlag ? "成功!" : "失败!"));
     }
 
-    // 查看文档
+    @AopLogger(describe = "查看文档", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查看文档")
     @PostMapping("/info")
     public Result<?> info(Long docId){
         return Result.success(docService.getById(docId));
     }
 
+    @AopLogger(describe = "分页查询文档", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询文档")
     @PostMapping("/page")
     public Result<?> page(@Parameter(description = "是否过滤未上线的文档", required = true) Boolean onlyOnline,
@@ -79,7 +82,8 @@ public class DocController {
         return Result.success(page);
     }
 
-    // 文档审核通过
+
+    @AopLogger(describe = "文档审核通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "文档审核通过")
     @PostMapping("/audit-pass")
     public Result<?> auditPass(@Parameter(description = "文档id") Long docId,
@@ -90,7 +94,8 @@ public class DocController {
         return Result.success("文档审核通过!");
     }
 
-    // 文档审核不通过
+
+    @AopLogger(describe = "文档审核不通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "文档审核不通过")
     @PostMapping("/audit-not-pass")
     public Result<?> auditNotPass(@Parameter(description = "文档id") Long docId,
@@ -101,7 +106,8 @@ public class DocController {
         return Result.success("文档审核不通过!");
     }
 
-    // 发布文档
+
+    @AopLogger(describe = "发布文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "发布文档")
     @PostMapping("/audit-publish")
     public Result<?> auditPublish(@Parameter(description = "文档id") Long docId,
@@ -111,8 +117,9 @@ public class DocController {
         return Result.success("文档发布成功!");
     }
 
-    // 编辑文档
-    @Operation(summary = "发布文档")
+
+    @AopLogger(describe = "编辑文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "编辑文档")
     @PostMapping("/edit")
     public Result<?> edit(@RequestBody DocEntity docEntity){
         docEntity.setUpdateTime(new Date());
@@ -120,7 +127,8 @@ public class DocController {
         return Result.success("文档审核通过!");
     }
 
-    // 删除文档
+
+    @AopLogger(describe = "删除文档", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "删除文档")
     @PostMapping("/delete")
     public Result<?> delete(@RequestBody DocEntity docEntity){

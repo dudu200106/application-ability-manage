@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
  * @version 1.0.0
  * @date 2024/01/10
  */
-@Repository
+@Mapper
 public interface AbilityApplyMapper extends BaseMapper<AbilityApplyEntity> {
 }

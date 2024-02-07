@@ -130,6 +130,7 @@ public class AopLoggerAspect {
                 " called with parameters: " + parameters);
         logEntity.setCreateBy("管理员");
         logEntity.setUpdateBy("管理员");
+        logEntity.setUsername("管理员");
         logService.save(logEntity);
         return result;
     }

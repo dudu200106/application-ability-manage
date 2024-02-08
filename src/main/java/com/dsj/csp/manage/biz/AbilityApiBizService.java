@@ -13,6 +13,15 @@ public interface AbilityApiBizService {
 
 
     String auditApi(AbilityAuditVO auditVO);
+    String auditWithdraw(Long apiId, String note);
+    String auditSubmit(Long apiId, String note);
+    String auditNotPass(Long apiId, String note);
+    String auditPass(Long apiId, String note);
+    String auditPublish(Long apiId, String note);
+    String auditOffline(Long apiId, String note);
+
+
+
 
     boolean updateApi(AbilityApiVO apiVO);
 

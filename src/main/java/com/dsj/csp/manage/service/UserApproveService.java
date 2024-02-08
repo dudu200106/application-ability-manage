@@ -43,8 +43,9 @@ public interface UserApproveService extends IService<UserApproveEntity> {
     void approveSuccess(UserApproveRequest user, String accessToken);
     //实名认证审核未通过
     void approveFail(UserApproveRequest user,String accessToken);
+    //条件分页查询平台当前用户
+    Page<UserApproveEntity> selectUser(String keyword, Date startTime, Date endTime, int page, int size);
     //统计用户总数
-
     Long userCount();
 
 }

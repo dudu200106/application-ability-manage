@@ -72,9 +72,25 @@ public class AdminApproveController {
      */
     @Operation(summary = "实名认证审核未通过")
     @PostMapping("/approveFail")
-    @AopLogger(describe = "实名认证审核通过",operateType = LogEnum.UPDATE,logType = LogEnum.OPERATETYPE)
+    @AopLogger(describe = "实名认证审核未通过",operateType = LogEnum.UPDATE,logType = LogEnum.OPERATETYPE)
     public Result<?> approveFail(@RequestBody UserApproveRequest user,@RequestHeader String accessToken){
         userApproveService.approveFail(user,accessToken);
         return Result.success("审核未通过");
+    }
+
+    /**
+     * 按条件分页查询用户信息
+     * @param keyword
+     * @param startTime
+     * @param endTime
+     * @param page
+     * @param size
+     * @return
+     */
+    @Operation(summary = "按条件分页查询用户")
+    @GetMapping("/selectUser")
+    @AopLogger(describe = "按条件分页查询用户",operateType = LogEnum.SELECT,logType = LogEnum.OPERATETYPE)
+    public Result<Page<UserApproveEntity>> selectUser(@Parameter(description = "名称关键字（可为空）")String keyword, @Parameter(description = "开始时间（可为空）") Date startTime, @Parameter(description = "最后时间（可为空）")Date endTime, int page, int size){
+        return Result.success(userApproveService.selectUser(keyword, startTime, endTime,page,size));
     }
 }

@@ -56,8 +56,8 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         String responseBody = response.getBody();
         JSONObject responseJson = JSON.parseObject(responseBody);
         JSONObject dataJson = JSON.parseObject(responseJson.getString("data"));
-        String code = responseJson.getString("code");
-        if (code.equals("-1")) {
+        int code = responseJson.getInteger("code");
+        if (code==-1) {
             throw new FlowException(CodeEnum.TOKEN_ERROR);
         }
         UserApproveRequest userApproveRequest = new UserApproveRequest();
@@ -194,6 +194,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
         approveFeign(user.getUserId(), UserStatusEnum.SUCCESS.getStatus());
 //          FIXME  return updateResult; 在controller做判断并进行不同的响应
         // TODO 为每一次的sql结果负责
+
     }
 
     @Override
@@ -211,6 +212,21 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
             throw new FlowException(CodeEnum.UPDATE_ERROR);
         }
         approveFeign(user.getUserId(), UserStatusEnum.FAIL.getStatus());
+    }
+
+    @Override
+    public Page<UserApproveEntity> selectUser(String keyword, Date startTime, Date endTime, int page, int size) {
+        QueryWrapper<UserApproveEntity> wrapper = new QueryWrapper();
+        wrapper.lambda()
+                .orderByDesc(UserApproveEntity::getCreateTime)
+                .between(Objects.nonNull(startTime) && Objects.nonNull(endTime), UserApproveEntity::getCreateTime, startTime, endTime)
+                .and(StringUtils.isNotBlank(keyword), lambdaQuery -> {
+                    lambdaQuery
+                            .like(UserApproveEntity::getGovName, keyword)
+                            .or()
+                            .like(UserApproveEntity::getUserName, keyword);
+                });
+        return baseMapper.selectPage(new Page(page, size), wrapper);
     }
 
     @Override

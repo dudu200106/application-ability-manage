@@ -1,5 +1,6 @@
-package com.dsj.csp.common.util.annotation;
+package com.dsj.csp.common.aop.aspect;
 
+import com.dsj.csp.common.aop.annotation.NotBlankOrWhitespace;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

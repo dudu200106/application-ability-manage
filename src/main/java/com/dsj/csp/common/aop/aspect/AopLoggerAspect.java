@@ -10,7 +10,6 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
@@ -50,8 +49,8 @@ public class AopLoggerAspect {
      * @param point
      * @return
      */
-    @Before("aopLoggerAspect()")
-    public Object doAround(JoinPoint point) {
+    @Around("aopLoggerAspect()")
+    public Object doAround(ProceedingJoinPoint point) throws Throwable {
         LogEntity logEntity = new LogEntity();
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) requestAttributes;
@@ -59,16 +58,20 @@ public class AopLoggerAspect {
         Object result = null;
         long startTime = System.currentTimeMillis();
         try {
-            result=point.getSignature();
+//            result=point.getSignature();
+            result = point.proceed();
             System.out.println(result);
-//            result = point.proceed();
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            System.out.println(throwable);
             logger.error(throwable.getMessage());
+            logPrint(startTime,result,request,logEntity,point);
+            throw throwable;
         }
+        return logPrint(startTime,result,request,logEntity,point);
+    }
+
+    public Object logPrint(long startTime, Object result, HttpServletRequest request, LogEntity logEntity, ProceedingJoinPoint point){
         String describe = getAopLoggerDescribe(point);
-//        int operateType=getAopLoggerOperateType(point);
-//        System.out.println("操作类型"+operateType);
         LogEnum logType = getAopLoggerLogType(point);
         logEntity.setLogType(logType.getCode());
         System.out.println(logType.getCode());

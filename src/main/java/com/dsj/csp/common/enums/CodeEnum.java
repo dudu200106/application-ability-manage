@@ -21,6 +21,7 @@ public enum CodeEnum {
     PASSWORD_FORMAT_ERROR(604,"密码格式异常，必须包含字母、数字和符号"),
     APPNAME(611,"该用户下已存在应用名"),
     Img_ERROR(612,"图片已破损,请重新上传"),
+    LOG_ERROR(613,"日志记录异常"),
     //数据格式异常
     BIND_ERROR(650,"数据格式异常"),
     MISSING_SERVLET_REQUEST_PARAMETER_ERROR(651,"缺少必要参数"),

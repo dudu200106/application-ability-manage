@@ -7,6 +7,8 @@ import com.dsj.csp.common.exception.FlowException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -16,9 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
@@ -28,6 +28,11 @@ import java.util.Objects;
 
 @RestControllerAdvice
 public class GenericExceptionHandler {
+    @ExceptionHandler(FlowException.class)
+    public Result<?> defaultExceptionHandler(HttpServletRequest req, HttpServletResponse resp, FlowException e) {
+        Result result = new Result(e.getCode(), false, e.getMessage(), null);
+        return result;
+    }
 
     /**
      * 业务异常包装处理
@@ -55,12 +60,6 @@ public class GenericExceptionHandler {
         Objects.requireNonNull(bindingResult.getFieldError());
         return Result.failed("传入参数不规范：" +
                 bindingResult.getFieldError().getField() + "，" + bindingResult.getFieldError().getDefaultMessage());
-    }
-
-    @ExceptionHandler(FlowException.class)
-    public Result defaultExceptionHandler(HttpServletRequest req, HttpServletResponse resp, FlowException e){
-        Result result = new Result(e.getCode(),false,e.getMessage(),null);
-        return result;
     }
 
     /**

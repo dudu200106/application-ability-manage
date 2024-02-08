@@ -58,44 +58,143 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
     @Override
     public String auditApi(AbilityAuditVO auditVO) {
-        AbilityApiEntity api = abilityApiService.getById(auditVO.getApiId());
+        Long apiId = auditVO.getApiId();
+        String note = auditVO.getNote();
+        // 审核
+        switch(auditVO.getFlag()) {
+            case 0:
+                return auditWithdraw(apiId, note);
+            case 1:
+                return auditSubmit(apiId, note);
+            case 2:
+                return auditNotPass(apiId, note);
+            case 3:
+                return auditPass(apiId, note);
+            case 4:
+                return auditPublish(apiId, note);
+            default:
+                return auditOffline(apiId, note);
+        }
+    }
+
+    @Override
+    public String auditWithdraw(Long apiId, String note) {
+        AbilityApiEntity api = abilityApiService.getById(apiId);
         if (api==null){
             throw new BusinessException("审核失败! 接口不存在,请刷新页面后重试...");
         }
         // 审核流程限制: 状态(0未提交 1待审核 2审核未通过 3未发布 4已发布 5已下线)
-        if ((auditVO.getFlag() == 0 && api.getStatus() != 1)
-                || (auditVO.getFlag() == 1 && api.getStatus() != 0)
-                || (auditVO.getFlag() == 2 && api.getStatus() != 1)
-                || (auditVO.getFlag() == 3 && api.getStatus() != 1)
-                || (auditVO.getFlag() == 4 && !(api.getStatus() == 3 || api.getStatus() == 5))
-                || (auditVO.getFlag() == 5 && api.getStatus() != 4)) {
-            throw new BusinessException("审核失败! 请刷新页面后重试...");
-        }
-        // 下线接口的时候校验是否有用户正在使用着
-        if (auditVO.getFlag() == 5){
-            // 统计该接口下审核通过正在使用的申请数量
-            long cntUsing = abilityApiApplyService.count(Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
-                    .eq(AbilityApiApplyEntity::getApiId, auditVO.getApiId())
-                    .eq(AbilityApiApplyEntity::getStatus, 2));
-            if (cntUsing>0){
-                throw new BusinessException("该接口还有应用正在使用!");
-            }
+        if (api.getStatus() != 1) {
+            throw new BusinessException("只用待审核的接口才能撤回,请刷新页面后重试!");
         }
         LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
-        updateWrapper.eq(AbilityApiEntity::getApiId, auditVO.getApiId());
-        updateWrapper.set(AbilityApiEntity::getStatus, auditVO.getFlag());
-        updateWrapper.set(AbilityApiEntity::getNote, auditVO.getNote());
+        updateWrapper.eq(AbilityApiEntity::getApiId, apiId);
+        updateWrapper.set(AbilityApiEntity::getStatus, 0);
+        updateWrapper.set(AbilityApiEntity::getNote, note);
+        updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
+        abilityApiService.update(updateWrapper);
+        return "审核撤回完毕!";
+    }
+
+    @Override
+    public String auditSubmit(Long apiId, String note) {
+        AbilityApiEntity api = abilityApiService.getById(apiId);
+        if (api==null){
+            throw new BusinessException("审核失败! 接口不存在,请刷新页面后重试...");
+        }
+        // 审核流程限制: 状态(0未提交 1待审核 2审核未通过 3未发布 4已发布 5已下线)
+        if (api.getStatus() != 0) {
+            throw new BusinessException("只用待提交状态的接口才能够提交,请刷新页面后重试!");
+        }
+        LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
+        updateWrapper.eq(AbilityApiEntity::getApiId, apiId);
+        updateWrapper.set(AbilityApiEntity::getStatus, 1);
+        updateWrapper.set(AbilityApiEntity::getNote, note);
+        updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
+        abilityApiService.update(updateWrapper);
+        return "审核提交完毕! 请等待审核...";
+    }
+
+    @Override
+    public String auditNotPass(Long apiId, String note) {
+        AbilityApiEntity api = abilityApiService.getById(apiId);
+        if (api==null){
+            throw new BusinessException("审核失败! 接口不存在,请刷新页面后重试...");
+        }
+        // 审核流程限制: 状态(0未提交 1待审核 2审核未通过 3未发布 4已发布 5已下线)
+        if (api.getStatus() != 1) {
+            throw new BusinessException("只用待审核的接口才能审核不通过,请刷新页面后重试!");
+        }
+        LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
+        updateWrapper.eq(AbilityApiEntity::getApiId, apiId);
+        updateWrapper.set(AbilityApiEntity::getStatus, 2);
+        updateWrapper.set(AbilityApiEntity::getNote, note);
         updateWrapper.set(AbilityApiEntity::getApproveTime, new Date());
         abilityApiService.update(updateWrapper);
-        // 审核成功反馈信息
-        String auditMsg = auditVO.getFlag()==0 ? "审核撤回完毕!" :
-                auditVO.getFlag()==1 ? "审核提交完毕, 等待审核..." :
-                        auditVO.getFlag()==2 ? "审核不通过完毕!" :
-                                auditVO.getFlag()==3 ? "审核通过完毕! 等待发布..." :
-                                        auditVO.getFlag()==4 ? "接口发布完毕!" :
-                                                "接口下线完毕!";
-        return auditMsg;
+        return "审核不通过完毕!";
+    }
 
+    @Override
+    public String auditPass(Long apiId, String note) {
+        AbilityApiEntity api = abilityApiService.getById(apiId);
+        if (api==null){
+            throw new BusinessException("审核失败! 接口不存在,请刷新页面后重试...");
+        }
+        // 审核流程限制: 状态(0未提交 1待审核 2审核未通过 3未发布 4已发布 5已下线)
+        if (api.getStatus() != 1) {
+            throw new BusinessException("只用待审核的接口才能审核通过,请刷新页面后重试!");
+        }
+        LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
+        updateWrapper.eq(AbilityApiEntity::getApiId, apiId);
+        updateWrapper.set(AbilityApiEntity::getStatus, 3);
+        updateWrapper.set(AbilityApiEntity::getNote, note);
+        updateWrapper.set(AbilityApiEntity::getApproveTime, new Date());
+        abilityApiService.update(updateWrapper);
+        return "审核通过完毕! 等待发布...";
+    }
+
+    @Override
+    public String auditPublish(Long apiId, String note) {
+        AbilityApiEntity api = abilityApiService.getById(apiId);
+        if (api==null){
+            throw new BusinessException("审核失败! 接口不存在,请刷新页面后重试...");
+        }
+        // 审核流程限制: 状态(0未提交 1待审核 2审核未通过 3未发布 4已发布 5已下线)
+        if (api.getStatus() != 3) {
+            throw new BusinessException("只用审核通过的接口才能发布,请刷新页面后重试!");
+        }
+        LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
+        updateWrapper.eq(AbilityApiEntity::getApiId, apiId);
+        updateWrapper.set(AbilityApiEntity::getStatus, 4);
+        updateWrapper.set(AbilityApiEntity::getNote, note);
+        updateWrapper.set(AbilityApiEntity::getApproveTime, new Date());
+        abilityApiService.update(updateWrapper);
+        return "接口发布完毕!";
+    }
+
+    @Override
+    public String auditOffline(Long apiId, String note) {
+        AbilityApiEntity api = abilityApiService.getById(apiId);
+        if (api==null){
+            throw new BusinessException("审核失败! 接口不存在,请刷新页面后重试...");
+        }
+        // 审核流程限制: 状态(0未提交 1待审核 2审核未通过 3未发布 4已发布 5已下线)
+        if (api.getStatus() != 4) {
+            throw new BusinessException("只用发布的接口才能下线,请刷新页面后重试!");
+        }
+        long cntUsing = abilityApiApplyService.count(Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
+                .eq(AbilityApiApplyEntity::getApiId, apiId)
+                .eq(AbilityApiApplyEntity::getStatus, 2));
+        if (cntUsing>0){
+            throw new BusinessException("该接口还有应用正在使用!");
+        }
+        LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
+        updateWrapper.eq(AbilityApiEntity::getApiId, apiId);
+        updateWrapper.set(AbilityApiEntity::getStatus, 5);
+        updateWrapper.set(AbilityApiEntity::getNote, note);
+        updateWrapper.set(AbilityApiEntity::getApproveTime, new Date());
+        abilityApiService.update(updateWrapper);
+        return "接口下线完毕!";
     }
 
 

@@ -57,18 +57,13 @@ public class DocController {
     @AopLogger(describe = "分页查询文档", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询文档")
     @PostMapping("/page")
-    public Result<?> page(@Parameter(description = "是否过滤未上线的文档", required = true) Boolean onlyOnline,
+    public Result<?> page(@Parameter(description = "是否过滤未上线的文档") boolean onlyOnline,
                           @Parameter(description = "接口ID") Long apiId,
                           @Parameter(description = "当前页数", required = true) int current,
                           @Parameter(description = "分页条数", required = true) int size,
-                          @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
                           @Parameter(description = "开始时间") Date startTime,
-                          @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
                           @Parameter(description = "结束时间") Date endTime) {
         // 构造分页条件
-        if(onlyOnline==null){
-            onlyOnline=false;
-        }
         LambdaQueryWrapper<DocEntity> queryWrapper = Wrappers.lambdaQuery(DocEntity.class)
                 .eq(apiId!=null, DocEntity::getApiId, apiId)
                 .ge(Objects.nonNull(startTime), DocEntity::getCreateTime, startTime)

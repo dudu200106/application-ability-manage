@@ -2,13 +2,12 @@ package com.dsj.csp.manage.dto;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.dsj.common.dto.PageQuery;
 import com.dsj.csp.manage.entity.AbilityEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 import java.util.Objects;
 
 @Data

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -54,11 +55,6 @@ public class AbilityApiVO implements Serializable {
     @Schema(description="接口版本")
     private String apiVersion;
 
-    @Schema(description="创建时间" )
-    private Timestamp createTime;
-
-    @Schema(description = "更新时间")
-    private Timestamp updateTime;
 
 //    @Schema(description = "网关公钥")
 //    private String publicKey;
@@ -92,6 +88,16 @@ public class AbilityApiVO implements Serializable {
 
     @Schema(description = "备注")
     private String note;
+
+    @Schema(description="创建时间" )
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone="GMT+8")
+    @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+    private Timestamp createTime;
+
+    @Schema(description = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+    private Timestamp updateTime;
 
     /**
      * 请求参数列表

@@ -5,6 +5,7 @@ import com.dsj.csp.manage.entity.AbilityApiEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Date;
 import java.util.List;
@@ -69,6 +70,8 @@ public class AbilityDTO {
      */
     @TableField(value = "CJSJ")
     @Schema(description = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
     private Date createTime;
 
     /**
@@ -76,6 +79,8 @@ public class AbilityDTO {
      */
     @TableField(value = "GXSJ")
     @Schema(description = "修改时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
     private Date updateTime;
 
     @Schema(description = "能力接口列表")

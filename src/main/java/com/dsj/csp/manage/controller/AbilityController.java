@@ -22,11 +22,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * @author Sean Du
@@ -38,7 +40,6 @@ import java.util.List;
 @RequestMapping("/ability")
 @Tag(name = "能力管理", description = "用于管理能力的API")
 public class AbilityController {
-
     private final AbilityService abilityService;
     private final AbilityApiService abilityApiService;
     private final AbilityBizService abilityBizService;
@@ -74,10 +75,10 @@ public class AbilityController {
                                          @Parameter(description = "分页条数", required = true) int size,
                                          @Parameter(description = "当前页数", required = true) int current,
                                          @Parameter(description = "搜索关键字") String keyword,
-                                         @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
-                                             @Parameter(description = "开始时间") Date startTime,
-                                         @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
-                                             @Parameter(description = "结束时间") Date endTime) {
+                                         @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+                                         @Parameter(description = "开始时间") Date startTime,
+                                         @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+                                         @Parameter(description = "结束时间") Date endTime) {
         return Result.success(abilityService.pageAbilitys(userId, keyword, startTime, endTime, current, size));
     }
 
@@ -214,11 +215,10 @@ public class AbilityController {
         return Result.success(msg);
     }
 
-
     @AopLogger(describe = "分页查询api目录列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询api目录列表")
     @GetMapping("page-api-catalog")
-    public Result<?> pageApiList(@Parameter(description = "是否过滤未发布的接口") Boolean onlyPublished,
+    public Result<?> pageApiList(@Parameter(description = "是否过滤未发布的接口") boolean onlyPublished,
                                  @Parameter(description = "请求方式") String reqMethod,
                                  @Parameter(description = "状态") Integer status,
                                  @Parameter(description = "用户ID") Long userId,
@@ -226,20 +226,17 @@ public class AbilityController {
                                  @Parameter(description = "分页条数", required = true) int size,
                                  @Parameter(description = "当前页数", required = true) int current,
                                  @Parameter(description = "搜索关键字") String keyword,
-                                 @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
-                                     @Parameter(description = "开始时间") Date startTime,
-                                 @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
-                                     @Parameter(description = "结束时间") Date endTime) {
-        if(onlyPublished==null){
-            onlyPublished=false;
-        }
+                                 @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+                                 @Parameter(description = "开始时间") Date startTime,
+                                 @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+                                 @Parameter(description = "结束时间") Date endTime) {
         return Result.success(abilityApiBizService.pageApiCatalog(onlyPublished, reqMethod, status, userId, abilityId, keyword, current, size, startTime, endTime));
     }
 
     @AopLogger(describe = "分页查询接口申请列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询接口申请列表", description = "分页查询接口申请列表")
     @GetMapping("/page-api-apply")
-    public Result<?> pageApiApply(@Parameter(description = "是否屏蔽'未提交'状态申请") Boolean onlySubmitted,
+    public Result<?> pageApiApply(@Parameter(description = "是否屏蔽'未提交'状态申请") boolean onlySubmitted,
                                   @Parameter(description = "用户ID") Long userId,
                                   @Parameter(description = "应用ID") Long appId,
                                   @Parameter(description = "能力ID") Long abilityId,
@@ -247,13 +244,10 @@ public class AbilityController {
                                   @Parameter(description = "当前页数", required = true) int current,
                                   @Parameter(description = "搜索关键字") String keyword,
                                   @Parameter(description = "状态") Integer status,
-                                  @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
-                                      @Parameter(description = "开始时间") Date startTime,
-                                  @JsonFormat(pattern = "yyyy/MM/dd",timezone="GMT+8")
-                                      @Parameter(description = "结束时间") Date endTime) {
-        if(onlySubmitted==null){
-            onlySubmitted=false;
-        }
+                                  @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+                                  @Parameter(description = "开始时间") Date startTime,
+                                  @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+                                  @Parameter(description = "结束时间") Date endTime) {
         return Result.success(abilityApiApplyBizService.pageApiApply(onlySubmitted, appId, userId, abilityId, keyword, status, startTime, endTime, current, size));
     }
 
@@ -261,13 +255,15 @@ public class AbilityController {
     @Operation(summary = "分页查询申请通过的接口列表", description = "分页查询申请通过的接口列表")
     @GetMapping("/page-passed-apis")
     public Result<?> pagePassedApi(@Parameter(description = "用户ID") Long userId,
-                                  @Parameter(description = "应用ID") Long appId,
-                                  @Parameter(description = "能力ID") Long abilityId,
-                                  @Parameter(description = "分页条数", required = true) int size,
-                                  @Parameter(description = "当前页数", required = true) int current,
-                                  @Parameter(description = "搜索关键字(匹配接口名称/描述/路径)") String keyword,
-                                  @Parameter(description = "开始时间") Date startTime,
-                                  @Parameter(description = "结束时间") Date endTime) {
+                                   @Parameter(description = "应用ID") Long appId,
+                                   @Parameter(description = "能力ID") Long abilityId,
+                                   @Parameter(description = "分页条数", required = true) int size,
+                                   @Parameter(description = "当前页数", required = true) int current,
+                                   @Parameter(description = "搜索关键字(匹配接口名称/描述/路径)") String keyword,
+                                   @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+                                   @Parameter(description = "开始时间") Date startTime,
+                                   @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+                                   @Parameter(description = "结束时间") Date endTime) {
         return Result.success(abilityApiBizService.pagePassedApis(userId, appId, abilityId, keyword, current, size, startTime, endTime));
     }
 

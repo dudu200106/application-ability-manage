@@ -10,8 +10,11 @@ import com.dsj.common.dto.Result;
 import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.dto.DocDto;
+import com.dsj.csp.manage.entity.AbilityApiEntity;
 import com.dsj.csp.manage.entity.DocCatalogEntity;
 import com.dsj.csp.manage.entity.DocEntity;
+import com.dsj.csp.manage.service.AbilityApiService;
+import com.dsj.csp.manage.service.DocCatalogService;
 import com.dsj.csp.manage.service.DocService;
 import com.dsj.csp.manage.service.UserApproveService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,7 +38,9 @@ import java.util.stream.Collectors;
 public class DocController {
 
     private final DocService docService;
+    private final DocCatalogService docCatalogService;
     private final UserApproveService userApproveService;
+    private final AbilityApiService abilityApiService;
 
     @AopLogger(describe = "新增文档", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增文档")
@@ -55,7 +60,14 @@ public class DocController {
     @Operation(summary = "查看文档")
     @GetMapping("/info")
     public Result<?> info(Long docId){
-        return Result.success(docService.getById(docId));
+        DocEntity doc = docService.getById(docId);
+        DocDto docDto = new DocDto();
+        BeanUtil.copyProperties(doc, docDto);
+        DocCatalogEntity catalog = docCatalogService.getById(doc.getCatalogId());
+        AbilityApiEntity api = abilityApiService.getById(doc.getApiId());
+        docDto.setCatalogName(catalog.getCatalogName());
+        docDto.setApiName(api.getApiName());
+        return Result.success(docDto);
     }
 
     @AopLogger(describe = "分页查询文档", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
@@ -80,18 +92,45 @@ public class DocController {
         Page page = docService.page(new Page<>(current, size), queryWrapper);
         List<DocEntity> records = page.getRecords();
         Set<Long> catalogIds = records.stream().map(doc->doc.getCatalogId()).collect(Collectors.toSet());
+        Set<Long> apiIds = records.stream().map(doc->doc.getApiId()).collect(Collectors.toSet());
         Map<Long, DocCatalogEntity> catalogMap= SimpleQuery.keyMap(Wrappers.lambdaQuery(DocCatalogEntity.class)
                 .in(DocCatalogEntity::getCatalogId, catalogIds), DocCatalogEntity::getCatalogId);
+        Map<Long, AbilityApiEntity> apiMap= SimpleQuery.keyMap(Wrappers.lambdaQuery(AbilityApiEntity.class)
+                .in(AbilityApiEntity::getApiId, apiIds), AbilityApiEntity::getApiId);
         List<DocDto> resRecords = records.stream().map(doc -> {
             DocDto docDto = new DocDto();
             BeanUtil.copyProperties(doc, docDto);
-            docDto.setCatalogName(catalogMap.get(doc.getCatalogId()).getCatalogName());
+//            try{
+                docDto.setCatalogName(catalogMap.get(doc.getCatalogId())==null ? null : catalogMap.get(doc.getCatalogId()).getCatalogName());
+                docDto.setApiName(apiMap.get(doc.getApiId())==null ? null : apiMap.get(doc.getApiId()).getApiName());
+//            }catch (NullPointerException e){
+//                throw new BusinessException("存在文档所属的目录或者对应的接口不存在!");
+//            }
             return docDto;
         }).toList();
         page.setRecords(resRecords);
         return Result.success(page);
     }
 
+    @AopLogger(describe = "提交文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "提交文档")
+    @PostMapping("/audit-submit")
+    public Result<?> auditSubmit(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
+        // Token验证
+        userApproveService.identify(accessToken).getUserName();
+        docService.auditSubmit(doc.getDocId());
+        return Result.success("文档提交完成!");
+    }
+
+    @AopLogger(describe = "撤回文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "撤回文档")
+    @PostMapping("/audit-withdraw")
+    public Result<?> auditWithdraw(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
+        // Token验证
+        userApproveService.identify(accessToken).getUserName();
+        docService.auditWithdraw(doc.getDocId());
+        return Result.success("文档撤回完成!");
+    }
 
     @AopLogger(describe = "文档审核通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "文档审核通过")
@@ -101,7 +140,6 @@ public class DocController {
         docService.auditPass(doc.getDocId(), doc.getNote(), operatorName);
         return Result.success("文档审核通过!");
     }
-
 
     @AopLogger(describe = "文档审核不通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "文档审核不通过")

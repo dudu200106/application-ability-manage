@@ -24,6 +24,38 @@ import java.util.Date;
 @Transactional
 public class DocServiceImpl extends ServiceImpl<DocMapper, DocEntity> implements DocService {
     @Override
+    public void auditSubmit(Long docId) {
+        DocEntity docEntity = this.getById(docId);
+        if (docEntity==null){
+            throw new BusinessException("提交失败! 文档不存在,请刷新页面后重试...");
+        }
+        if (docEntity.getStatus()!=6){
+            throw new BusinessException("只有'待提交'的文档才能提交,请刷新后重试!");
+        }
+        LambdaUpdateWrapper<DocEntity> updateWrapper = Wrappers.lambdaUpdate();
+        updateWrapper.eq(DocEntity::getDocId, docId);
+        updateWrapper.set(DocEntity::getStatus, 0);
+        updateWrapper.set(DocEntity::getUpdateTime, new Date());
+        this.update(updateWrapper);
+    }
+
+    @Override
+    public void auditWithdraw(Long docId) {
+        DocEntity docEntity = this.getById(docId);
+        if (docEntity==null){
+            throw new BusinessException("撤回失败! 文档不存在,请刷新页面后重试...");
+        }
+        if (docEntity.getStatus()!=0){
+            throw new BusinessException("只有'待审核'的文档才能撤回,请刷新后重试!");
+        }
+        LambdaUpdateWrapper<DocEntity> updateWrapper = Wrappers.lambdaUpdate();
+        updateWrapper.eq(DocEntity::getDocId, docId);
+        updateWrapper.set(DocEntity::getStatus, 6);
+        updateWrapper.set(DocEntity::getUpdateTime, new Date());
+        this.update(updateWrapper);
+    }
+
+    @Override
     public void auditPass(Long docId, String note, String operator) {
         DocEntity docEntity = this.getById(docId);
         if (docEntity==null){

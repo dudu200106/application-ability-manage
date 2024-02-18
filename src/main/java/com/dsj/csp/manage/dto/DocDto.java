@@ -42,6 +42,12 @@ public class DocDto  implements Serializable {
     private Long apiId;
 
     /**
+     * 接口名称
+     */
+    @Schema(description = "接口名称")
+    private String apiName;
+
+    /**
      * 文档名称
      */
     @Schema(description = "文档名称")

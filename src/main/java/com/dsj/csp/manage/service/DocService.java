@@ -9,6 +9,18 @@ import com.dsj.csp.manage.entity.DocEntity;
  * @date 2024-02-06
  */
 public interface DocService extends IService<DocEntity> {
+    /**
+     * 提交文档
+     * @param docId
+     */
+    void auditSubmit(Long docId);
+
+    /**
+     * 撤回文档
+     * @param docId
+     */
+    void auditWithdraw(Long docId);
+
     void auditPass(Long docId, String note, String operator);
 
     void auditNotPass(Long docId, String note, String operatorName);

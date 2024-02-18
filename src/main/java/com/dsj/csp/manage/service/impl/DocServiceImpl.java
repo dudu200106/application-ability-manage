@@ -35,7 +35,7 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, DocEntity> implements
         LambdaUpdateWrapper<DocEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(DocEntity::getDocId, docId);
         updateWrapper.set(DocEntity::getStatus, 1);
-        updateWrapper.set(ObjectUtil.isEmpty(note), DocEntity::getNote, note);
+        updateWrapper.set(!ObjectUtil.isEmpty(note), DocEntity::getNote, note);
         updateWrapper.set(DocEntity::getOperator, operator);
         updateWrapper.set(DocEntity::getApproveTime, new Date());
         this.update(updateWrapper);
@@ -53,7 +53,7 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, DocEntity> implements
         LambdaUpdateWrapper<DocEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(DocEntity::getDocId, docId);
         updateWrapper.set(DocEntity::getStatus, 2);
-        updateWrapper.set(ObjectUtil.isEmpty(note), DocEntity::getNote, note);
+        updateWrapper.set(!ObjectUtil.isEmpty(note), DocEntity::getNote, note);
         updateWrapper.set(DocEntity::getOperator, operatorName);
         updateWrapper.set(DocEntity::getApproveTime, new Date());
         this.update(updateWrapper);
@@ -71,7 +71,7 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, DocEntity> implements
         LambdaUpdateWrapper<DocEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(DocEntity::getDocId, docId);
         updateWrapper.set(DocEntity::getStatus, 3);
-        updateWrapper.set(ObjectUtil.isEmpty(note), DocEntity::getNote, note);
+        updateWrapper.set(!ObjectUtil.isEmpty(note), DocEntity::getNote, note);
         updateWrapper.set(DocEntity::getOperator, operatorName);
         updateWrapper.set(DocEntity::getApproveTime, new Date());
         this.update(updateWrapper);
@@ -89,7 +89,7 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, DocEntity> implements
         LambdaUpdateWrapper<DocEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(DocEntity::getDocId, docId);
         updateWrapper.set(DocEntity::getStatus, 4);
-        updateWrapper.set(ObjectUtil.isEmpty(note), DocEntity::getNote, note);
+        updateWrapper.set(!ObjectUtil.isEmpty(note), DocEntity::getNote, note);
         updateWrapper.set(DocEntity::getOperator, operatorName);
         updateWrapper.set(DocEntity::getApproveTime, new Date());
         this.update(updateWrapper);
@@ -102,12 +102,12 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, DocEntity> implements
             throw new BusinessException("下线失败!文档不存在,请刷新页面后重试...");
         }
         if (docEntity.getStatus()!= 3 && docEntity.getStatus()!= 4){
-            throw new BusinessException("只有'已发布'的文档才能下线,请刷新后重试!");
+            throw new BusinessException("只有'已发布'或'已上线'的文档才能下线,请刷新后重试!");
         }
         LambdaUpdateWrapper<DocEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(DocEntity::getDocId, docId);
         updateWrapper.set(DocEntity::getStatus, 5);
-        updateWrapper.set(ObjectUtil.isEmpty(note), DocEntity::getNote, note);
+        updateWrapper.set(!ObjectUtil.isEmpty(note), DocEntity::getNote, note);
         updateWrapper.set(DocEntity::getOperator, operatorName);
         updateWrapper.set(DocEntity::getApproveTime, new Date());
         this.update(updateWrapper);

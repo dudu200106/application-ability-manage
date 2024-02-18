@@ -47,7 +47,7 @@ public class DcoCatalogController {
     @AopLogger(describe = "查看目录详情", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查看目录详情")
     @GetMapping("/info")
-    public Result<?> queryinfo(Long catalogId){
+    public Result<?> queryInfo(@Parameter(description = "目录Id") Long catalogId){
         return Result.success(docCatalogService.getById(catalogId));
     }
 
@@ -61,7 +61,7 @@ public class DcoCatalogController {
     @AopLogger(describe = "编辑目录", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "编辑目录")
     @PostMapping("/edit")
-    public Result<?> edit(DocCatalogEntity catalogEntity){
+    public Result<?> edit(@RequestBody DocCatalogEntity catalogEntity){
         boolean editFlag = docCatalogService.updateById(catalogEntity);
         return Result.success("编辑目录" + (editFlag ? "成功!" : "失败!"), editFlag);
     }
@@ -69,7 +69,7 @@ public class DcoCatalogController {
     @AopLogger(describe = "删除目录", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "删除目录")
     @PostMapping("/delete")
-    public Result<?> delete(DocCatalogEntity catalogEntity){
+    public Result<?> delete(@RequestBody DocCatalogEntity catalogEntity){
         // 删除目录下的所有文档
         docService.remove(Wrappers.lambdaQuery(DocEntity.class).eq(DocEntity::getCatalogId, catalogEntity.getCatalogId()));
         // 删除目录

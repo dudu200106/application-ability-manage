@@ -35,8 +35,8 @@ public class DocController {
 
     @AopLogger(describe = "新增文档", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增文档")
-    @PostMapping("/save")
-    public Result<?> add(DocEntity doc){
+    @PostMapping("/add")
+    public Result<?> add(@RequestBody DocEntity doc){
         long cnt = docService.count(Wrappers.lambdaQuery(DocEntity.class)
                 .eq(DocEntity::getDocName, doc.getDocName())
                 .eq(DocEntity::getCatalogId, doc.getCatalogId()));
@@ -49,7 +49,7 @@ public class DocController {
 
     @AopLogger(describe = "查看文档", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查看文档")
-    @PostMapping("/info")
+    @GetMapping("/info")
     public Result<?> info(Long docId){
         return Result.success(docService.getById(docId));
     }

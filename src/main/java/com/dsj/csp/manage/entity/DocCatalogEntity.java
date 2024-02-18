@@ -26,7 +26,7 @@ public class DocCatalogEntity implements Serializable {
      */
     @TableId(value = "WDML_ID", type = IdType.AUTO)
     @Schema(description = "目录ID")
-    private Long catalogID;
+    private Long catalogId;
 
     /**
      * 目录名称

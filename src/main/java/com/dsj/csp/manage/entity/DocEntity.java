@@ -35,7 +35,7 @@ public class DocEntity implements Serializable {
     /**
      * 接口ID
      */
-    @TableField(value = "接口ID")
+    @TableField(value = "NLJK_ID")
     @Schema(description = "接口ID")
     private Long apiId;
     /**

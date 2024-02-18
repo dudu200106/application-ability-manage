@@ -56,7 +56,7 @@ public class DocController {
 
     @AopLogger(describe = "分页查询文档", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询文档")
-    @PostMapping("/page")
+    @GetMapping("/page")
     public Result<?> page(@Parameter(description = "是否过滤未上线的文档") boolean onlyOnline,
                           @Parameter(description = "接口ID") Long apiId,
                           @Parameter(description = "当前页数", required = true) int current,
@@ -81,23 +81,19 @@ public class DocController {
     @AopLogger(describe = "文档审核通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "文档审核通过")
     @PostMapping("/audit-pass")
-    public Result<?> auditPass(@Parameter(description = "文档id") Long docId,
-                             @Parameter(description = "操作备注") String note,
-                             @RequestHeader("accessToken") String accessToken){
+    public Result<?> auditPass(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
         String operatorName = userApproveService.identify(accessToken).getUserName();
-        docService.auditPass(docId, note, operatorName);
+        docService.auditPass(doc.getDocId(), doc.getNote(), operatorName);
         return Result.success("文档审核通过!");
     }
 
 
     @AopLogger(describe = "文档审核不通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "文档审核不通过")
-    @PostMapping("/audit-not-pass")
-    public Result<?> auditNotPass(@Parameter(description = "文档id") Long docId,
-                             @Parameter(description = "操作备注") String note,
-                             @RequestHeader("accessToken") String accessToken){
+    @GetMapping("/audit-not-pass")
+    public Result<?> auditNotPass(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
         String operatorName = userApproveService.identify(accessToken).getUserName();
-        docService.auditNotPass(docId, note, operatorName);
+        docService.auditNotPass(doc.getDocId(), doc.getNote(), operatorName);
         return Result.success("文档审核不通过!");
     }
 
@@ -105,21 +101,28 @@ public class DocController {
     @AopLogger(describe = "发布文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "发布文档")
     @PostMapping("/audit-publish")
-    public Result<?> auditPublish(@Parameter(description = "文档id") Long docId,
-                                  @RequestHeader("accessToken") String accessToken){
+    public Result<?> auditPublish(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
         String operatorName = userApproveService.identify(accessToken).getUserName();
-        docService.auditPublish(docId, operatorName);
+        docService.auditPublish(doc.getDocId(), operatorName);
         return Result.success("文档发布成功!");
     }
 
+    @AopLogger(describe = "下线文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "下线文档")
+    @PostMapping("/abort-publish")
+    public Result<?> abortPublish(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
+        String operatorName = userApproveService.identify(accessToken).getUserName();
+        docService.auditOffline(doc.getDocId(), doc.getNote(), operatorName);
+        return Result.success("文档发布成功!");
+    }
 
     @AopLogger(describe = "编辑文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "编辑文档")
     @PostMapping("/edit")
     public Result<?> edit(@RequestBody DocEntity docEntity){
         docEntity.setUpdateTime(new Date());
-        docService.updateById(docEntity);
-        return Result.success("文档审核通过!");
+        boolean editFlag = docService.updateById(docEntity);
+        return Result.success("文档编辑完成!", editFlag );
     }
 
 
@@ -127,8 +130,8 @@ public class DocController {
     @Operation(summary = "删除文档")
     @PostMapping("/delete")
     public Result<?> delete(@RequestBody DocEntity docEntity){
-        docService.removeById(docEntity);
-        return Result.success("文档审核通过!");
+        boolean deleteFlag = docService.removeById(docEntity);
+        return Result.success("文档删除完成!", deleteFlag);
     }
 
 }

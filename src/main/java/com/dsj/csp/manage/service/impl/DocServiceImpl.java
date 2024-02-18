@@ -63,7 +63,7 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, DocEntity> implements
     public void auditPublish(Long docId, String operatorName) {
         DocEntity docEntity = this.getById(docId);
         if (docEntity==null){
-            throw new BusinessException("审核失败!文档不存在,请刷新页面后重试...");
+            throw new BusinessException("发布失败!文档不存在,请刷新页面后重试...");
         }
         if (docEntity.getStatus()!=1){
             throw new BusinessException("只有'审核通过'的文档才能发布,请刷新后重试!");
@@ -77,13 +77,13 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, DocEntity> implements
     }
 
     @Override
-    public void auditOnline(Long docId) {
+    public void auditOffline(Long docId, String note, String operatorName) {
         DocEntity docEntity = this.getById(docId);
         if (docEntity==null){
-            throw new BusinessException("审核失败!文档不存在,请刷新页面后重试...");
+            throw new BusinessException("下线失败!文档不存在,请刷新页面后重试...");
         }
         if (docEntity.getStatus()!=1){
-            throw new BusinessException("只有'审核通过'的文档才能发布,请刷新后重试!");
+            throw new BusinessException("只有'已发布'的文档才能下线,请刷新后重试!");
         }
         LambdaUpdateWrapper<DocEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(DocEntity::getDocId, docId);

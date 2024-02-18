@@ -15,5 +15,5 @@ public interface DocService extends IService<DocEntity> {
 
     void auditPublish(Long docId, String operatorName);
 
-    void auditOnline(Long docId);
+    void auditOffline(Long docId, String note, String operatorName);
 }

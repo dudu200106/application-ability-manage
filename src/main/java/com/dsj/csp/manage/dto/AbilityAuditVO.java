@@ -5,8 +5,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class AbilityAuditVO {
+public class AbilityAuditVO  implements Serializable {
     @Schema(description = "能力申请ID")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long abilityApplyId;

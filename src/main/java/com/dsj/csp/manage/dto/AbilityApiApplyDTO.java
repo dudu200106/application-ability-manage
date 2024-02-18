@@ -9,6 +9,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.sql.Date;
 import java.util.List;
 
@@ -21,7 +22,7 @@ import java.util.List;
  */
 @Data
 @Schema(description = "能力申请VO")
-public class AbilityApiApplyDTO {
+public class AbilityApiApplyDTO  implements Serializable {
 
     @Schema(description = "接口申请ID")
     @JsonFormat(shape = JsonFormat.Shape.STRING)

@@ -1,13 +1,18 @@
 package com.dsj.csp.manage.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.toolkit.SimpleQuery;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.enums.LogEnum;
+import com.dsj.csp.manage.dto.DocDto;
+import com.dsj.csp.manage.entity.DocCatalogEntity;
 import com.dsj.csp.manage.entity.DocEntity;
+import com.dsj.csp.manage.entity.UserApproveEntity;
 import com.dsj.csp.manage.service.DocService;
 import com.dsj.csp.manage.service.UserApproveService;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -18,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author SeanDu
@@ -68,12 +74,23 @@ public class DocController {
                 .eq(apiId!=null, DocEntity::getApiId, apiId)
                 .ge(Objects.nonNull(startTime), DocEntity::getCreateTime, startTime)
                 .le(Objects.nonNull(endTime), DocEntity::getCreateTime, endTime)
-                .in(onlyOnline, DocEntity::getStatus, 5)
+                .notIn(onlyOnline, DocEntity::getStatus, 5)
                 // 排序
                 .orderByDesc(DocEntity::getCreateTime)
                 .orderByAsc(DocEntity::getStatus);
         // 主表分页查询
         Page page = docService.page(new Page<>(current, size), queryWrapper);
+        List<DocEntity> records = page.getRecords();
+        Set<Long> catalogIds = records.stream().map(doc->doc.getCatalogId()).collect(Collectors.toSet());
+        Map<Long, DocCatalogEntity> catalogMap= SimpleQuery.keyMap(Wrappers.lambdaQuery(DocCatalogEntity.class)
+                .in(DocCatalogEntity::getCatalogId, catalogIds), DocCatalogEntity::getCatalogId);
+        List<DocDto> resRecords = records.stream().map(doc -> {
+            DocDto docDto = new DocDto();
+            BeanUtil.copyProperties(doc, docDto);
+            docDto.setCatalogName(catalogMap.get(doc.getCatalogId()).getCatalogName());
+            return docDto;
+        }).toList();
+        page.setRecords(resRecords);
         return Result.success(page);
     }
 

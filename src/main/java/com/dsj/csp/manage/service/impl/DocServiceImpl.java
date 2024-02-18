@@ -60,7 +60,7 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, DocEntity> implements
     }
 
     @Override
-    public void auditPublish(Long docId, String operatorName) {
+    public void auditPublish(Long docId, String note, String operatorName) {
         DocEntity docEntity = this.getById(docId);
         if (docEntity==null){
             throw new BusinessException("发布失败!文档不存在,请刷新页面后重试...");
@@ -71,6 +71,25 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, DocEntity> implements
         LambdaUpdateWrapper<DocEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(DocEntity::getDocId, docId);
         updateWrapper.set(DocEntity::getStatus, 3);
+        updateWrapper.set(ObjectUtil.isEmpty(note), DocEntity::getNote, note);
+        updateWrapper.set(DocEntity::getOperator, operatorName);
+        updateWrapper.set(DocEntity::getApproveTime, new Date());
+        this.update(updateWrapper);
+    }
+
+    @Override
+    public void auditOnline(Long docId, String note, String operatorName) {
+        DocEntity docEntity = this.getById(docId);
+        if (docEntity==null){
+            throw new BusinessException("上线失败!文档不存在,请刷新页面后重试...");
+        }
+        if (docEntity.getStatus()!=3){
+            throw new BusinessException("只有'已发布'的文档才能上线,请刷新后重试!");
+        }
+        LambdaUpdateWrapper<DocEntity> updateWrapper = Wrappers.lambdaUpdate();
+        updateWrapper.eq(DocEntity::getDocId, docId);
+        updateWrapper.set(DocEntity::getStatus, 4);
+        updateWrapper.set(ObjectUtil.isEmpty(note), DocEntity::getNote, note);
         updateWrapper.set(DocEntity::getOperator, operatorName);
         updateWrapper.set(DocEntity::getApproveTime, new Date());
         this.update(updateWrapper);
@@ -82,12 +101,14 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, DocEntity> implements
         if (docEntity==null){
             throw new BusinessException("下线失败!文档不存在,请刷新页面后重试...");
         }
-        if (docEntity.getStatus()!=1){
+        if (docEntity.getStatus()!= 3 && docEntity.getStatus()!= 4){
             throw new BusinessException("只有'已发布'的文档才能下线,请刷新后重试!");
         }
         LambdaUpdateWrapper<DocEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(DocEntity::getDocId, docId);
-        updateWrapper.set(DocEntity::getStatus, 4);
+        updateWrapper.set(DocEntity::getStatus, 5);
+        updateWrapper.set(ObjectUtil.isEmpty(note), DocEntity::getNote, note);
+        updateWrapper.set(DocEntity::getOperator, operatorName);
         updateWrapper.set(DocEntity::getApproveTime, new Date());
         this.update(updateWrapper);
     }

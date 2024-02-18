@@ -12,10 +12,8 @@ import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.dto.DocDto;
 import com.dsj.csp.manage.entity.DocCatalogEntity;
 import com.dsj.csp.manage.entity.DocEntity;
-import com.dsj.csp.manage.entity.UserApproveEntity;
 import com.dsj.csp.manage.service.DocService;
 import com.dsj.csp.manage.service.UserApproveService;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -107,7 +105,7 @@ public class DocController {
 
     @AopLogger(describe = "文档审核不通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "文档审核不通过")
-    @GetMapping("/audit-not-pass")
+    @PostMapping("/audit-not-pass")
     public Result<?> auditNotPass(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
         String operatorName = userApproveService.identify(accessToken).getUserName();
         docService.auditNotPass(doc.getDocId(), doc.getNote(), operatorName);
@@ -120,17 +118,26 @@ public class DocController {
     @PostMapping("/audit-publish")
     public Result<?> auditPublish(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
         String operatorName = userApproveService.identify(accessToken).getUserName();
-        docService.auditPublish(doc.getDocId(), operatorName);
+        docService.auditPublish(doc.getDocId(), null, operatorName);
         return Result.success("文档发布成功!");
+    }
+
+    @AopLogger(describe = "上线文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "上线文档")
+    @PostMapping("/audit-online")
+    public Result<?> auditOnline(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
+        String operatorName = userApproveService.identify(accessToken).getUserName();
+        docService.auditOnline(doc.getDocId(), doc.getNote(), operatorName);
+        return Result.success("文档上线成功!");
     }
 
     @AopLogger(describe = "下线文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "下线文档")
-    @PostMapping("/abort-publish")
+    @PostMapping("/audit-offline")
     public Result<?> abortPublish(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
         String operatorName = userApproveService.identify(accessToken).getUserName();
         docService.auditOffline(doc.getDocId(), doc.getNote(), operatorName);
-        return Result.success("文档发布成功!");
+        return Result.success("文档下线成功!");
     }
 
     @AopLogger(describe = "编辑文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)

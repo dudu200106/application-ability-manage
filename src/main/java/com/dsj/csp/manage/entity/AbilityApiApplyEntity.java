@@ -111,6 +111,7 @@ public class AbilityApiApplyEntity implements Serializable {
      */
     @TableLogic(value = "0", delval = "1")
     @TableField(value = "IS_DELETE")
+    @Schema(description="是否删除")
     private Integer isDelete;
     /**
     * 创建时间

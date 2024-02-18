@@ -1,9 +1,6 @@
 package com.dsj.csp.manage.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -76,6 +73,7 @@ public class DocEntity implements Serializable {
     /**
      * 是否删除
      */
+    @TableLogic(value = "0", delval = "1")
     @TableField(value = "IS_DELETE")
     @Schema(description = "是否删除")
     private Integer isDelete;

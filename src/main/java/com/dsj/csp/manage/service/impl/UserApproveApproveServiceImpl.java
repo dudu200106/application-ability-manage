@@ -167,7 +167,7 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
                     lambdaQuery
                             .like(UserApproveEntity::getGovName, keyword)
                             .or()
-                            .like(UserApproveEntity::getCompanyName, keyword);
+                            .like(UserApproveEntity::getUserName, keyword);
                 });
         return baseMapper.selectPage(new Page(page, size), wrapper);
     }

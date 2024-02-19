@@ -1,6 +1,7 @@
 package com.dsj.csp.manage.dto;
 
 import com.dsj.csp.manage.entity.DocEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -18,6 +19,7 @@ public class DocCatalogDto implements Serializable {
      * 目录Id
      */
     @Schema(description = "目录ID")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long catalogId;
 
     /**

@@ -3,7 +3,6 @@ package com.dsj.csp.manage.controller;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.toolkit.SimpleQuery;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.common.aop.annotation.AopLogger;
@@ -18,7 +17,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,7 +29,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/doc-catalog")
-@Tag(name = "文档目录管理", description = "")
+@Tag(name = "文档目录管理", description = "用于管理文档目录")
 @RequiredArgsConstructor
 public class DcoCatalogController {
 
@@ -42,7 +40,7 @@ public class DcoCatalogController {
     @Operation(summary = "新增目录")
     @PostMapping("/add")
     public Result<?> add(@RequestBody DocCatalogEntity catalogEntity){
-        Long cntCatalog = docCatalogService.count(Wrappers.lambdaQuery(DocCatalogEntity.class)
+        long cntCatalog = docCatalogService.count(Wrappers.lambdaQuery(DocCatalogEntity.class)
                 .eq(DocCatalogEntity::getCatalogName, catalogEntity.getCatalogName()));
         if (cntCatalog>0){
             throw new BusinessException("目录名称已存在!");

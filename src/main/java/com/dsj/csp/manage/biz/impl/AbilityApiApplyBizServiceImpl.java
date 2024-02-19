@@ -89,18 +89,13 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         // 审核
         Long applyId = auditVO.getApiApplyId();
         String note = auditVO.getNote();
-        switch(auditVO.getFlag()){
-            case 0:
-                return auditWithdraw(applyId, note);
-            case 1:
-                return auditSubmit(applyId, note);
-            case 2:
-                return auditPass(applyId, note);
-            case 3:
-                return auditNotPass(applyId, note);
-            default:
-                return auditBlockUp(applyId, note);
-        }
+        return switch (auditVO.getFlag()) {
+            case 0 -> auditWithdraw(applyId, note);
+            case 1 -> auditSubmit(applyId, note);
+            case 2 -> auditPass(applyId, note);
+            case 3 -> auditNotPass(applyId, note);
+            default -> auditBlockUp(applyId, note);
+        };
     }
 
     @Override
@@ -255,7 +250,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                     .like(UserApproveEntity::getUserName, keyword)
 //                    .like(UserApproveEntity::getCompanyName, keyword)
                     .like(UserApproveEntity::getGovName, keyword));
-            ids = users.stream().map(e->e.getUserId()).collect(Collectors.toSet());
+            ids = users.stream().map(UserApproveEntity::getUserId).collect(Collectors.toSet());
         }
         return ids;
     }
@@ -266,7 +261,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                         .select(ManageApplicationEntity::getAppId)
                         .eq(userId!= null, ManageApplicationEntity::getAppUserId, userId)
                         .like(!ObjectUtil.isEmpty(keyword), ManageApplicationEntity::getAppName, keyword))
-                .stream().map(e->e.getAppId()).collect(Collectors.toSet());
+                .stream().map(ManageApplicationEntity::getAppId).collect(Collectors.toSet());
         return ids;
     }
 
@@ -285,7 +280,6 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                 // 排序
                 .orderByDesc(AbilityApiApplyEntity::getUpdateTime)
                 .orderByAsc(AbilityApiApplyEntity::getStatus);
-
         // 关键字
         if (!ObjectUtil.isEmpty(keyword)){
             List<Long> abilityIds = abilityService.getAbilityIds(keyword.trim());
@@ -300,30 +294,30 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
             );
         }
         // 主表分页, 并单表查询从表信息, 构造分页返回结果
-        Page prePage = abilityApiApplyService.page(new Page<>(current, size), qw);
+        Page<AbilityApiApplyEntity> prePage = abilityApiApplyService.page(new Page<>(current, size), qw);
         if (prePage.getTotal()==0){
-            return prePage;
+            return new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         }
-        // 2.查出必要的分页返回信息
+        // 2.单表查询 查出必要的分页返回信息
         List<AbilityApiApplyEntity> records = prePage.getRecords();
-//        // 接口表
-        Set<Long> apiIds = records.stream().map(e->e.getApiId()).collect(Collectors.toSet());
+        // 接口表
+        Set<Long> apiIds = records.stream().map(AbilityApiApplyEntity::getApiId).collect(Collectors.toSet());
         Map<Long, AbilityApiEntity> apiMap = SimpleQuery.keyMap(Wrappers.lambdaQuery(AbilityApiEntity.class)
                 .in(AbilityApiEntity::getApiId, apiIds), AbilityApiEntity::getApiId);
         // 能力 查出能力名称
-        Set<Long> abiltiyIds = records.stream().map(e->e.getAbilityId()).collect(Collectors.toSet());
+        Set<Long> abiltiyIds = records.stream().map(AbilityApiApplyEntity::getAbilityId).collect(Collectors.toSet());
         Map<Long, AbilityEntity> abilityMap = SimpleQuery.keyMap(Wrappers.lambdaQuery(AbilityEntity.class)
                 .in(AbilityEntity::getAbilityId, abiltiyIds), AbilityEntity::getAbilityId);
         // 应用 查出应用名称
-        Set<Long> appIds = records.stream().map(e->e.getAppId()).collect(Collectors.toSet());
+        Set<Long> appIds = records.stream().map(AbilityApiApplyEntity::getAppId).collect(Collectors.toSet());
         Map<String, ManageApplicationEntity> appMap = SimpleQuery.keyMap(Wrappers.lambdaQuery(ManageApplicationEntity.class)
                 .in(ManageApplicationEntity::getAppId, appIds), ManageApplicationEntity::getAppId);
         // 用户 查出企业/政府名称
-        Set<Long> userIds = records.stream().map(e->e.getUserId()).collect(Collectors.toSet());
+        Set<Long> userIds = records.stream().map(AbilityApiApplyEntity::getUserId).collect(Collectors.toSet());
         Map<String, UserApproveEntity> userMap = SimpleQuery.keyMap(Wrappers.lambdaQuery(UserApproveEntity.class)
                 .in(UserApproveEntity::getUserId, userIds), UserApproveEntity::getUserId);
-        // 3.构造返回的分页res
-        Page newPage = new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
+        // 3.初始化返回的分页, 并
+        Page<AbilityApiApplyDTO> newPage = new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         List<AbilityApiApplyDTO> resRecords = records.stream().map(apply ->{
             AbilityApiApplyDTO applyDTO = new AbilityApiApplyDTO();
             BeanUtil.copyProperties(apply, applyDTO, true);

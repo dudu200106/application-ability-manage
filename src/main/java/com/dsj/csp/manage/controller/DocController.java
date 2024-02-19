@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/doc")
-@Tag(name = "文档管理", description = "用于管理卡法文档")
+@Tag(name = "文档管理", description = "用于管理文档")
 @RequiredArgsConstructor
 public class DocController {
 
@@ -52,7 +52,7 @@ public class DocController {
         if (cnt>0){
             throw new BusinessException("文档名称在该目录下已存在");
         }
-        Boolean addFlag = docService.save(doc);
+        boolean addFlag = docService.save(doc);
         return Result.success("文档保存" +(addFlag ? "成功!" : "失败!"));
     }
 
@@ -93,10 +93,10 @@ public class DocController {
                 .orderByDesc(DocEntity::getCreateTime)
                 .orderByAsc(DocEntity::getStatus);
         // 主表分页查询
-        Page page = docService.page(new Page<>(current, size), queryWrapper);
+        Page<DocEntity> page = docService.page(new Page<>(current, size), queryWrapper);
         List<DocEntity> records = page.getRecords();
-        Set<Long> catalogIds = records.stream().map(doc->doc.getCatalogId()).collect(Collectors.toSet());
-        Set<Long> apiIds = records.stream().map(doc->doc.getApiId()).collect(Collectors.toSet());
+        Set<Long> catalogIds = records.stream().map(DocEntity::getCatalogId).collect(Collectors.toSet());
+        Set<Long> apiIds = records.stream().map(DocEntity::getApiId).collect(Collectors.toSet());
         Map<Long, DocCatalogEntity> catalogMap= SimpleQuery.keyMap(Wrappers.lambdaQuery(DocCatalogEntity.class)
                 .in(DocCatalogEntity::getCatalogId, catalogIds), DocCatalogEntity::getCatalogId);
         Map<Long, AbilityApiEntity> apiMap= SimpleQuery.keyMap(Wrappers.lambdaQuery(AbilityApiEntity.class)
@@ -108,8 +108,10 @@ public class DocController {
             docDto.setApiName(apiMap.get(doc.getApiId())==null ? null : apiMap.get(doc.getApiId()).getApiName());
             return docDto;
         }).toList();
-        page.setRecords(resRecords);
-        return Result.success(page);
+        // 初始化返回分页
+        Page<DocDto> resPage = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
+        resPage.setRecords(resRecords);
+        return Result.success(resPage);
     }
 
     @AopLogger(describe = "提交文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)

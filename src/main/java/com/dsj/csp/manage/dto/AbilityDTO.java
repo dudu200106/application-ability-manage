@@ -1,6 +1,5 @@
 package com.dsj.csp.manage.dto;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,6 +32,7 @@ public class AbilityDTO implements Serializable {
      * 用户ID
      */
     @Schema(description = "用户ID")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long userId;
 
     /**

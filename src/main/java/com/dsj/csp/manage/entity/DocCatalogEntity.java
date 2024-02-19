@@ -1,6 +1,7 @@
 package com.dsj.csp.manage.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,6 +24,7 @@ public class DocCatalogEntity implements Serializable {
      */
     @TableId(value = "WDML_ID", type = IdType.AUTO)
     @Schema(description = "目录ID")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long catalogId;
 
     /**

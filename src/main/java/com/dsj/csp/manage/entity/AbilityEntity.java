@@ -54,6 +54,7 @@ public class AbilityEntity implements Serializable {
      */
     @TableField("YH_ID")
     @Schema(description = "用户ID")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long userId;
 
     /**

@@ -70,4 +70,11 @@ public class DocCatalogEntity implements Serializable {
     @Schema(description = "更新时间")
     private Date updateTime;
 
+    /**
+     * 图标名称
+     */
+    @TableField(value = "TB")
+    @Schema(description = "图标名称")
+    private String iconName;
+
 }

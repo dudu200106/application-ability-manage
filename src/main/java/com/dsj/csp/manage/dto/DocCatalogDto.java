@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,6 +40,12 @@ public class DocCatalogDto implements Serializable {
      */
     @Schema(description = "备注")
     private String note;
+
+    /**
+     * 图标名称
+     */
+    @Schema(description = "图标名称")
+    private Date iconName;
 
     /**
      * 文档列表

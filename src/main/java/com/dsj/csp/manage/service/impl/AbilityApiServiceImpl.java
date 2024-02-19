@@ -26,9 +26,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AbilityApiServiceImpl extends ServiceImpl<AbilityApiMapper, AbilityApiEntity> implements AbilityApiService  {
 
-
-
-
     @Override
     public List<Long> getApiIds(String keyword) {
         List<AbilityApiEntity> apis = this.list(Wrappers.lambdaQuery(AbilityApiEntity.class)

@@ -104,12 +104,8 @@ public class DocController {
         List<DocDto> resRecords = records.stream().map(doc -> {
             DocDto docDto = new DocDto();
             BeanUtil.copyProperties(doc, docDto);
-//            try{
-                docDto.setCatalogName(catalogMap.get(doc.getCatalogId())==null ? null : catalogMap.get(doc.getCatalogId()).getCatalogName());
-                docDto.setApiName(apiMap.get(doc.getApiId())==null ? null : apiMap.get(doc.getApiId()).getApiName());
-//            }catch (NullPointerException e){
-//                throw new BusinessException("存在文档所属的目录或者对应的接口不存在!");
-//            }
+            docDto.setCatalogName(catalogMap.get(doc.getCatalogId())==null ? null : catalogMap.get(doc.getCatalogId()).getCatalogName());
+            docDto.setApiName(apiMap.get(doc.getApiId())==null ? null : apiMap.get(doc.getApiId()).getApiName());
             return docDto;
         }).toList();
         page.setRecords(resRecords);
@@ -190,7 +186,6 @@ public class DocController {
         boolean editFlag = docService.updateById(docEntity);
         return Result.success("文档编辑完成!", editFlag );
     }
-
 
     @AopLogger(describe = "删除文档", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "删除文档")

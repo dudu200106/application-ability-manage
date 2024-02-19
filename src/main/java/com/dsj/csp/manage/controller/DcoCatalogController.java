@@ -1,11 +1,14 @@
 package com.dsj.csp.manage.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.toolkit.SimpleQuery;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.enums.LogEnum;
+import com.dsj.csp.manage.dto.DocCatalogDto;
 import com.dsj.csp.manage.entity.DocCatalogEntity;
 import com.dsj.csp.manage.entity.DocEntity;
 import com.dsj.csp.manage.service.DocCatalogService;
@@ -15,6 +18,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.w3c.dom.stylesheets.LinkStyle;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -75,6 +82,34 @@ public class DcoCatalogController {
         // 删除目录
         boolean delFlag = docCatalogService.removeById(catalogEntity.getCatalogId());
         return Result.success("删除目录" + (delFlag ? "成功!" : "失败!"), delFlag);
+    }
+
+    @AopLogger(describe = "查询所有目录及其文档列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "查询所有目录及其文档列表")
+    @GetMapping("/doc-list")
+    public Result<?> queryAllCatalogAndDoc(){
+        // 查出所有目录列表
+        List<DocCatalogEntity> catalogs = docCatalogService.list();
+        // 查出目录列表下的所有文档列表(一次性查出, 减少DB查询次数)
+        Set<Long> catalogIds = catalogs.stream().map(DocCatalogEntity::getCatalogId).collect(Collectors.toSet());
+        List<DocEntity> docs = docService.list(Wrappers.lambdaQuery(DocEntity.class)
+                .select(DocEntity::getDocId, DocEntity::getCatalogId, DocEntity::getDocName)
+                .in(DocEntity::getCatalogId, catalogIds));
+        Map<Long, List<DocEntity>> docEntityMap = new HashMap<>();
+        docs.forEach(doc -> {
+            // 如果key不存在则初始化一个空列表
+            docEntityMap.putIfAbsent(doc.getCatalogId(), new ArrayList<>());
+            docEntityMap.get(doc.getCatalogId()).add(doc);
+        });
+        // 构造返回结果
+        List<DocCatalogDto> catalogDtoList = catalogs.stream().map(catalog->{
+            DocCatalogDto catalogDto = new DocCatalogDto();
+            BeanUtil.copyProperties(catalog, catalogDto);
+            List<DocEntity> docList = docEntityMap.getOrDefault(catalog.getCatalogId(), new ArrayList<>());
+            catalogDto.setDocList(docList);
+            return catalogDto;
+        }).toList();
+        return Result.success(catalogDtoList);
     }
 
 }

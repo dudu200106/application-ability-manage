@@ -75,6 +75,8 @@ public class DocController {
     @GetMapping("/page")
     public Result<?> page(@Parameter(description = "是否过滤未上线的文档") boolean onlyOnline,
                           @Parameter(description = "接口ID") Long apiId,
+                          @Parameter(description = "目录ID") Long catalogId,
+                          @Parameter(description = "接口ID") Integer status,
                           @Parameter(description = "当前页数", required = true) int current,
                           @Parameter(description = "分页条数", required = true) int size,
                           @Parameter(description = "开始时间") Date startTime,
@@ -82,6 +84,8 @@ public class DocController {
         // 构造分页条件
         LambdaQueryWrapper<DocEntity> queryWrapper = Wrappers.lambdaQuery(DocEntity.class)
                 .eq(apiId!=null, DocEntity::getApiId, apiId)
+                .eq(catalogId!=null, DocEntity::getCatalogId, catalogId)
+                .eq(status!=null, DocEntity::getStatus, status)
                 .ge(Objects.nonNull(startTime), DocEntity::getCreateTime, startTime)
                 .le(Objects.nonNull(endTime), DocEntity::getCreateTime, endTime)
                 .notIn(onlyOnline, DocEntity::getStatus, 5)

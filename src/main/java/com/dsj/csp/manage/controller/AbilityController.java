@@ -280,7 +280,7 @@ public class AbilityController {
     @PostMapping("/delete-api-apply")
     public Result<?> removeApiApply(@RequestBody AbilityDeleteDTO deleteDTO){
         String apiApplyIds = deleteDTO.getApiApplyIds();
-        List<Long> ids = Arrays.stream(apiApplyIds.split(",")).map(id -> Long.parseLong(id)).toList();
+        List<Long> ids = Arrays.stream(apiApplyIds.split(",")).map(Long::parseLong).toList();
         Boolean delFlag = abilityApiApplyService.removeBatchByIds(ids);
         return Result.success("删除能力申请完成! ", delFlag);
     }

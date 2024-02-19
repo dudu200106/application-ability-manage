@@ -17,7 +17,6 @@ import com.dsj.csp.manage.entity.AbilityEntity;
 import com.dsj.csp.manage.service.AbilityApiApplyService;
 import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.AbilityService;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * @author Sean Du
@@ -160,14 +158,14 @@ public class AbilityController {
     }
 
 
-    @AopLogger(describe = "删除能力接口", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "删除能力接口")
+    @AopLogger(describe = "删除接口", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "删除接口")
     @PostMapping("/delete-api")
     public Result<?> removeApi(@RequestBody AbilityDeleteDTO deleteDTO){
         String apiIds = deleteDTO.getApiIds();
-        List<Long> ids = Arrays.asList(apiIds.split(",")).stream().map(id -> Long.parseLong(id)).toList();
+        List<Long> ids = Arrays.stream(apiIds.split(",")).map(Long::parseLong).toList();
         Boolean delFlag = abilityApiService.removeBatchByIds(ids);
-        return Result.success("删除能力完成! ", delFlag);
+        return Result.success("删除接口完成! ", delFlag);
     }
 
 
@@ -282,7 +280,7 @@ public class AbilityController {
     @PostMapping("/delete-api-apply")
     public Result<?> removeApiApply(@RequestBody AbilityDeleteDTO deleteDTO){
         String apiApplyIds = deleteDTO.getApiApplyIds();
-        List<Long> ids = Arrays.asList(apiApplyIds.split(",")).stream().map(id -> Long.parseLong(id)).toList();
+        List<Long> ids = Arrays.stream(apiApplyIds.split(",")).map(id -> Long.parseLong(id)).toList();
         Boolean delFlag = abilityApiApplyService.removeBatchByIds(ids);
         return Result.success("删除能力申请完成! ", delFlag);
     }

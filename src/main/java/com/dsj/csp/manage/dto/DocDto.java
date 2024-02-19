@@ -3,6 +3,7 @@ package com.dsj.csp.manage.dto;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -21,12 +22,14 @@ public class DocDto  implements Serializable {
      * 文档ID
      */
     @Schema(description = "文档ID")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long docId;
 
     /**
      * 文档目录ID
      */
     @Schema(description = "文档目录ID")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long catalogId;
 
     /**
@@ -39,6 +42,7 @@ public class DocDto  implements Serializable {
      * 接口ID
      */
     @Schema(description = "接口ID")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long apiId;
 
     /**

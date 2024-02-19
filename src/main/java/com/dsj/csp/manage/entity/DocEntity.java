@@ -1,6 +1,7 @@
 package com.dsj.csp.manage.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,18 +22,21 @@ public class DocEntity implements Serializable {
      * 文档ID
      */
     @TableId(value = "WD_ID", type = IdType.AUTO)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     @Schema(description = "文档ID")
     private Long docId;
     /**
      * 文档目录ID
      */
     @TableField(value = "WDML_ID")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     @Schema(description = "文档目录ID")
     private Long catalogId;
     /**
      * 接口ID
      */
     @TableField(value = "NLJK_ID")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     @Schema(description = "接口ID")
     private Long apiId;
     /**

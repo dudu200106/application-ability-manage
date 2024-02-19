@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: application-ability-manage
+  cloud:
+    nacos:
+      server-addr: http://106.227.92.123:8848/application-ability-manage.yml
+      discovery:
+        service: ${spring.application.name}
+        group: csp
+        namespace: test
+      config:
+        namespace: test
+        group: csp
+        file-extension: yaml
+  config:
+    import: "nacos:"

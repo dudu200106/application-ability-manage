@@ -45,7 +45,7 @@ public class DocCatalogDto implements Serializable {
      * 图标名称
      */
     @Schema(description = "图标名称")
-    private Date iconName;
+    private String iconName;
 
     /**
      * 文档列表

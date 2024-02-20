@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.toolkit.SimpleQuery;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.dto.AbilityApiVO;
@@ -15,7 +14,6 @@ import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.*;
 import lombok.RequiredArgsConstructor;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,12 +71,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
     @Override
     public String auditWithdraw(Long apiId, String note) {
-        AbilityApiEntity api = abilityApiService.getById(apiId);
-        if (api==null){
-            throw new BusinessException("审核失败! 接口不存在,请刷新页面后重试...");
-        }
-        // 审核流程限制: 状态(0未提交 1待审核 2审核未通过 3未发布 4已发布 5已下线)
-        if (api.getStatus() != 1) {
+        boolean isValid = isApiValid(apiId, 1) ;
+        if (!isValid) {
             throw new BusinessException("只用待审核的接口才能撤回,请刷新页面后重试!");
         }
         LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
@@ -92,12 +86,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
     @Override
     public String auditSubmit(Long apiId, String note) {
-        AbilityApiEntity api = abilityApiService.getById(apiId);
-        if (api==null){
-            throw new BusinessException("审核失败! 接口不存在,请刷新页面后重试...");
-        }
-        // 审核流程限制: 状态(0未提交 1待审核 2审核未通过 3未发布 4已发布 5已下线)
-        if (api.getStatus() != 0) {
+        boolean isValid = isApiValid(apiId, 0) ;
+        if (!isValid) {
             throw new BusinessException("只用待提交状态的接口才能够提交,请刷新页面后重试!");
         }
         LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
@@ -111,12 +101,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
     @Override
     public String auditNotPass(Long apiId, String note) {
-        AbilityApiEntity api = abilityApiService.getById(apiId);
-        if (api==null){
-            throw new BusinessException("审核失败! 接口不存在,请刷新页面后重试...");
-        }
-        // 审核流程限制: 状态(0未提交 1待审核 2审核未通过 3未发布 4已发布 5已下线)
-        if (api.getStatus() != 1) {
+        boolean isValid = isApiValid(apiId, 1) ;
+        if (!isValid) {
             throw new BusinessException("只用待审核的接口才能审核不通过,请刷新页面后重试!");
         }
         LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
@@ -130,12 +116,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
     @Override
     public String auditPass(Long apiId, String note) {
-        AbilityApiEntity api = abilityApiService.getById(apiId);
-        if (api==null){
-            throw new BusinessException("审核失败! 接口不存在,请刷新页面后重试...");
-        }
-        // 审核流程限制: 状态(0未提交 1待审核 2审核未通过 3未发布 4已发布 5已下线)
-        if (api.getStatus() != 1) {
+        boolean isValid = isApiValid(apiId, 1) ;
+        if (!isValid) {
             throw new BusinessException("只用待审核的接口才能审核通过,请刷新页面后重试!");
         }
         LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
@@ -149,12 +131,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
     @Override
     public String auditPublish(Long apiId, String note) {
-        AbilityApiEntity api = abilityApiService.getById(apiId);
-        if (api==null){
-            throw new BusinessException("审核失败! 接口不存在,请刷新页面后重试...");
-        }
-        // 审核流程限制: 状态(0未提交 1待审核 2审核未通过 3未发布 4已发布 5已下线)
-        if (api.getStatus() != 3 && api.getStatus()!=5) {
+        boolean isValid = isApiValid(apiId, 3) || isApiValid(apiId, 5) ;
+        if (!isValid) {
             throw new BusinessException("只用审核通过的接口才能发布,请刷新页面后重试!");
         }
         LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
@@ -168,12 +146,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
     @Override
     public String auditOffline(Long apiId, String note) {
-        AbilityApiEntity api = abilityApiService.getById(apiId);
-        if (api==null){
-            throw new BusinessException("审核失败! 接口不存在,请刷新页面后重试...");
-        }
-        // 审核流程限制: 状态(0未提交 1待审核 2审核未通过 3未发布 4已发布 5已下线)
-        if (api.getStatus() != 4) {
+        boolean isValid = isApiValid(apiId, 4) ;
+        if (!isValid) {
             throw new BusinessException("只用发布的接口才能下线,请刷新页面后重试!");
         }
         long cntUsing = abilityApiApplyService.count(Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
@@ -191,18 +165,34 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         return "接口下线完毕!";
     }
 
+    /**
+     * 审核操作前的判断,
+     * @param apiId 接口ID
+     * @param targetPrevStatus 期待的前任审核状态
+     * @return 审核操作是否有效
+     */
+    public boolean isApiValid(Long apiId, int targetPrevStatus){
+        // 审核的接口是否还存在
+        AbilityApiEntity api = abilityApiService.getById(apiId);
+        if (api==null){
+            throw new BusinessException("审核失败! 接口不存在,请刷新页面后重试...");
+        }
+        // 审核操作是否有效
+        // 审核流程限制: 状态(0未提交 1待审核 2审核未通过 3未发布 4已发布 5已下线)
+        return api.getStatus()==targetPrevStatus;
+    }
+
 
     @Override
     public boolean updateApi(AbilityApiVO apiVO) {
         AbilityApiEntity api = new AbilityApiEntity();
         BeanUtil.copyProperties(apiVO, api, true);
         api.setUpdateTime(new Date());
-
         // 覆盖参数列表
-        LambdaQueryWrapper reqQW = Wrappers.lambdaQuery(AbilityApiReq.class).eq(AbilityApiReq::getApiId, apiVO.getApiId());
-        abilityApiReqService.remove(reqQW);
-        LambdaQueryWrapper respQW = Wrappers.lambdaQuery(AbilityApiResp.class).eq(AbilityApiResp::getApiId, apiVO.getApiId());
-        abilityApiRespService.remove(respQW);
+        abilityApiReqService.remove(Wrappers.lambdaQuery(AbilityApiReq.class)
+                .eq(AbilityApiReq::getApiId, apiVO.getApiId()));
+        abilityApiRespService.remove(Wrappers.lambdaQuery(AbilityApiResp.class)
+                .eq(AbilityApiResp::getApiId, apiVO.getApiId()));
         Long apiId = apiVO.getApiId();
         return abilityApiService.updateById(api) &&
                 abilityApiReqService.saveReqList(apiVO.getReqList(), apiId) &&
@@ -250,7 +240,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         // 主表查询
         List<AbilityApiEntity> apiList = abilityApiService.list(queryWrapper);
         // 构造返回结果
-        Set<Long> abilityIds = apiList.stream().map(api -> api.getAbilityId()).collect(Collectors.toSet());
+        Set<Long> abilityIds = apiList.stream().map(AbilityApiEntity::getAbilityId).collect(Collectors.toSet());
         Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
         List<AbilityApiVO> apiVOs = apiList.stream().map(api->{
             AbilityApiVO apiVO = new AbilityApiVO();
@@ -277,7 +267,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         // 主表查询
         List<AbilityApiEntity> apiList = abilityApiService.list(queryWrapper);
         // 构造返回结果
-        Set<Long> abilityIds = apiList.stream().map(api -> api.getAbilityId()).collect(Collectors.toSet());
+        Set<Long> abilityIds = apiList.stream().map(AbilityApiEntity::getAbilityId).collect(Collectors.toSet());
         Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
         List<AbilityApiVO> apiVOs = apiList.stream().map(api->{
             AbilityApiVO apiVO = new AbilityApiVO();
@@ -308,11 +298,11 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         // 关键字不为空
         if (!ObjectUtil.isEmpty(keyword)){
             // 获取符合关键字模糊查询的能力ID集合
-            List<Long> abiltiyIds = abilityService.getAbilityIds(keyword.trim());
+            List<Long> abilityIds = abilityService.getAbilityIds(keyword.trim());
             queryWrapper.and(i -> i.like(AbilityApiEntity::getApiName, keyword)
                     .or().like(AbilityApiEntity::getApiDesc, keyword)
                     .or().like(AbilityApiEntity::getApiUrl, keyword)
-                    .or().in(abiltiyIds.size()>0, AbilityApiEntity::getAbilityId, abiltiyIds)
+                    .or().in(abilityIds.size()>0, AbilityApiEntity::getAbilityId, abilityIds)
             );
         }
         // 主表分页查询
@@ -335,9 +325,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         return resPage;
     }
 
-
     @Override
-    public Page pageApiCatalog(Boolean onlyPublished, String reqMethod, Integer status, Long userId, Long abilityId, String keyword, int current, int size, Date startTime, Date endTime) {
+    public Page<AbilityApiVO> pageApiCatalog(Boolean onlyPublished, String reqMethod, Integer status, Long userId, Long abilityId, String keyword, int current, int size, Date startTime, Date endTime) {
         // 构造分页条件构造器
         LambdaQueryWrapper<AbilityApiEntity> queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)
                 .eq(userId!=null, AbilityApiEntity::getUserId, userId)
@@ -358,16 +347,16 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                             .or().like(AbilityApiEntity::getApiUrl, keyword)
                             .or().in(abiltiyIds.size()>0, AbilityApiEntity::getAbilityId, abiltiyIds));
         }
-        Page prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
+        Page<AbilityApiEntity> prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
         List<AbilityApiEntity> preRecords = prePage.getRecords();
         if (preRecords.size()==0){
-            return prePage;
+            return new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         }
 
-        Set<Long> abilityIds = preRecords.stream().map(api -> api.getAbilityId()).collect(Collectors.toSet());
+        Set<Long> abilityIds = preRecords.stream().map(AbilityApiEntity::getAbilityId).collect(Collectors.toSet());
         Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
         // 构造返回分页
-        Page resPage = new Page(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
+        Page<AbilityApiVO> resPage = new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         List<AbilityApiVO> resRecords = preRecords.stream().map(api -> {
             AbilityApiVO apiVO = new AbilityApiVO();
             BeanUtil.copyProperties(api, apiVO);

@@ -145,11 +145,11 @@ public class DocBizServiceImpl implements DocBizService {
         if (docEntity==null){
             throw new BusinessException("审核失败! 文档不存在,请刷新页面后重试...");
         }
-        // 文档关联的接口是否存在并且已发布
-        AbilityApiEntity api = abilityApiService.getById(docEntity.getApiId());
-        if (api==null || api.getStatus()!=4){
-            throw new BusinessException("申请的接口不存在了，或已下线！");
-        }
+//        // 文档关联的接口是否存在并且已发布
+//        AbilityApiEntity api = abilityApiService.getById(docEntity.getApiId());
+//        if (api==null || api.getStatus()!=4){
+//            throw new BusinessException("申请的接口不存在了，或已下线！");
+//        }
         // 审核操作是否有效
         return docEntity.getStatus()==targetPrevStatus;
     }

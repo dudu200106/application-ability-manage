@@ -101,16 +101,8 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
 
     @Override
     public String auditWithdraw(Long applyId, String note) {
-        AbilityApiApplyEntity apply = abilityApiApplyService.getById(applyId);
-        if (apply==null){
-            throw new BusinessException("审核通过失败!找不到该申请记录!");
-        }
-        AbilityApiEntity api = abilityApiService.getById(apply.getApiId());
-        if (api==null || api.getStatus()!=4){
-            throw new BusinessException("申请的接口不存在了，或已下线！");
-        }
-        // 审核流程限制: 状态(0待提交 1待审核 2审核通过 3审核不通过 4已停用 )
-        if (apply.getStatus() != 1) {
+        boolean isValid = isApplyValid(applyId, 1);
+        if (!isValid) {
             throw new BusinessException("只有'待审核'的申请才能撤回!请刷新页面后重试");
         }
         // 创建更新条件构造器
@@ -123,16 +115,8 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
 
     @Override
     public String auditSubmit(Long applyId, String note) {
-        AbilityApiApplyEntity apply = abilityApiApplyService.getById(applyId);
-        if (apply==null){
-            throw new BusinessException("审核通过失败!找不到该申请记录!");
-        }
-        AbilityApiEntity api = abilityApiService.getById(apply.getApiId());
-        if (api==null || api.getStatus()!=4){
-            throw new BusinessException("申请的接口不存在了，或已下线！");
-        }
-        // 审核流程限制: 状态(0待提交 1待审核 2审核通过 3审核不通过 4已停用 )
-        if (apply.getStatus() != 0) {
+        boolean isValid = isApplyValid(applyId, 0);
+        if (!isValid) {
             throw new BusinessException("只有'未提交'的申请才能提交!请刷新页面后重试");
         }
         // 创建更新条件构造器
@@ -145,16 +129,8 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
 
     @Override
     public String auditPass(Long applyId, String note) {
-        AbilityApiApplyEntity apply = abilityApiApplyService.getById(applyId);
-        if (apply==null){
-            throw new BusinessException("审核通过失败!找不到该申请记录!");
-        }
-        AbilityApiEntity api = abilityApiService.getById(apply.getApiId());
-        if (api==null || api.getStatus()!=4){
-            throw new BusinessException("申请的接口不存在了，或已下线！");
-        }
-        // 审核流程限制: 状态(0待提交 1待审核 2审核通过 3审核不通过 4已停用 )
-        if (apply.getStatus() != 1 && apply.getStatus() != 4) {
+        boolean isValid = isApplyValid(applyId, 2) || isApplyValid(applyId, 2);
+        if (!isValid) {
             throw new BusinessException("只有'待审核'或者'停用'的申请才能审核通过!请刷新页面后重试");
         }
         // 创建更新条件构造器
@@ -166,7 +142,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         abilityApiApplyService.update(updateWrapper);
 
         // 判断是否要生成一对密钥
-        Long appId = apply.getAppId();
+        Long appId = abilityApiApplyService.getById(applyId).getAppId();
         ManageApplicationEntity app = manageApplicationService.getById(appId);
         // 如果申请的appId不存在
         if (app == null){
@@ -196,16 +172,8 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
 
     @Override
     public String auditNotPass(Long applyId, String note) {
-        AbilityApiApplyEntity apply = abilityApiApplyService.getById(applyId);
-        if (apply==null){
-            throw new BusinessException("审核通过失败!找不到该申请记录!");
-        }
-        AbilityApiEntity api = abilityApiService.getById(apply.getApiId());
-        if (api==null || api.getStatus()!=4){
-            throw new BusinessException("申请的接口不存在了，或已下线！");
-        }
-        // 审核流程限制: 状态(0待提交 1待审核 2审核通过 3审核不通过 4已停用 )
-        if (apply.getStatus() != 1 && apply.getStatus() != 4) {
+        boolean isValid = isApplyValid(applyId, 1);
+        if (!isValid) {
             throw new BusinessException("只有'待审核'的申请才能审核不通过!请刷新页面后重试");
         }
         // 创建更新条件构造器
@@ -220,16 +188,8 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
 
     @Override
     public String auditBlockUp(Long applyId, String note) {
-        AbilityApiApplyEntity apply = abilityApiApplyService.getById(applyId);
-        if (apply==null){
-            throw new BusinessException("审核通过失败!找不到该申请记录!");
-        }
-        AbilityApiEntity api = abilityApiService.getById(apply.getApiId());
-        if (api==null || api.getStatus()!=4){
-            throw new BusinessException("申请的接口不存在了，或已下线！");
-        }
-        // 审核流程限制: 状态(0待提交 1待审核 2审核通过 3审核不通过 4已停用 )
-        if (apply.getStatus() != 2) {
+        boolean isValid = isApplyValid(applyId, 2);
+        if (!isValid) {
             throw new BusinessException("只有'审核通过'的申请才能停用!请刷新页面后重试");
         }
         // 创建更新条件构造器
@@ -240,6 +200,26 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         updateWrapper.set(AbilityApiApplyEntity::getApproveTime, new Date());
         abilityApiApplyService.update(updateWrapper);
         return "停用完毕!";
+    }
+
+    /**
+     * 审核申请操作前的判断,
+     * @param applyId 申请id
+     * @param targetPrevStatus 期待的前任审核状态
+     * @return 审核操作是否有效
+     */
+    public boolean isApplyValid(Long applyId, int targetPrevStatus){
+        AbilityApiApplyEntity apply = abilityApiApplyService.getById(applyId);
+        if (apply==null){
+            throw new BusinessException("审核通过失败!找不到该申请记录!");
+        }
+        AbilityApiEntity api = abilityApiService.getById(apply.getApiId());
+        if (api==null || api.getStatus()!=4){
+            throw new BusinessException("申请的接口不存在了，或已下线！");
+        }
+        // 审核流程限制: 状态(0待提交 1待审核 2审核通过 3审核不通过 4已停用 )
+        // 审核操作是否有效
+        return apply.getStatus()==targetPrevStatus;
     }
 
     @Override
@@ -268,7 +248,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
 
     @Override
     public Page<AbilityApiApplyDTO> pageApiApply(Boolean onlySubmitted, Long appId, Long userId, Long abilityId, String keyword, Integer status, Date startTime, Date endTime, int current, int size) {
-        // 1.构造分页条件
+        // 1.构造分页条件, 查询主表分页
         LambdaQueryWrapper<AbilityApiApplyEntity> qw = Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
                 .eq(appId != null, AbilityApiApplyEntity::getAppId, appId)
                 .eq(userId != null, AbilityApiApplyEntity::getUserId, userId)
@@ -300,7 +280,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         if (prePage.getTotal()==0){
             return new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         }
-        // 2.单表查询 查出必要的分页返回信息
+        // 2.单表查询 查出必要的分页返回信息(避免过多的分页)
         List<AbilityApiApplyEntity> records = prePage.getRecords();
         // 接口表
         Set<Long> apiIds = records.stream().map(AbilityApiApplyEntity::getApiId).collect(Collectors.toSet());
@@ -319,8 +299,8 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         Map<String, UserApproveEntity> userMap = SimpleQuery.keyMap(Wrappers.lambdaQuery(UserApproveEntity.class)
                 .in(UserApproveEntity::getUserId, userIds), UserApproveEntity::getUserId);
         // 文档 查出申请的接口对应的文档id
-        Map<Long, Long> docMap = SimpleQuery.map(Wrappers.lambdaQuery(DocEntity.class)
-                .in(DocEntity::getApiId, apiIds), DocEntity::getApiId, DocEntity::getDocId);
+        Map<Long, Long> docMap = SimpleQuery.map(Wrappers.lambdaQuery(DocEntity.class).in(DocEntity::getApiId, apiIds),
+                DocEntity::getApiId, DocEntity::getDocId);
         // 3.初始化返回的分页, 并
         Page<AbilityApiApplyDTO> newPage = new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         List<AbilityApiApplyDTO> resRecords = records.stream().map(apply ->{
@@ -332,7 +312,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
             applyDTO.setAppName(appMap.get(apply.getAppId() + "")==null ? null : appMap.get(apply.getAppId() + "").getAppName());
             applyDTO.setCompanyName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getCompanyName());
             applyDTO.setGovName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getGovName());
-//            applyDTO.setDocId(docMap.get(docMap.get(apply.getApiId())));
+            applyDTO.setDocId(docMap.get(apply.getApiId()));
             return applyDTO;
         }).toList();
         newPage.setRecords(resRecords);

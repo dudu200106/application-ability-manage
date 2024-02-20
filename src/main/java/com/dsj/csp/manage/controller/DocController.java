@@ -112,6 +112,9 @@ public class DocController {
                 .orderByAsc(DocEntity::getStatus);
         // 主表分页查询
         Page<DocEntity> page = docService.page(new Page<>(current, size), queryWrapper);
+        if (page.getRecords().isEmpty()){
+            return Result.success(new Page<>(page.getCurrent(), page.getSize(), page.getTotal()));
+        }
         List<DocEntity> records = page.getRecords();
         Set<Long> catalogIds = records.stream().map(DocEntity::getCatalogId).collect(Collectors.toSet());
         Set<Long> apiIds = records.stream().map(DocEntity::getApiId).collect(Collectors.toSet());

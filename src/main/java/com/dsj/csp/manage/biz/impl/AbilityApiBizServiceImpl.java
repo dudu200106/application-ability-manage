@@ -61,20 +61,14 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         Long apiId = auditVO.getApiId();
         String note = auditVO.getNote();
         // 审核
-        switch(auditVO.getFlag()) {
-            case 0:
-                return auditWithdraw(apiId, note);
-            case 1:
-                return auditSubmit(apiId, note);
-            case 2:
-                return auditNotPass(apiId, note);
-            case 3:
-                return auditPass(apiId, note);
-            case 4:
-                return auditPublish(apiId, note);
-            default:
-                return auditOffline(apiId, note);
-        }
+        return switch(auditVO.getFlag()) {
+            case 0 -> auditWithdraw(apiId, note);
+            case 1 -> auditSubmit(apiId, note);
+            case 2 -> auditNotPass(apiId, note);
+            case 3 -> auditPass(apiId, note);
+            case 4 -> auditPublish(apiId, note);
+            default -> auditOffline(apiId, note);
+        };
     }
 
     @Override
@@ -160,7 +154,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
             throw new BusinessException("审核失败! 接口不存在,请刷新页面后重试...");
         }
         // 审核流程限制: 状态(0未提交 1待审核 2审核未通过 3未发布 4已发布 5已下线)
-        if (api.getStatus() != 3) {
+        if (api.getStatus() != 3 && api.getStatus()!=5) {
             throw new BusinessException("只用审核通过的接口才能发布,请刷新页面后重试!");
         }
         LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();

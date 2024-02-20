@@ -9,6 +9,7 @@ import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.enums.LogEnum;
+import com.dsj.csp.manage.biz.DocBizService;
 import com.dsj.csp.manage.dto.DocDto;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
 import com.dsj.csp.manage.entity.DocCatalogEntity;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 public class DocController {
 
     private final DocService docService;
+    private final DocBizService docBizService;
     private final DocCatalogService docCatalogService;
     private final UserApproveService userApproveService;
     private final AbilityApiService abilityApiService;
@@ -56,7 +58,9 @@ public class DocController {
         if (doc.getApiId()!=null){
             // Api接口是否多次关联文档
             long cntMultipleApi = docService.count(Wrappers.lambdaQuery(DocEntity.class)
-                    .eq(DocEntity::getApiId, doc.getApiId()));
+                    .eq(DocEntity::getApiId, doc.getApiId())
+                    // 2审核不通过 5已下线
+                    .notIn(DocEntity::getStatus, 2, 5));
             if (cntMultipleApi>0){
                 throw new BusinessException("该文档关联的Api已被其他文档关联!");
             }
@@ -129,7 +133,7 @@ public class DocController {
     public Result<?> auditSubmit(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
         // Token验证
         userApproveService.identify(accessToken).getUserName();
-        docService.auditSubmit(doc.getDocId());
+        docBizService.auditSubmit(doc.getDocId());
         return Result.success("文档提交完成!");
     }
 
@@ -139,7 +143,7 @@ public class DocController {
     public Result<?> auditWithdraw(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
         // Token验证
         userApproveService.identify(accessToken).getUserName();
-        docService.auditWithdraw(doc.getDocId());
+        docBizService.auditWithdraw(doc.getDocId());
         return Result.success("文档撤回完成!");
     }
 
@@ -148,7 +152,7 @@ public class DocController {
     @PostMapping("/audit-pass")
     public Result<?> auditPass(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
         String operatorName = userApproveService.identify(accessToken).getUserName();
-        docService.auditPass(doc.getDocId(), doc.getNote(), operatorName);
+        docBizService.auditPass(doc.getDocId(), doc.getNote(), operatorName);
         return Result.success("文档审核通过!");
     }
 
@@ -157,7 +161,7 @@ public class DocController {
     @PostMapping("/audit-not-pass")
     public Result<?> auditNotPass(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
         String operatorName = userApproveService.identify(accessToken).getUserName();
-        docService.auditNotPass(doc.getDocId(), doc.getNote(), operatorName);
+        docBizService.auditNotPass(doc.getDocId(), doc.getNote(), operatorName);
         return Result.success("文档审核不通过!");
     }
 
@@ -167,7 +171,7 @@ public class DocController {
     @PostMapping("/audit-publish")
     public Result<?> auditPublish(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
         String operatorName = userApproveService.identify(accessToken).getUserName();
-        docService.auditPublish(doc.getDocId(), null, operatorName);
+        docBizService.auditPublish(doc.getDocId(), null, operatorName);
         return Result.success("文档发布成功!");
     }
 
@@ -176,7 +180,7 @@ public class DocController {
     @PostMapping("/audit-online")
     public Result<?> auditOnline(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
         String operatorName = userApproveService.identify(accessToken).getUserName();
-        docService.auditOnline(doc.getDocId(), doc.getNote(), operatorName);
+        docBizService.auditOnline(doc.getDocId(), doc.getNote(), operatorName);
         return Result.success("文档上线成功!");
     }
 
@@ -185,7 +189,7 @@ public class DocController {
     @PostMapping("/audit-offline")
     public Result<?> abortPublish(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
         String operatorName = userApproveService.identify(accessToken).getUserName();
-        docService.auditOffline(doc.getDocId(), doc.getNote(), operatorName);
+        docBizService.auditOffline(doc.getDocId(), doc.getNote(), operatorName);
         return Result.success("文档下线成功!");
     }
 

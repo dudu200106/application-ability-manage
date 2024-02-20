@@ -45,6 +45,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         long cnt =abilityApiApplyService.count(Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
                 .eq(AbilityApiApplyEntity::getAppId, applyEntity.getAppId())
                 .eq(AbilityApiApplyEntity::getApiId,applyEntity.getApiId())
+                // 状态0:未提交 1:待审核 2审核通过
                 .in(AbilityApiApplyEntity::getStatus, 0, 1, 2));
         if (cnt!=0){
             throw new BusinessException("操作无效！所选应用已保存或者申请过该能力接口");
@@ -274,6 +275,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                 .eq(abilityId != null, AbilityApiApplyEntity::getAbilityId, abilityId)
                 .eq(status != null, AbilityApiApplyEntity::getStatus, status)
                 // 如果过滤未提交状态
+                // 状态0: 未提交
                 .notIn(onlySubmitted, AbilityApiApplyEntity::getStatus, 0)
                 .ge(Objects.nonNull(startTime), AbilityApiApplyEntity::getUpdateTime, startTime)
                 .le(Objects.nonNull(endTime), AbilityApiApplyEntity::getUpdateTime, endTime)
@@ -316,6 +318,9 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         Set<Long> userIds = records.stream().map(AbilityApiApplyEntity::getUserId).collect(Collectors.toSet());
         Map<String, UserApproveEntity> userMap = SimpleQuery.keyMap(Wrappers.lambdaQuery(UserApproveEntity.class)
                 .in(UserApproveEntity::getUserId, userIds), UserApproveEntity::getUserId);
+        // 文档 查出申请的接口对应的文档id
+        Map<Long, Long> docMap = SimpleQuery.map(Wrappers.lambdaQuery(DocEntity.class)
+                .in(DocEntity::getApiId, apiIds), DocEntity::getApiId, DocEntity::getDocId);
         // 3.初始化返回的分页, 并
         Page<AbilityApiApplyDTO> newPage = new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         List<AbilityApiApplyDTO> resRecords = records.stream().map(apply ->{
@@ -327,6 +332,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
             applyDTO.setAppName(appMap.get(apply.getAppId() + "")==null ? null : appMap.get(apply.getAppId() + "").getAppName());
             applyDTO.setCompanyName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getCompanyName());
             applyDTO.setGovName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getGovName());
+//            applyDTO.setDocId(docMap.get(docMap.get(apply.getApiId())));
             return applyDTO;
         }).toList();
         newPage.setRecords(resRecords);

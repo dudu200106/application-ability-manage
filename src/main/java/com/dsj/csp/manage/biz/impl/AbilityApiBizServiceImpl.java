@@ -111,6 +111,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         updateWrapper.set(AbilityApiEntity::getStatus, 2);
         updateWrapper.set(AbilityApiEntity::getNote, note);
         updateWrapper.set(AbilityApiEntity::getApproveTime, new Date());
+        updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
         abilityApiService.update(updateWrapper);
         return "审核不通过完毕!";
     }
@@ -126,6 +127,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         updateWrapper.set(AbilityApiEntity::getStatus, 3);
         updateWrapper.set(AbilityApiEntity::getNote, note);
         updateWrapper.set(AbilityApiEntity::getApproveTime, new Date());
+        updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
         abilityApiService.update(updateWrapper);
         return "审核通过完毕! 等待发布...";
     }
@@ -141,6 +143,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         updateWrapper.set(AbilityApiEntity::getStatus, 4);
         updateWrapper.set(AbilityApiEntity::getNote, note);
         updateWrapper.set(AbilityApiEntity::getApproveTime, new Date());
+        updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
         abilityApiService.update(updateWrapper);
         return "接口发布完毕!";
     }
@@ -162,6 +165,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         updateWrapper.set(AbilityApiEntity::getStatus, 5);
         updateWrapper.set(AbilityApiEntity::getNote, note);
         updateWrapper.set(AbilityApiEntity::getApproveTime, new Date());
+        updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
         abilityApiService.update(updateWrapper);
         return "接口下线完毕!";
     }

@@ -1,6 +1,7 @@
 package com.dsj.csp.manage.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -11,6 +12,7 @@ import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.DocBizService;
 import com.dsj.csp.manage.dto.DocDto;
+import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
 import com.dsj.csp.manage.entity.DocCatalogEntity;
 import com.dsj.csp.manage.entity.DocEntity;
@@ -93,6 +95,7 @@ public class DocController {
                           @Parameter(description = "接口ID") Long apiId,
                           @Parameter(description = "目录ID") Long catalogId,
                           @Parameter(description = "接口ID") Integer status,
+                          @Parameter(description = "查询关键字") String keyword,
                           @Parameter(description = "当前页数", required = true) int current,
                           @Parameter(description = "分页条数", required = true) int size,
                           @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
@@ -110,6 +113,14 @@ public class DocController {
                 // 排序
                 .orderByDesc(DocEntity::getUpdateTime)
                 .orderByAsc(DocEntity::getStatus);
+        // 关键字
+        if (!ObjectUtil.isEmpty(keyword)){
+            List<Long> catalogIds = docCatalogService.matchCatalogIdList(keyword.trim());
+            queryWrapper.and(i -> i.like(DocEntity::getDocName, keyword)
+                    .or().like(DocEntity::getNote, keyword)
+                    .or().in(catalogIds.size()>0, DocEntity::getCatalogId, catalogIds)
+            );
+        }
         // 主表分页查询
         Page<DocEntity> page = docService.page(new Page<>(current, size), queryWrapper);
         if (page.getRecords().isEmpty()){

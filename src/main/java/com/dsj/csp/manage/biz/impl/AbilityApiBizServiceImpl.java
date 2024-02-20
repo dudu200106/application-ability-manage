@@ -246,7 +246,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         List<AbilityApiVO> apiVOs = apiList.stream().map(api->{
             AbilityApiVO apiVO = new AbilityApiVO();
             BeanUtil.copyProperties(api, apiVO, true);
-            apiVO.setAbilityName(abilityMap.get(api.getAbilityId())==null ? null : abilityMap.get(api.getAbilityId()).getAbilityName());
+            apiVO.setAbilityName(abilityMap.getOrDefault(api.getAbilityId(), new AbilityEntity()).getAbilityName());
             return apiVO;
         }).toList();
         return apiVOs;
@@ -273,7 +273,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         List<AbilityApiVO> apiVOs = apiList.stream().map(api->{
             AbilityApiVO apiVO = new AbilityApiVO();
             BeanUtil.copyProperties(api, apiVO, true);
-            apiVO.setAbilityName(abilityMap.get(api.getAbilityId())==null ? null : abilityMap.get(api.getAbilityId()).getAbilityName());
+            apiVO.setAbilityName(abilityMap.getOrDefault(api.getAbilityId(), new AbilityEntity()).getAbilityName());
             return apiVO;
         }).toList();
         return apiVOs;
@@ -319,7 +319,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         List<AbilityApiVO> resRecords = preRecords.stream().map(api -> {
             AbilityApiVO apiVO = new AbilityApiVO();
             BeanUtil.copyProperties(api, apiVO);
-            apiVO.setAbilityName(abilityMap.get(api.getAbilityId())==null ? null : abilityMap.get(api.getAbilityId()).getAbilityName());
+            apiVO.setAbilityName(abilityMap.getOrDefault(api.getAbilityId(), new AbilityEntity()).getAbilityName());
             return apiVO;
         }).toList();
         resPage.setRecords(resRecords);

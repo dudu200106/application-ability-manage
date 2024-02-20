@@ -247,7 +247,9 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     }
 
     @Override
-    public Page<AbilityApiApplyDTO> pageApiApply(Boolean onlySubmitted, Long appId, Long userId, Long abilityId, String keyword, Integer status, Date startTime, Date endTime, int current, int size) {
+    public Page<AbilityApiApplyDTO> pageApiApply(Boolean onlySubmitted, Long appId, Long userId, Long abilityId,
+                                                 String keyword, Integer status, Date startTime, Date endTime,
+                                                 int current, int size) {
         // 1.构造分页条件, 查询主表分页
         LambdaQueryWrapper<AbilityApiApplyEntity> qw = Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
                 .eq(appId != null, AbilityApiApplyEntity::getAppId, appId)
@@ -287,9 +289,9 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         Map<Long, AbilityApiEntity> apiMap = SimpleQuery.keyMap(Wrappers.lambdaQuery(AbilityApiEntity.class)
                 .in(AbilityApiEntity::getApiId, apiIds), AbilityApiEntity::getApiId);
         // 能力 查出能力名称
-        Set<Long> abiltiyIds = records.stream().map(AbilityApiApplyEntity::getAbilityId).collect(Collectors.toSet());
+        Set<Long> abilityIds = records.stream().map(AbilityApiApplyEntity::getAbilityId).collect(Collectors.toSet());
         Map<Long, AbilityEntity> abilityMap = SimpleQuery.keyMap(Wrappers.lambdaQuery(AbilityEntity.class)
-                .in(AbilityEntity::getAbilityId, abiltiyIds), AbilityEntity::getAbilityId);
+                .in(AbilityEntity::getAbilityId, abilityIds), AbilityEntity::getAbilityId);
         // 应用 查出应用名称
         Set<Long> appIds = records.stream().map(AbilityApiApplyEntity::getAppId).collect(Collectors.toSet());
         Map<String, ManageApplicationEntity> appMap = SimpleQuery.keyMap(Wrappers.lambdaQuery(ManageApplicationEntity.class)
@@ -298,17 +300,17 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         Set<Long> userIds = records.stream().map(AbilityApiApplyEntity::getUserId).collect(Collectors.toSet());
         Map<String, UserApproveEntity> userMap = SimpleQuery.keyMap(Wrappers.lambdaQuery(UserApproveEntity.class)
                 .in(UserApproveEntity::getUserId, userIds), UserApproveEntity::getUserId);
-        // 3.初始化返回的分页, 并
+        // 3.初始化返回的分页, 并为必要的返回属性赋值
         Page<AbilityApiApplyDTO> newPage = new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         List<AbilityApiApplyDTO> resRecords = records.stream().map(apply ->{
             AbilityApiApplyDTO applyDTO = new AbilityApiApplyDTO();
             BeanUtil.copyProperties(apply, applyDTO, true);
-            applyDTO.setApiName(apiMap.get(apply.getApiId())==null ? null : apiMap.get(apply.getApiId()).getApiName());
-            applyDTO.setApiDesc(apiMap.get(apply.getApiId())==null ? null : apiMap.get(apply.getApiId()).getApiDesc());
-            applyDTO.setAbilityName(abilityMap.get(apply.getAbilityId())==null ? null : abilityMap.get(apply.getAbilityId()).getAbilityName());
-            applyDTO.setAppName(appMap.get(apply.getAppId() + "")==null ? null : appMap.get(apply.getAppId() + "").getAppName());
-            applyDTO.setCompanyName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getCompanyName());
-            applyDTO.setGovName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getGovName());
+            applyDTO.setApiName(apiMap.getOrDefault(apply.getApiId(), new AbilityApiEntity()).getApiName());
+            applyDTO.setApiDesc(apiMap.getOrDefault(apply.getApiId(), new AbilityApiEntity()).getApiDesc());
+            applyDTO.setAbilityName(abilityMap.getOrDefault(apply.getAbilityId(), new AbilityEntity()).getAbilityName());
+            applyDTO.setAppName(appMap.getOrDefault(apply.getAppId() + "", new ManageApplicationEntity()).getAppName());
+            applyDTO.setCompanyName(userMap.getOrDefault(apply.getUserId() + "", new UserApproveEntity()).getCompanyName());
+            applyDTO.setGovName(userMap.getOrDefault(apply.getUserId() + "", new UserApproveEntity()).getGovName());
             return applyDTO;
         }).toList();
         newPage.setRecords(resRecords);

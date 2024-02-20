@@ -22,6 +22,10 @@ public class AbilityApiVO implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long abilityId;
 
+    @Schema(description = "接口关联的文档ID")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private Long docId;
+
     @Schema(description = "能力名称")
     @Length(max= 30,message="编码长度不能超过30")
     private String abilityName;

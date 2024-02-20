@@ -90,11 +90,13 @@ public class DcoCatalogController {
         List<DocCatalogEntity> catalogs = docCatalogService.list();
         // 查出目录列表下的所有文档列表(一次性查出, 减少DB查询次数)
         Set<Long> catalogIds = catalogs.stream().map(DocCatalogEntity::getCatalogId).collect(Collectors.toSet());
+        // 状态3: 已发布
         List<DocEntity> docs = docService.list(Wrappers.lambdaQuery(DocEntity.class)
                 .select(DocEntity::getDocId, DocEntity::getCatalogId, DocEntity::getDocName)
                 .in(DocEntity::getCatalogId, catalogIds)
-                .eq(DocEntity::getStatus, 4));
+                .eq(DocEntity::getStatus, 3));
         Map<Long, List<DocEntity>> docEntityMap = new HashMap<>();
+        // 将文档存入目录-文档键值对
         docs.forEach(doc -> {
             // 如果key不存在则初始化一个空列表
             docEntityMap.putIfAbsent(doc.getCatalogId(), new ArrayList<>());

@@ -103,20 +103,20 @@ public class DocBizServiceImpl implements DocBizService {
         docService.update(updateWrapper);
     }
 
-    @Override
-    public void auditOnline(Long docId, String note, String operatorName) {
-        boolean isValid = isValidJudge(docId, 3);
-        if (!isValid){
-            throw new BusinessException("只有'已发布'的文档才能上线,请刷新后重试!");
-        }
-        LambdaUpdateWrapper<DocEntity> updateWrapper = Wrappers.lambdaUpdate();
-        updateWrapper.eq(DocEntity::getDocId, docId);
-        updateWrapper.set(DocEntity::getStatus, 4);
-        updateWrapper.set(!ObjectUtil.isEmpty(note), DocEntity::getNote, note);
-        updateWrapper.set(DocEntity::getOperator, operatorName);
-        updateWrapper.set(DocEntity::getApproveTime, new Date());
-        docService.update(updateWrapper);
-    }
+//    @Override
+//    public void auditOnline(Long docId, String note, String operatorName) {
+//        boolean isValid = isValidJudge(docId, 3);
+//        if (!isValid){
+//            throw new BusinessException("只有'已发布'的文档才能上线,请刷新后重试!");
+//        }
+//        LambdaUpdateWrapper<DocEntity> updateWrapper = Wrappers.lambdaUpdate();
+//        updateWrapper.eq(DocEntity::getDocId, docId);
+//        updateWrapper.set(DocEntity::getStatus, 4);
+//        updateWrapper.set(!ObjectUtil.isEmpty(note), DocEntity::getNote, note);
+//        updateWrapper.set(DocEntity::getOperator, operatorName);
+//        updateWrapper.set(DocEntity::getApproveTime, new Date());
+//        docService.update(updateWrapper);
+//    }
 
     @Override
     public void auditOffline(Long docId, String note, String operatorName) {

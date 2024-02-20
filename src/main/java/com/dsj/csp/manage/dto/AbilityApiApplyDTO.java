@@ -103,10 +103,6 @@ public class AbilityApiApplyDTO  implements Serializable {
     @Schema(description = "申请使用的接口")
     private AbilityApiEntity api;
 
-    @Schema(description = "接口关联的文档ID")
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private Long docId;
-
     /**
      * 请求参数列表
      */

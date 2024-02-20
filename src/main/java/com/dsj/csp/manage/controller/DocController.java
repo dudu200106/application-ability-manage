@@ -77,16 +77,18 @@ public class DocController {
         DocDto docDto = new DocDto();
         BeanUtil.copyProperties(doc, docDto);
         DocCatalogEntity catalog = docCatalogService.getById(doc.getCatalogId());
-        AbilityApiEntity api = abilityApiService.getById(doc.getApiId());
         docDto.setCatalogName(catalog.getCatalogName());
-        docDto.setApiName(api.getApiName());
+        if (doc.getApiId()!=null){
+            AbilityApiEntity api = abilityApiService.getById(doc.getApiId());
+            docDto.setApiName(api.getApiName());
+        }
         return Result.success(docDto);
     }
 
     @AopLogger(describe = "分页查询文档", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询文档")
     @GetMapping("/page")
-    public Result<?> page(@Parameter(description = "是否过滤未上线的文档") boolean onlyOnline,
+    public Result<?> page(@Parameter(description = "是否过滤未发布的文档") boolean onlySubmit,
                           @Parameter(description = "接口ID") Long apiId,
                           @Parameter(description = "目录ID") Long catalogId,
                           @Parameter(description = "接口ID") Integer status,
@@ -101,7 +103,7 @@ public class DocController {
                 .eq(status!=null, DocEntity::getStatus, status)
                 .ge(Objects.nonNull(startTime), DocEntity::getCreateTime, startTime)
                 .le(Objects.nonNull(endTime), DocEntity::getCreateTime, endTime)
-                .notIn(onlyOnline, DocEntity::getStatus, 5)
+                .in(onlySubmit, DocEntity::getStatus, 3)
                 // 排序
                 .orderByDesc(DocEntity::getCreateTime)
                 .orderByAsc(DocEntity::getStatus);
@@ -175,14 +177,15 @@ public class DocController {
         return Result.success("文档发布成功!");
     }
 
-    @AopLogger(describe = "上线文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "上线文档")
-    @PostMapping("/audit-online")
-    public Result<?> auditOnline(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
-        String operatorName = userApproveService.identify(accessToken).getUserName();
-        docBizService.auditOnline(doc.getDocId(), doc.getNote(), operatorName);
-        return Result.success("文档上线成功!");
-    }
+//     // 取消已上线状态
+//    @AopLogger(describe = "上线文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+//    @Operation(summary = "上线文档")
+//    @PostMapping("/audit-online")
+//    public Result<?> auditOnline(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
+//        String operatorName = userApproveService.identify(accessToken).getUserName();
+//        docBizService.auditOnline(doc.getDocId(), doc.getNote(), operatorName);
+//        return Result.success("文档上线成功!");
+//    }
 
     @AopLogger(describe = "下线文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "下线文档")

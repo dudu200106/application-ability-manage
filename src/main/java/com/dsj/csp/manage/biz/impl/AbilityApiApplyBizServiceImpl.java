@@ -298,9 +298,6 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         Set<Long> userIds = records.stream().map(AbilityApiApplyEntity::getUserId).collect(Collectors.toSet());
         Map<String, UserApproveEntity> userMap = SimpleQuery.keyMap(Wrappers.lambdaQuery(UserApproveEntity.class)
                 .in(UserApproveEntity::getUserId, userIds), UserApproveEntity::getUserId);
-        // 文档 查出申请的接口对应的文档id
-        Map<Long, Long> docMap = SimpleQuery.map(Wrappers.lambdaQuery(DocEntity.class).in(DocEntity::getApiId, apiIds),
-                DocEntity::getApiId, DocEntity::getDocId);
         // 3.初始化返回的分页, 并
         Page<AbilityApiApplyDTO> newPage = new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         List<AbilityApiApplyDTO> resRecords = records.stream().map(apply ->{
@@ -312,7 +309,6 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
             applyDTO.setAppName(appMap.get(apply.getAppId() + "")==null ? null : appMap.get(apply.getAppId() + "").getAppName());
             applyDTO.setCompanyName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getCompanyName());
             applyDTO.setGovName(userMap.get(apply.getUserId() + "")==null ? null : userMap.get(apply.getUserId() + "").getGovName());
-            applyDTO.setDocId(docMap.get(apply.getApiId()));
             return applyDTO;
         }).toList();
         newPage.setRecords(resRecords);

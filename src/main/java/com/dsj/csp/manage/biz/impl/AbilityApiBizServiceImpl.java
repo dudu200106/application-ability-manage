@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.toolkit.SimpleQuery;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.dto.AbilityApiVO;
@@ -354,13 +355,19 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         }
 
         Set<Long> abilityIds = preRecords.stream().map(AbilityApiEntity::getAbilityId).collect(Collectors.toSet());
+        List<Long> apiIds = preRecords.stream().map(AbilityApiEntity::getApiId).toList();
+        // 能力分类
         Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
+        // 文档 查出申请的接口对应的文档id
+        Map<Long, Long> docMap = SimpleQuery.map(Wrappers.lambdaQuery(DocEntity.class).in(DocEntity::getApiId, apiIds),
+                DocEntity::getApiId, DocEntity::getDocId);
         // 构造返回分页
         Page<AbilityApiVO> resPage = new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         List<AbilityApiVO> resRecords = preRecords.stream().map(api -> {
             AbilityApiVO apiVO = new AbilityApiVO();
             BeanUtil.copyProperties(api, apiVO);
-            apiVO.setAbilityName(abilityMap.get(api.getAbilityId())==null ? null : abilityMap.get(api.getAbilityId()).getAbilityName());
+            apiVO.setAbilityName(abilityMap.getOrDefault(api.getAbilityId(), new AbilityEntity()).getAbilityName());
+            apiVO.setDocId(docMap.get(api.getApiId()));
             return apiVO;
         }).toList();
         resPage.setRecords(resRecords);

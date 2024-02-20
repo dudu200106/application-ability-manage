@@ -92,7 +92,8 @@ public class DcoCatalogController {
         Set<Long> catalogIds = catalogs.stream().map(DocCatalogEntity::getCatalogId).collect(Collectors.toSet());
         List<DocEntity> docs = docService.list(Wrappers.lambdaQuery(DocEntity.class)
                 .select(DocEntity::getDocId, DocEntity::getCatalogId, DocEntity::getDocName)
-                .in(DocEntity::getCatalogId, catalogIds));
+                .in(DocEntity::getCatalogId, catalogIds)
+                .eq(DocEntity::getStatus, 4));
         Map<Long, List<DocEntity>> docEntityMap = new HashMap<>();
         docs.forEach(doc -> {
             // 如果key不存在则初始化一个空列表

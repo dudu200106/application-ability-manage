@@ -54,11 +54,11 @@ public class DocEntity implements Serializable {
     private String docDesc;
 
     /**
-     * 操作人
+     * 创建人
      */
     @TableField(value = "WD_CZR")
-    @Schema(description = "操作人")
-    private String operator;
+    @Schema(description = "创建人")
+    private String creator;
 
     /**
      * 状态(默认:0未提交 1待审核 2审核通过 3审核不通过 4已发布 5已下线)
@@ -95,12 +95,21 @@ public class DocEntity implements Serializable {
     @TableField(value = "WD_GXSJ")
     @Schema(description = "更新时间")
     private Date updateTime;
+
     /**
      * 审批时间
      */
     @TableField(value = "WD_SPSJ")
     @Schema(description = "审批时间")
     private Date approveTime;
+
+    /**
+     * 审批时间
+     */
+    @TableField(value = "WD_FBSJ")
+    @Schema(description = "发布时间")
+    private Date submitTime;
+
     /**
      * 文档内容
      */

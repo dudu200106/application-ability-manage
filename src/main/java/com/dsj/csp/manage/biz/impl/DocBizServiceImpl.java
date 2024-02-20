@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.biz.DocBizService;
-import com.dsj.csp.manage.entity.AbilityApiEntity;
 import com.dsj.csp.manage.entity.DocEntity;
 import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.DocService;
@@ -58,7 +57,7 @@ public class DocBizServiceImpl implements DocBizService {
     }
 
     @Override
-    public void auditPass(Long docId, String note, String operator) {
+    public void auditPass(Long docId, String note) {
         boolean isValid = isValidJudge(docId, 0);
         if (!isValid){
             throw new BusinessException("只有'待审核'的文档才能审核通过,请刷新后重试!");
@@ -68,13 +67,13 @@ public class DocBizServiceImpl implements DocBizService {
         // 状态1: 审核通过
         updateWrapper.set(DocEntity::getStatus, 1);
         updateWrapper.set(!ObjectUtil.isEmpty(note), DocEntity::getNote, note);
-        updateWrapper.set(DocEntity::getOperator, operator);
+        updateWrapper.set(DocEntity::getUpdateTime, new Date());
         updateWrapper.set(DocEntity::getApproveTime, new Date());
         docService.update(updateWrapper);
     }
 
     @Override
-    public void auditNotPass(Long docId, String note, String operatorName) {
+    public void auditNotPass(Long docId, String note) {
         boolean isValid = isValidJudge(docId, 0);
         if (!isValid){
             throw new BusinessException("只有'待审核'的文档才能审核不通过,请刷新后重试!");
@@ -83,13 +82,13 @@ public class DocBizServiceImpl implements DocBizService {
         updateWrapper.eq(DocEntity::getDocId, docId);
         updateWrapper.set(DocEntity::getStatus, 2);
         updateWrapper.set(!ObjectUtil.isEmpty(note), DocEntity::getNote, note);
-        updateWrapper.set(DocEntity::getOperator, operatorName);
+        updateWrapper.set(DocEntity::getUpdateTime, new Date());
         updateWrapper.set(DocEntity::getApproveTime, new Date());
         docService.update(updateWrapper);
     }
 
     @Override
-    public void auditPublish(Long docId, String note, String operatorName) {
+    public void auditPublish(Long docId, String note, String creator) {
         boolean isValid = isValidJudge(docId, 1);
         if (!isValid){
             throw new BusinessException("只有'审核通过'的文档才能发布,请刷新后重试!");
@@ -98,13 +97,15 @@ public class DocBizServiceImpl implements DocBizService {
         updateWrapper.eq(DocEntity::getDocId, docId);
         updateWrapper.set(DocEntity::getStatus, 3);
         updateWrapper.set(!ObjectUtil.isEmpty(note), DocEntity::getNote, note);
-        updateWrapper.set(DocEntity::getOperator, operatorName);
+        updateWrapper.set(DocEntity::getCreator, creator);
+        updateWrapper.set(DocEntity::getUpdateTime, new Date());
         updateWrapper.set(DocEntity::getApproveTime, new Date());
+        updateWrapper.set(DocEntity::getSubmitTime, new Date());
         docService.update(updateWrapper);
     }
 
 //    @Override
-//    public void auditOnline(Long docId, String note, String operatorName) {
+//    public void auditOnline(Long docId, String note) {
 //        boolean isValid = isValidJudge(docId, 3);
 //        if (!isValid){
 //            throw new BusinessException("只有'已发布'的文档才能上线,请刷新后重试!");
@@ -119,7 +120,7 @@ public class DocBizServiceImpl implements DocBizService {
 //    }
 
     @Override
-    public void auditOffline(Long docId, String note, String operatorName) {
+    public void auditOffline(Long docId, String note) {
         boolean isValid = isValidJudge(docId, 3) || isValidJudge(docId, 4);
         if (!isValid){
             throw new BusinessException("只有'已发布'或'已上线'的文档才能下线,请刷新后重试!");
@@ -128,7 +129,7 @@ public class DocBizServiceImpl implements DocBizService {
         updateWrapper.eq(DocEntity::getDocId, docId);
         updateWrapper.set(DocEntity::getStatus, 5);
         updateWrapper.set(!ObjectUtil.isEmpty(note), DocEntity::getNote, note);
-        updateWrapper.set(DocEntity::getOperator, operatorName);
+        updateWrapper.set(DocEntity::getUpdateTime, new Date());
         updateWrapper.set(DocEntity::getApproveTime, new Date());
         docService.update(updateWrapper);
     }

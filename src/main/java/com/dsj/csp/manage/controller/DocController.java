@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -94,7 +95,9 @@ public class DocController {
                           @Parameter(description = "接口ID") Integer status,
                           @Parameter(description = "当前页数", required = true) int current,
                           @Parameter(description = "分页条数", required = true) int size,
+                          @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
                           @Parameter(description = "开始时间") Date startTime,
+                          @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
                           @Parameter(description = "结束时间") Date endTime) {
         // 构造分页条件
         LambdaQueryWrapper<DocEntity> queryWrapper = Wrappers.lambdaQuery(DocEntity.class)
@@ -105,7 +108,7 @@ public class DocController {
                 .le(Objects.nonNull(endTime), DocEntity::getCreateTime, endTime)
                 .in(onlySubmit, DocEntity::getStatus, 3)
                 // 排序
-                .orderByDesc(DocEntity::getCreateTime)
+                .orderByDesc(DocEntity::getUpdateTime)
                 .orderByAsc(DocEntity::getStatus);
         // 主表分页查询
         Page<DocEntity> page = docService.page(new Page<>(current, size), queryWrapper);
@@ -154,7 +157,7 @@ public class DocController {
     @PostMapping("/audit-pass")
     public Result<?> auditPass(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
         String operatorName = userApproveService.identify(accessToken).getUserName();
-        docBizService.auditPass(doc.getDocId(), doc.getNote(), operatorName);
+        docBizService.auditPass(doc.getDocId(), doc.getNote());
         return Result.success("文档审核通过!");
     }
 
@@ -163,7 +166,7 @@ public class DocController {
     @PostMapping("/audit-not-pass")
     public Result<?> auditNotPass(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
         String operatorName = userApproveService.identify(accessToken).getUserName();
-        docBizService.auditNotPass(doc.getDocId(), doc.getNote(), operatorName);
+        docBizService.auditNotPass(doc.getDocId(), doc.getNote());
         return Result.success("文档审核不通过!");
     }
 
@@ -192,7 +195,7 @@ public class DocController {
     @PostMapping("/audit-offline")
     public Result<?> abortPublish(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
         String operatorName = userApproveService.identify(accessToken).getUserName();
-        docBizService.auditOffline(doc.getDocId(), doc.getNote(), operatorName);
+        docBizService.auditOffline(doc.getDocId(), doc.getNote());
         return Result.success("文档下线成功!");
     }
 

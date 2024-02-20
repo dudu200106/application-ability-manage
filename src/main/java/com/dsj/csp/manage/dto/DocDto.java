@@ -103,6 +103,13 @@ public class DocDto  implements Serializable {
      */
     @Schema(description = "审批时间")
     private Date approveTime;
+
+    /**
+     * 审批时间
+     */
+    @Schema(description = "发布时间")
+    private Date submitTime;
+
     /**
      * 文档内容
      */

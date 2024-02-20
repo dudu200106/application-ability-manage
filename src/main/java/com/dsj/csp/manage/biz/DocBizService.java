@@ -18,15 +18,15 @@ public interface DocBizService {
      */
     void auditWithdraw(Long docId);
 
-    void auditPass(Long docId, String note, String operator);
+    void auditPass(Long docId, String note);
 
-    void auditNotPass(Long docId, String note, String operatorName);
+    void auditNotPass(Long docId, String note);
 
     void auditPublish(Long docId, String note, String operatorName);
 
     // 取消'已上线'状态
-//    void auditOnline(Long docId, String note, String operatorName);
+//    void auditOnline(Long docId, String note);
 
-    void auditOffline(Long docId, String note, String operatorName);
+    void auditOffline(Long docId, String note);
 
 }

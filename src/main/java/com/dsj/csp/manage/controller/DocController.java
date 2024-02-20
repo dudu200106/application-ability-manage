@@ -46,11 +46,20 @@ public class DocController {
     @Operation(summary = "新增文档")
     @PostMapping("/add")
     public Result<?> add(@RequestBody DocEntity doc){
-        long cnt = docService.count(Wrappers.lambdaQuery(DocEntity.class)
+        // 是否该目录下已存在同名文档
+        long cntSameDoc = docService.count(Wrappers.lambdaQuery(DocEntity.class)
                 .eq(DocEntity::getDocName, doc.getDocName())
                 .eq(DocEntity::getCatalogId, doc.getCatalogId()));
-        if (cnt>0){
-            throw new BusinessException("文档名称在该目录下已存在");
+        if (cntSameDoc>0){
+            throw new BusinessException("文档名称在该目录下已存在!");
+        }
+        if (doc.getApiId()!=null){
+            // Api接口是否多次关联文档
+            long cntMultipleApi = docService.count(Wrappers.lambdaQuery(DocEntity.class)
+                    .eq(DocEntity::getApiId, doc.getApiId()));
+            if (cntMultipleApi>0){
+                throw new BusinessException("该文档关联的Api已被其他文档关联!");
+            }
         }
         boolean addFlag = docService.save(doc);
         return Result.success("文档保存" +(addFlag ? "成功!" : "失败!"));

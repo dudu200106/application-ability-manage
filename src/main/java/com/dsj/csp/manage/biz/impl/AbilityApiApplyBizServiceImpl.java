@@ -269,7 +269,8 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
             List<Long> abilityIds = abilityService.getAbilityIds(keyword.trim());
             Set<String> appIds = getAppIds(null, keyword.trim());
             Set<String> userIds = getUserIds(keyword.trim());
-            qw.and(i -> i.like(AbilityApiApplyEntity::getApiName, keyword)
+            qw.and(i -> i.like(AbilityApiApplyEntity::getApiApplyId, keyword)
+                    .or().like(AbilityApiApplyEntity::getApiName, keyword)
                     .or().like(AbilityApiApplyEntity::getNote, keyword)
                     .or().like(AbilityApiApplyEntity::getIllustrate, keyword)
                     .or().in(abilityIds.size()>0, AbilityApiApplyEntity::getAbilityId, abilityIds)

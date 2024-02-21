@@ -117,7 +117,8 @@ public class DocController {
         // 关键字
         if (!ObjectUtil.isEmpty(keyword)){
             List<Long> catalogIds = docCatalogService.matchCatalogIdList(keyword.trim());
-            queryWrapper.and(i -> i.like(DocEntity::getDocName, keyword)
+            queryWrapper.and(i -> i.like(DocEntity::getDocId, keyword)
+                    .or().like(DocEntity::getDocName, keyword)
                     .or().like(DocEntity::getNote, keyword)
                     .or().in(catalogIds.size()>0, DocEntity::getCatalogId, catalogIds)
             );

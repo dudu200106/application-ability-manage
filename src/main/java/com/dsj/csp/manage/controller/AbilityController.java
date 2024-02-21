@@ -158,17 +158,6 @@ public class AbilityController {
     }
 
 
-    @AopLogger(describe = "删除接口", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "删除接口")
-    @PostMapping("/delete-api")
-    public Result<?> removeApi(@RequestBody AbilityDeleteDTO deleteDTO){
-        String apiIds = deleteDTO.getApiIds();
-        List<Long> ids = Arrays.stream(apiIds.split(",")).map(Long::parseLong).toList();
-        Boolean delFlag = abilityApiService.removeBatchByIds(ids);
-        return Result.success("删除接口完成! ", delFlag);
-    }
-
-
     @AopLogger(describe = "查询能力的接口列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查询能力的接口列表", description = "查询能力的接口列表")
     @GetMapping("/query-api-list")
@@ -274,17 +263,6 @@ public class AbilityController {
                 .eq(AbilityApiApplyEntity::getApiApplyId, apiApplyEntity.getApiApplyId());
         return Result.success(abilityApiApplyService.update(apiApplyEntity, updateWrapper));
     }
-
-    @AopLogger(describe = "删除接口申请", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "删除接口申请")
-    @PostMapping("/delete-api-apply")
-    public Result<?> removeApiApply(@RequestBody AbilityDeleteDTO deleteDTO){
-        String apiApplyIds = deleteDTO.getApiApplyIds();
-        List<Long> ids = Arrays.stream(apiApplyIds.split(",")).map(Long::parseLong).toList();
-        Boolean delFlag = abilityApiApplyService.removeBatchByIds(ids);
-        return Result.success("删除能力申请完成! ", delFlag);
-    }
-
 
     @AopLogger(describe = "获取能力简单信息目录", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "获取能力简单信息目录")

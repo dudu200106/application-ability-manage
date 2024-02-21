@@ -304,7 +304,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         if (!ObjectUtil.isEmpty(keyword)){
             // 获取符合关键字模糊查询的能力ID集合
             List<Long> abilityIds = abilityService.getAbilityIds(keyword.trim());
-            queryWrapper.and(i -> i.like(AbilityApiEntity::getApiName, keyword)
+            queryWrapper.and(i -> i.like(AbilityApiEntity::getApiId, keyword)
+                    .or().like(AbilityApiEntity::getApiName, keyword)
                     .or().like(AbilityApiEntity::getApiDesc, keyword)
                     .or().like(AbilityApiEntity::getApiUrl, keyword)
                     .or().in(abilityIds.size()>0, AbilityApiEntity::getAbilityId, abilityIds)
@@ -347,7 +348,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         if (!ObjectUtil.isEmpty(keyword)){
             // 获取符合关键字模糊查询的能力ID集合
             List<Long> abiltiyIds = abilityService.getAbilityIds(keyword.trim());
-            queryWrapper.and(i -> i.like(AbilityApiEntity::getApiName, keyword)
+            queryWrapper.and(i -> i.like(AbilityApiEntity::getApiId, keyword)
+                            .or().like(AbilityApiEntity::getApiName, keyword)
                             .or().like(AbilityApiEntity::getApiDesc, keyword)
                             .or().like(AbilityApiEntity::getApiUrl, keyword)
                             .or().in(abiltiyIds.size()>0, AbilityApiEntity::getAbilityId, abiltiyIds));

@@ -3,6 +3,8 @@ package com.dsj.csp.manage.controller;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.common.dto.Result;
+import com.dsj.csp.common.aop.annotation.AopLogger;
+import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
 import com.dsj.csp.manage.dto.AbilityAuditVO;
 import com.dsj.csp.manage.dto.AbilityDeleteDTO;
@@ -25,8 +27,8 @@ import java.util.List;
 public class AbilityApiApplyController {
 
     // TODO  之前忘记划分控制层, 之后在进行接口的划分
-//    private final AbilityApiApplyService abilityApiApplyService;
-//    private final AbilityApiApplyBizService abilityApiApplyBizService;
+    private final AbilityApiApplyService abilityApiApplyService;
+    private final AbilityApiApplyBizService abilityApiApplyBizService;
 //
 //    @Operation(summary = "新增接口使用申请", description = "新增接口使用申请")
 //    @PostMapping("/add")
@@ -72,14 +74,25 @@ public class AbilityApiApplyController {
 //        return Result.success(abilityApiApplyService.update(apiApplyEntity, updateWrapper));
 //    }
 //
-//    @Operation(summary = "删除接口申请")
-//    @PostMapping("/delete")
-//    public Result<?> removeApiApply(@RequestBody AbilityDeleteDTO deleteDTO){
-//        String apiApplyIds = deleteDTO.getApiApplyIds();
-//        List<Long> ids = Arrays.asList(apiApplyIds.split(",")).stream().map(id -> Long.parseLong(id)).toList();
-//        Boolean delFlag = abilityApiApplyService.removeBatchByIds(ids);
-//        return Result.success("删除能力申请完成! ", delFlag);
-//    }
+
+    @AopLogger(describe = "批量删除接口申请", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "批量删除接口申请")
+    @PostMapping("/delete")
+    public Result<?> removeApiApplyBatch(@RequestBody AbilityDeleteDTO deleteDTO){
+        String apiApplyIds = deleteDTO.getApiApplyIds();
+        List<Long> ids = Arrays.stream(apiApplyIds.split(",")).map(Long::parseLong).toList();
+        Boolean delFlag = abilityApiApplyService.removeBatchByIds(ids);
+        return Result.success("批量删除能力申请完成! ", delFlag);
+    }
+
+    @AopLogger(describe = "删除接口申请", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "删除接口申请")
+    @PostMapping("/delete")
+    public Result<?> removeApiApply(@RequestBody AbilityApiApplyEntity apiApplyEntity){
+        Boolean delFlag = abilityApiApplyService.removeById(apiApplyEntity.getApiApplyId());
+        return Result.success("删除接口申请完成! ", delFlag);
+    }
+
 //
 //
 //    @Operation(summary = "统计用户申请能力数量")

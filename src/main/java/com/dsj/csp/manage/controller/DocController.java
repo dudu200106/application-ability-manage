@@ -18,7 +18,6 @@ import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.DocCatalogService;
 import com.dsj.csp.manage.service.DocService;
-import com.dsj.csp.manage.service.UserApproveService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -98,9 +97,9 @@ public class DocController {
                           @Parameter(description = "查询关键字") String keyword,
                           @Parameter(description = "当前页数", required = true) int current,
                           @Parameter(description = "分页条数", required = true) int size,
-                          @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+                          @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss", fallbackPatterns = {"yyyy/MM/dd", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
                           @Parameter(description = "开始时间") Date startTime,
-                          @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+                          @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss", fallbackPatterns = {"yyyy/MM/dd", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
                           @Parameter(description = "结束时间") Date endTime) {
         // 构造分页条件
         LambdaQueryWrapper<DocEntity> queryWrapper = Wrappers.lambdaQuery(DocEntity.class)

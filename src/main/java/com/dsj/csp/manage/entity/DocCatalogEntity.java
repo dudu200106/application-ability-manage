@@ -59,14 +59,14 @@ public class DocCatalogEntity implements Serializable {
     /**
      * 创建时间
      */
-    @TableField(value = "WDML_CJSJ")
+    @TableField(value = "WDML_CJSJ", fill = FieldFill.INSERT)
     @Schema(description = "创建时间")
     private Date createTime;
 
     /**
      * 更新时间
      */
-    @TableField(value = "WDML_GXSJ")
+    @TableField(value = "WDML_GXSJ", fill = FieldFill.INSERT_UPDATE)
     @Schema(description = "更新时间")
     private Date updateTime;
 

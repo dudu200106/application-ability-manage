@@ -107,11 +107,11 @@ public class AbilityApiEntity implements Serializable {
     @Schema(description = "逻辑删除")
     private Integer isDelete;
 
-    @TableField(value = "NLJK_CJSJ" )
+    @TableField(value = "NLJK_CJSJ", fill = FieldFill.INSERT)
     @Schema(description = "创建时间")
     private Date createTime;
 
-    @TableField(value = "NLJK_GXSJ")
+    @TableField(value = "NLJK_GXSJ", fill = FieldFill.INSERT_UPDATE)
     @Schema(description = "更新时间")
     private Date updateTime;
 

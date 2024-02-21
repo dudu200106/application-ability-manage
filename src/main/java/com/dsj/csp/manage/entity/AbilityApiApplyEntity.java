@@ -116,21 +116,21 @@ public class AbilityApiApplyEntity implements Serializable {
     /**
     * 创建时间
     */
-    @TableField(value = "NLSQ_CJSJ")
+    @TableField(value = "NLSQ_CJSJ", fill = FieldFill.INSERT)
     @Schema(description="创建时间")
     private Date createTime;
+    /**
+    * 更新时间
+    */
+    @TableField(value = "NLSQ_GXSJ", fill = FieldFill.INSERT_UPDATE)
+    @Schema(description="更新时间")
+    private Date updateTime;
     /**
      * 审批时间
      */
     @TableField("NLSQ_SPSJ")
     @Schema(description="审批时间")
     private Date approveTime;
-    /**
-    * 更新时间
-    */
-    @TableField(value = "NLSQ_GXSJ")
-    @Schema(description="更新时间")
-    private Date updateTime;
     /**
     * 是否同意协议
     */

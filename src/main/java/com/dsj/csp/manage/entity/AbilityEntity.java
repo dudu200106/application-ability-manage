@@ -96,14 +96,14 @@ public class AbilityEntity implements Serializable {
     /**
      * 创建时间
      */
-    @TableField(value = "CJSJ")
+    @TableField(value = "CJSJ", fill = FieldFill.INSERT)
     @Schema(description = "创建时间")
     private Date createTime;
 
     /**
      * 修改时间
      */
-    @TableField(value = "GXSJ")
+    @TableField(value = "GXSJ", fill = FieldFill.INSERT_UPDATE)
     @Schema(description = "修改时间")
     private Date updateTime;
 }

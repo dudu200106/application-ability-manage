@@ -85,14 +85,14 @@ public class DocEntity implements Serializable {
     /**
      * 创建时间
      */
-    @TableField(value = "WD_CJSJ")
+    @TableField(value = "WD_CJSJ", fill = FieldFill.INSERT)
     @Schema(description = "创建时间")
     private Date createTime;
 
     /**
      * 更新时间
      */
-    @TableField(value = "WD_GXSJ")
+    @TableField(value = "WD_GXSJ" ,fill = FieldFill.INSERT_UPDATE)
     @Schema(description = "更新时间")
     private Date updateTime;
 

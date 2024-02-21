@@ -39,6 +39,7 @@ public interface AbilityApiBizService {
      * 查询申请到的接口列表分页(审核通过的api申请)
      * @param userId
      * @param appId
+     *
      * @param abilityId
      * @param keyword
      * @param size
@@ -63,4 +64,5 @@ public interface AbilityApiBizService {
      */
     Page pageApiCatalog(Boolean onlyPublished, String reqMethod, Integer status, Long userId, Long abilityId, String keyword, int current, int size, Date startTime, Date endTime);
 
+    List<AbilityApiEntity> getApiCatalog(boolean onlyPublished, String reqMethod, Integer status, Long userId, Long abilityId);
 }

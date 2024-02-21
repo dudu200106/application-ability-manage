@@ -1,21 +1,15 @@
 package com.dsj.csp.manage.controller;
 
 import com.dsj.common.dto.Result;
+import com.dsj.csp.common.aop.annotation.AopLogger;
+import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
-import com.dsj.csp.manage.dto.AbilityApiVO;
-import com.dsj.csp.manage.dto.AbilityAuditVO;
-import com.dsj.csp.manage.dto.AbilityDeleteDTO;
-import com.dsj.csp.manage.service.AbilityApiApplyService;
-import com.dsj.csp.manage.service.AbilityApiService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -24,6 +18,21 @@ import java.util.List;
 public class AbilityApiController {
 
     // TODO  之前忘记划分控制层, 之后在进行接口的划分
+
+    private final AbilityApiBizService abilityApiBizService;
+
+    @AopLogger(describe = "查询接口简单目录", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "查询接口简单目录", description = "查询接口简单目录")
+    @GetMapping("/get-api-catalog")
+    public Result<?> getApiCatalog(@Parameter(description = "是否过滤未发布的接口") boolean onlyPublished,
+                                   @Parameter(description = "请求方式") String reqMethod,
+                                   @Parameter(description = "状态") Integer status,
+                                   @Parameter(description = "用户ID") Long userId,
+                                   @Parameter(description = "能力ID") Long abilityId) {
+        return Result.success(abilityApiBizService.getApiCatalog(onlyPublished, reqMethod, status, userId, abilityId));
+    }
+
+
 
 //    private final AbilityApiService abilityApiService;
 //    private final AbilityApiBizService abilityApiBizService;

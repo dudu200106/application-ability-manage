@@ -382,5 +382,22 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         return resPage;
     }
 
+    @Override
+    public List<AbilityApiEntity> getApiCatalog(boolean onlyPublished, String reqMethod, Integer status, Long userId, Long abilityId) {
+        // 构造分页条件构造器
+        LambdaQueryWrapper<AbilityApiEntity> queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)
+                .eq(userId!=null, AbilityApiEntity::getUserId, userId)
+                .eq(abilityId!=null, AbilityApiEntity::getAbilityId, abilityId)
+                .eq(reqMethod!=null, AbilityApiEntity::getReqMethod, reqMethod)
+                .eq(status!=null, AbilityApiEntity::getStatus, status)
+                .in(onlyPublished, AbilityApiEntity::getStatus, 4)
+                // 排序
+                .orderByDesc(AbilityApiEntity::getCreateTime)
+                // 查询字段
+                .select(AbilityApiEntity::getApiId, AbilityApiEntity::getApiName);
+        List<AbilityApiEntity> apiList = abilityApiService.list(queryWrapper);
+        return apiList;
+    }
+
 
 }

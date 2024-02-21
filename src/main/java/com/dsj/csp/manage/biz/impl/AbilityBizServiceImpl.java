@@ -56,8 +56,7 @@ public class AbilityBizServiceImpl implements AbilityBizService {
             throw new BusinessException("删除能力失败:该能力存在接口还在被应用使用!");
         }
         abilityApiService.remove(Wrappers.lambdaUpdate(AbilityApiEntity.class).in(AbilityApiEntity::getAbilityId, ids));
-        Boolean delFlag = abilityService.removeBatchByIds(ids);
-        return delFlag;
+        return abilityService.removeBatchByIds(ids);
     }
 
 

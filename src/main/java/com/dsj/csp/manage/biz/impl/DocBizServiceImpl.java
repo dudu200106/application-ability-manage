@@ -139,6 +139,7 @@ public class DocBizServiceImpl implements DocBizService {
         updateWrapper.eq(DocEntity::getDocId, docId);
         updateWrapper.set(DocEntity::getStatus, 5);
         updateWrapper.set(!ObjectUtil.isEmpty(note), DocEntity::getNote, note);
+        updateWrapper.set(DocEntity::getSubmitTime, null);
         updateWrapper.set(DocEntity::getUpdateTime, new Date());
         updateWrapper.set(DocEntity::getApproveTime, new Date());
         docService.update(updateWrapper);

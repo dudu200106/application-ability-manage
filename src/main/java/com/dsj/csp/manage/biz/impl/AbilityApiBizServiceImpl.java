@@ -233,7 +233,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     public List<AbilityApiVO> getAppApiList(Long appId) {
         // 查询出申请通过的apiId集合
         Set<Long> apiIds = abilityApiApplyService.getPassedApiIds(null, appId, null, null);
-        if (apiIds.size()==0){
+        if (apiIds.isEmpty()){
             return null;
         }
         // 构造查询条件
@@ -247,20 +247,19 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         // 构造返回结果
         Set<Long> abilityIds = apiList.stream().map(AbilityApiEntity::getAbilityId).collect(Collectors.toSet());
         Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
-        List<AbilityApiVO> apiVOs = apiList.stream().map(api->{
+        return apiList.stream().map(api->{
             AbilityApiVO apiVO = new AbilityApiVO();
             BeanUtil.copyProperties(api, apiVO, true);
             apiVO.setAbilityName(abilityMap.getOrDefault(api.getAbilityId(), new AbilityEntity()).getAbilityName());
             return apiVO;
         }).toList();
-        return apiVOs;
     }
 
     @Override
     public List<AbilityApiVO> getUserApiList(Long userId) {
         // 查询出申请通过的apiId集合
         Set<Long> apiIds = abilityApiApplyService.getPassedApiIds(userId, null, null, null);
-        if (apiIds.size()==0){
+        if (apiIds.isEmpty()){
             return null;
         }
         // 构造查询条件
@@ -274,21 +273,20 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         // 构造返回结果
         Set<Long> abilityIds = apiList.stream().map(AbilityApiEntity::getAbilityId).collect(Collectors.toSet());
         Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
-        List<AbilityApiVO> apiVOs = apiList.stream().map(api->{
+        return apiList.stream().map(api->{
             AbilityApiVO apiVO = new AbilityApiVO();
             BeanUtil.copyProperties(api, apiVO, true);
             apiVO.setAbilityName(abilityMap.getOrDefault(api.getAbilityId(), new AbilityEntity()).getAbilityName());
             return apiVO;
         }).toList();
-        return apiVOs;
     }
 
 
     @Override
-    public Page pagePassedApis(Long userId, Long appId, Long abilityId, String keyword, int current, int size, Date startTime, Date endTime) {
+    public Page<AbilityApiVO> pagePassedApis(Long userId, Long appId, Long abilityId, String keyword, int current, int size, Date startTime, Date endTime) {
         // 查询出申请通过的apiId集合
         Set<Long> apiIds = abilityApiApplyService.getPassedApiIds(userId, appId, abilityId, keyword);
-        if (apiIds.size()==0){
+        if (apiIds.isEmpty()){
             return new Page(current,size,0);
         }
         // 构造分页条件
@@ -312,15 +310,15 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
             );
         }
         // 主表分页查询
-        Page prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
+        Page<AbilityApiEntity> prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
         List<AbilityApiEntity> preRecords = prePage.getRecords();
-        if (preRecords.size()==0){
-            return prePage;
+        if (preRecords.isEmpty()){
+            return new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         }
         // 构造返回分页
-        Set<Long> abilityIds = preRecords.stream().map(api -> api.getAbilityId()).collect(Collectors.toSet());
+        Set<Long> abilityIds = preRecords.stream().map(AbilityApiEntity::getAbilityId).collect(Collectors.toSet());
         Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
-        Page resPage = new Page(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
+        Page<AbilityApiVO> resPage = new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         List<AbilityApiVO> resRecords = preRecords.stream().map(api -> {
             AbilityApiVO apiVO = new AbilityApiVO();
             BeanUtil.copyProperties(api, apiVO);
@@ -352,11 +350,11 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                             .or().like(AbilityApiEntity::getApiName, keyword)
                             .or().like(AbilityApiEntity::getApiDesc, keyword)
                             .or().like(AbilityApiEntity::getApiUrl, keyword)
-                            .or().in(abiltiyIds.size()>0, AbilityApiEntity::getAbilityId, abiltiyIds));
+                            .or().in(!abiltiyIds.isEmpty(), AbilityApiEntity::getAbilityId, abiltiyIds));
         }
         Page<AbilityApiEntity> prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
         List<AbilityApiEntity> preRecords = prePage.getRecords();
-        if (preRecords.size()==0){
+        if (preRecords.isEmpty()){
             return new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         }
 
@@ -376,7 +374,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         List<AbilityApiVO> resRecords = preRecords.stream().map(api -> {
             AbilityApiVO apiVO = new AbilityApiVO();
             BeanUtil.copyProperties(api, apiVO);
-            apiVO.setAbilityName(abilityMap.getOrDefault(api.getAbilityId(), new AbilityEntity()).getAbilityName());
+            apiVO.setAbilityName(abilityMap.getOrDefault(api.getAbilityId(), new AbilityEntity())
+                    .getAbilityName());
             apiVO.setDocId(docMap.get(api.getApiId()));
             return apiVO;
         }).toList();
@@ -397,8 +396,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                 .orderByDesc(AbilityApiEntity::getCreateTime)
                 // 查询字段
                 .select(AbilityApiEntity::getApiId, AbilityApiEntity::getApiName);
-        List<AbilityApiEntity> apiList = abilityApiService.list(queryWrapper);
-        return apiList;
+        return abilityApiService.list(queryWrapper);
     }
 
 

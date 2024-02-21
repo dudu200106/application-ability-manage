@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.toolkit.SimpleQuery;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
-import com.dsj.csp.common.annotation.CurrentUserToken;
+import com.dsj.csp.common.annotation.LoginUserToken;
 import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.DocBizService;
@@ -49,7 +49,7 @@ public class DocController {
     @AopLogger(describe = "新增文档", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增文档")
     @PostMapping("/add")
-    public Result<?> add(@RequestBody DocEntity doc, @CurrentUserToken UserApproveRequest userApproveRequest){
+    public Result<?> add(@RequestBody DocEntity doc, @LoginUserToken UserApproveRequest userApproveRequest){
         // 是否该目录下已存在同名文档
         long cntSameDoc = docService.count(Wrappers.lambdaQuery(DocEntity.class)
                 .eq(DocEntity::getDocName, doc.getDocName())
@@ -151,9 +151,7 @@ public class DocController {
     @AopLogger(describe = "提交文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "提交文档")
     @PostMapping("/audit-submit")
-    public Result<?> auditSubmit(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
-        // Token验证
-        userApproveService.identify(accessToken).getUserName();
+    public Result<?> auditSubmit(@RequestBody DocEntity doc){
         docBizService.auditSubmit(doc.getDocId());
         return Result.success("文档提交完成!");
     }
@@ -161,9 +159,7 @@ public class DocController {
     @AopLogger(describe = "撤回文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "撤回文档")
     @PostMapping("/audit-withdraw")
-    public Result<?> auditWithdraw(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
-        // Token验证
-        userApproveService.identify(accessToken).getUserName();
+    public Result<?> auditWithdraw(@RequestBody DocEntity doc){
         docBizService.auditWithdraw(doc.getDocId());
         return Result.success("文档撤回完成!");
     }
@@ -171,8 +167,7 @@ public class DocController {
     @AopLogger(describe = "文档审核通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "文档审核通过")
     @PostMapping("/audit-pass")
-    public Result<?> auditPass(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
-        String operatorName = userApproveService.identify(accessToken).getUserName();
+    public Result<?> auditPass(@RequestBody DocEntity doc){
         docBizService.auditPass(doc.getDocId(), doc.getNote());
         return Result.success("文档审核通过!");
     }
@@ -180,8 +175,7 @@ public class DocController {
     @AopLogger(describe = "文档审核不通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "文档审核不通过")
     @PostMapping("/audit-not-pass")
-    public Result<?> auditNotPass(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
-        String operatorName = userApproveService.identify(accessToken).getUserName();
+    public Result<?> auditNotPass(@RequestBody DocEntity doc){
         docBizService.auditNotPass(doc.getDocId(), doc.getNote());
         return Result.success("文档审核不通过!");
     }
@@ -190,9 +184,8 @@ public class DocController {
     @AopLogger(describe = "发布文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "发布文档")
     @PostMapping("/audit-publish")
-    public Result<?> auditPublish(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
-        String operatorName = userApproveService.identify(accessToken).getUserName();
-        docBizService.auditPublish(doc.getDocId(), null, operatorName);
+    public Result<?> auditPublish(@RequestBody DocEntity doc){
+        docBizService.auditPublish(doc.getDocId(), null);
         return Result.success("文档发布成功!");
     }
 
@@ -209,8 +202,7 @@ public class DocController {
     @AopLogger(describe = "下线文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "下线文档")
     @PostMapping("/audit-offline")
-    public Result<?> abortPublish(@RequestBody DocEntity doc, @RequestHeader("accessToken") String accessToken){
-        String operatorName = userApproveService.identify(accessToken).getUserName();
+    public Result<?> abortPublish(@RequestBody DocEntity doc){
         docBizService.auditOffline(doc.getDocId(), doc.getNote());
         return Result.success("文档下线成功!");
     }

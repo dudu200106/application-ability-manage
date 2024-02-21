@@ -88,7 +88,7 @@ public class DocBizServiceImpl implements DocBizService {
     }
 
     @Override
-    public void auditPublish(Long docId, String note, String creator) {
+    public void auditPublish(Long docId, String note) {
         boolean isValid = isValidJudge(docId, 1);
         if (!isValid){
             throw new BusinessException("只有'审核通过'的文档才能发布,请刷新后重试!");
@@ -97,7 +97,6 @@ public class DocBizServiceImpl implements DocBizService {
         updateWrapper.eq(DocEntity::getDocId, docId);
         updateWrapper.set(DocEntity::getStatus, 3);
         updateWrapper.set(!ObjectUtil.isEmpty(note), DocEntity::getNote, note);
-        updateWrapper.set(DocEntity::getCreator, creator);
         updateWrapper.set(DocEntity::getUpdateTime, new Date());
         updateWrapper.set(DocEntity::getApproveTime, new Date());
         updateWrapper.set(DocEntity::getSubmitTime, new Date());

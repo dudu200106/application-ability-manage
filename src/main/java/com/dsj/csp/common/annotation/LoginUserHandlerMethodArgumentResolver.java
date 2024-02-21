@@ -1,7 +1,10 @@
 package com.dsj.csp.common.annotation;
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.service.UserApproveService;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -21,16 +24,21 @@ public class LoginUserHandlerMethodArgumentResolver implements HandlerMethodArgu
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(CurrentUserToken.class) &&
-                parameter.getParameterType().isAssignableFrom(String.class);
+        return parameter.hasParameterAnnotation(LoginUserToken.class) &&
+                parameter.getParameterType().isAssignableFrom(UserApproveRequest.class);
     }
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+        LoginUserToken annotation = parameter.getParameterAnnotation(LoginUserToken.class);
         // header中获取用户token
-        String token = webRequest.getHeader("Authorization");
-        // TODO 根据userId获取User信息，这里省略，直接创建一个User对象。
+        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+        String token = request.getHeader(annotation.value());
+        if (StringUtils.isEmpty(token)){
+            // 一般来说前端请求头中都会在Accesstoken和Authorization中包含token，取其一就行
+            token = request.getHeader("Authorization");
+        }
         return userApproveService.identify(token);
     }
 

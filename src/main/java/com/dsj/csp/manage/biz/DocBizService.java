@@ -22,7 +22,7 @@ public interface DocBizService {
 
     void auditNotPass(Long docId, String note);
 
-    void auditPublish(Long docId, String note, String operatorName);
+    void auditPublish(Long docId, String note);
 
     // 取消'已上线'状态
 //    void auditOnline(Long docId, String note);

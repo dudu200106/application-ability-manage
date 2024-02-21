@@ -43,7 +43,6 @@ public class DocController {
     private final DocService docService;
     private final DocBizService docBizService;
     private final DocCatalogService docCatalogService;
-    private final UserApproveService userApproveService;
     private final AbilityApiService abilityApiService;
 
     @AopLogger(describe = "新增文档", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
@@ -221,7 +220,7 @@ public class DocController {
     @PostMapping("/delete")
     public Result<?> delete(@RequestBody DocEntity docEntity){
         boolean deleteFlag = docService.removeById(docEntity);
-        return Result.success("文档删除完成!", deleteFlag);
+        return Result.success(deleteFlag+"", "文档删除完成!");
     }
 
 }

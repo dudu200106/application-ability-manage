@@ -73,9 +73,9 @@ public class AbilityController {
                                          @Parameter(description = "分页条数", required = true) int size,
                                          @Parameter(description = "当前页数", required = true) int current,
                                          @Parameter(description = "搜索关键字") String keyword,
-                                         @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", fallbackPatterns = {"yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss"})
                                          @Parameter(description = "开始时间") Date startTime,
-                                         @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", fallbackPatterns = {"yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss"})
                                          @Parameter(description = "结束时间") Date endTime) {
         return Result.success(abilityService.pageAbilitys(userId, keyword, startTime, endTime, current, size));
     }
@@ -213,9 +213,9 @@ public class AbilityController {
                                  @Parameter(description = "分页条数", required = true) int size,
                                  @Parameter(description = "当前页数", required = true) int current,
                                  @Parameter(description = "搜索关键字") String keyword,
-                                 @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+                                 @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", fallbackPatterns = {"yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss"})
                                  @Parameter(description = "开始时间") Date startTime,
-                                 @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+                                 @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", fallbackPatterns = {"yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss"})
                                  @Parameter(description = "结束时间") Date endTime) {
         return Result.success(abilityApiBizService.pageApiCatalog(onlyPublished, reqMethod, status, userId, abilityId, keyword, current, size, startTime, endTime));
     }
@@ -231,9 +231,9 @@ public class AbilityController {
                                   @Parameter(description = "当前页数", required = true) int current,
                                   @Parameter(description = "搜索关键字") String keyword,
                                   @Parameter(description = "状态") Integer status,
-                                  @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+                                  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", fallbackPatterns = {"yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss"})
                                   @Parameter(description = "开始时间") Date startTime,
-                                  @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+                                  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", fallbackPatterns = {"yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss"})
                                   @Parameter(description = "结束时间") Date endTime) {
         return Result.success(abilityApiApplyBizService.pageApiApply(onlySubmitted, appId, userId, abilityId, keyword, status, startTime, endTime, current, size));
     }
@@ -247,9 +247,9 @@ public class AbilityController {
                                    @Parameter(description = "分页条数", required = true) int size,
                                    @Parameter(description = "当前页数", required = true) int current,
                                    @Parameter(description = "搜索关键字(匹配接口名称/描述/路径)") String keyword,
-                                   @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+                                   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", fallbackPatterns = {"yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss"})
                                    @Parameter(description = "开始时间") Date startTime,
-                                   @DateTimeFormat(pattern = "yyyy/MM/dd", fallbackPatterns = {"yyyy/MM/dd 00:00:00", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+                                   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", fallbackPatterns = {"yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss"})
                                    @Parameter(description = "结束时间") Date endTime) {
         return Result.success(abilityApiBizService.pagePassedApis(userId, appId, abilityId, keyword, current, size, startTime, endTime));
     }

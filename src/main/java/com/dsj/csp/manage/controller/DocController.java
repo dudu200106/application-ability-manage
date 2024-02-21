@@ -97,9 +97,9 @@ public class DocController {
                           @Parameter(description = "查询关键字") String keyword,
                           @Parameter(description = "当前页数", required = true) int current,
                           @Parameter(description = "分页条数", required = true) int size,
-                          @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss", fallbackPatterns = {"yyyy/MM/dd", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+                          @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", fallbackPatterns = {"yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss"})
                           @Parameter(description = "开始时间") Date startTime,
-                          @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss", fallbackPatterns = {"yyyy/MM/dd", "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"})
+                          @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", fallbackPatterns = {"yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss"})
                           @Parameter(description = "结束时间") Date endTime) {
         // 构造分页条件
         LambdaQueryWrapper<DocEntity> queryWrapper = Wrappers.lambdaQuery(DocEntity.class)
@@ -110,7 +110,7 @@ public class DocController {
                 .le(Objects.nonNull(endTime), DocEntity::getCreateTime, endTime)
                 .in(onlySubmit, DocEntity::getStatus, 3)
                 // 排序
-                .orderByDesc(DocEntity::getUpdateTime)
+                .orderByDesc(DocEntity::getCreateTime)
                 .orderByAsc(DocEntity::getStatus);
         // 关键字
         if (!ObjectUtil.isEmpty(keyword)){

@@ -262,7 +262,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                 .ge(Objects.nonNull(startTime), AbilityApiApplyEntity::getUpdateTime, startTime)
                 .le(Objects.nonNull(endTime), AbilityApiApplyEntity::getUpdateTime, endTime)
                 // 排序
-                .orderByDesc(AbilityApiApplyEntity::getUpdateTime)
+                .orderByDesc(AbilityApiApplyEntity::getCreateTime)
                 .orderByAsc(AbilityApiApplyEntity::getStatus);
         // 关键字
         if (!ObjectUtil.isEmpty(keyword)){

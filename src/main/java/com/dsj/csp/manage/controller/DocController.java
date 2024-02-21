@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.toolkit.SimpleQuery;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
+import com.dsj.csp.common.annotation.CurrentUserToken;
 import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.DocBizService;
@@ -48,7 +49,7 @@ public class DocController {
     @AopLogger(describe = "新增文档", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增文档")
     @PostMapping("/add")
-    public Result<?> add(@RequestBody DocEntity doc, @RequestHeader("AccessToken") String accessToken){
+    public Result<?> add(@RequestBody DocEntity doc, @CurrentUserToken UserApproveRequest userApproveRequest){
         // 是否该目录下已存在同名文档
         long cntSameDoc = docService.count(Wrappers.lambdaQuery(DocEntity.class)
                 .eq(DocEntity::getDocName, doc.getDocName())
@@ -67,7 +68,6 @@ public class DocController {
                 throw new BusinessException("该文档关联的Api已被其他文档关联!");
             }
         }
-        UserApproveRequest userApproveRequest = userApproveService.identify(accessToken);
         doc.setCreator(userApproveRequest.getUserName());
         boolean addFlag = docService.save(doc);
         return Result.success("文档保存" +(addFlag ? "成功!" : "失败!"));

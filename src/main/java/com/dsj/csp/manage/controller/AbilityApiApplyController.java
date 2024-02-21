@@ -28,7 +28,7 @@ public class AbilityApiApplyController {
 
     // TODO  之前忘记划分控制层, 之后在进行接口的划分
     private final AbilityApiApplyService abilityApiApplyService;
-    private final AbilityApiApplyBizService abilityApiApplyBizService;
+//    private final AbilityApiApplyBizService abilityApiApplyBizService;
 //
 //    @Operation(summary = "新增接口使用申请", description = "新增接口使用申请")
 //    @PostMapping("/add")
@@ -77,7 +77,7 @@ public class AbilityApiApplyController {
 
     @AopLogger(describe = "批量删除接口申请", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "批量删除接口申请")
-    @PostMapping("/delete")
+    @PostMapping("/delete-batch")
     public Result<?> removeApiApplyBatch(@RequestBody AbilityDeleteDTO deleteDTO){
         String apiApplyIds = deleteDTO.getApiApplyIds();
         List<Long> ids = Arrays.stream(apiApplyIds.split(",")).map(Long::parseLong).toList();

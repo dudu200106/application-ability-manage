@@ -12,10 +12,8 @@ import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.DocBizService;
 import com.dsj.csp.manage.dto.DocDto;
-import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
-import com.dsj.csp.manage.entity.AbilityApiEntity;
-import com.dsj.csp.manage.entity.DocCatalogEntity;
-import com.dsj.csp.manage.entity.DocEntity;
+import com.dsj.csp.manage.dto.request.UserApproveRequest;
+import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.DocCatalogService;
 import com.dsj.csp.manage.service.DocService;
@@ -50,7 +48,7 @@ public class DocController {
     @AopLogger(describe = "新增文档", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增文档")
     @PostMapping("/add")
-    public Result<?> add(@RequestBody DocEntity doc){
+    public Result<?> add(@RequestBody DocEntity doc, @RequestHeader("AccessToken") String accessToken){
         // 是否该目录下已存在同名文档
         long cntSameDoc = docService.count(Wrappers.lambdaQuery(DocEntity.class)
                 .eq(DocEntity::getDocName, doc.getDocName())
@@ -58,6 +56,7 @@ public class DocController {
         if (cntSameDoc>0){
             throw new BusinessException("文档名称在该目录下已存在!");
         }
+        // 是否有接口与之关联
         if (doc.getApiId()!=null){
             // Api接口是否多次关联文档
             long cntMultipleApi = docService.count(Wrappers.lambdaQuery(DocEntity.class)
@@ -68,6 +67,8 @@ public class DocController {
                 throw new BusinessException("该文档关联的Api已被其他文档关联!");
             }
         }
+        UserApproveRequest userApproveRequest = userApproveService.identify(accessToken);
+        doc.setCreator(userApproveRequest.getUserName());
         boolean addFlag = docService.save(doc);
         return Result.success("文档保存" +(addFlag ? "成功!" : "失败!"));
     }

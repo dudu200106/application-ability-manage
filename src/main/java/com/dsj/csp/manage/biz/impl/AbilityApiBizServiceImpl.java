@@ -363,8 +363,12 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         // 能力分类
         Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
         // 文档 查出申请的接口对应的文档id
-        Map<Long, Long> docMap = SimpleQuery.map(Wrappers.lambdaQuery(DocEntity.class).in(DocEntity::getApiId, apiIds),
-                DocEntity::getApiId, DocEntity::getDocId);
+        Map<Long, Long> docMap = SimpleQuery.map(
+                Wrappers.lambdaQuery(DocEntity.class)
+                        .in(DocEntity::getApiId, apiIds)
+                        .eq(DocEntity::getStatus, 3),
+                DocEntity::getApiId, DocEntity::getDocId
+        );
         // 构造返回分页
         Page<AbilityApiVO> resPage = new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         List<AbilityApiVO> resRecords = preRecords.stream().map(api -> {

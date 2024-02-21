@@ -67,7 +67,7 @@ public class DocDto  implements Serializable {
      * 操作人
      */
     @Schema(description = "操作人")
-    private String operator;
+    private String creator;
 
     /**
      * 状态(默认:0未提交 1待审核 2审核通过 3审核不通过 4已发布 5已下线)

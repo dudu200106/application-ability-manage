@@ -36,7 +36,7 @@ public class LoginUserHandlerMethodArgumentResolver implements HandlerMethodArgu
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = request.getHeader(annotation.value());
         if (StringUtils.isEmpty(token)){
-            // 一般来说前端请求头中都会在Accesstoken和Authorization中包含token，取其一就行
+            // 一般来说请求头中都会在Accesstoken和Authorization中包含token，取其一就行
             token = request.getHeader("Authorization");
         }
         return userApproveService.identify(token);

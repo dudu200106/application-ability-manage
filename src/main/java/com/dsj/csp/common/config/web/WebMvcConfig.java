@@ -1,5 +1,6 @@
 package com.dsj.csp.common.config.web;
 
+import com.dsj.csp.common.aop.aspect.LoginUserHandlerMethodArgumentResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -18,12 +19,13 @@ import java.util.Map;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
-    private ApplicationContext context;
+    private ApplicationContext applicationContext;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        Map<String, HandlerMethodArgumentResolver> beans = context.getBeansOfType(HandlerMethodArgumentResolver.class);
-        beans.forEach((name, bean) -> resolvers.add(bean));
+        LoginUserHandlerMethodArgumentResolver resolver = new LoginUserHandlerMethodArgumentResolver();
+        applicationContext.getAutowireCapableBeanFactory().autowireBean(resolver);
+        resolvers.add(resolver);
     }
 
 }

@@ -13,7 +13,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 注册自定义的HandleMethodArgumentResolver
@@ -33,19 +32,20 @@ public class WebMvcConfig implements WebMvcConfigurer {
         resolvers.add(resolver);
     }
 
-    /*注册过滤器*/
-    @Bean
-    public FilterRegistrationBean<Filter> orderFilter() {
-        // 利用工厂给容器外的对象注入所需组件
-        TokenValidationFilter filterBean = new TokenValidationFilter();
-        applicationContext.getAutowireCapableBeanFactory().autowireBean(filterBean);
-
-        FilterRegistrationBean<Filter> filter = new FilterRegistrationBean<>();
-        filter.setName("TokenValidationFilter");
-        filter.setUrlPatterns(Arrays.asList("/doc/*"));
-        filter.setFilter(filterBean);//指定优先级
-        filter.setOrder(-1);
-        return filter;
-    }
+//    /*注册过滤器*/
+//    @Bean
+//    public FilterRegistrationBean<Filter> orderFilter() {
+//        // 利用工厂给容器外的对象注入所需组件
+//        TokenValidationFilter filterBean = new TokenValidationFilter();
+//        applicationContext.getAutowireCapableBeanFactory().autowireBean(filterBean);
+//
+//        FilterRegistrationBean<Filter> filter = new FilterRegistrationBean<>();
+//        filter.setName("TokenValidationFilter");
+//        filter.setUrlPatterns(Arrays.asList("/doc/*"));
+//        filter.setFilter(filterBean);//指定优先级
+//        filter.setOrder(-1);
+//        return filter;
+//
+//    }
 
 }

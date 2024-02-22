@@ -101,7 +101,7 @@ public class DocBizServiceImpl implements DocBizService {
         if (docEntity.getApiId()!=null){
             AbilityApiEntity api = abilityApiService.getById(docEntity.getApiId());
             if (api==null || api.getStatus()!=4){
-                throw new BusinessException("文档关联的接口不存在，或还未发布！");
+                throw new BusinessException("文档关联的接口不存在,或者还未发布！");
             }
         }
         LambdaUpdateWrapper<DocEntity> updateWrapper = Wrappers.lambdaUpdate();

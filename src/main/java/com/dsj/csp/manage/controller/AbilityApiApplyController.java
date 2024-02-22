@@ -1,9 +1,12 @@
 package com.dsj.csp.manage.controller;
 
 import com.dsj.common.dto.Result;
+import com.dsj.csp.common.aop.annotation.LoginUserToken;
 import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.enums.LogEnum;
+import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
 import com.dsj.csp.manage.dto.AbilityDeleteDTO;
+import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
 import com.dsj.csp.manage.service.AbilityApiApplyService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +25,15 @@ public class AbilityApiApplyController {
 
     // TODO  之前忘记划分控制层, 之后在进行接口的划分
     private final AbilityApiApplyService abilityApiApplyService;
+    private final AbilityApiApplyBizService abilityApiApplyBizService;
+
+    @AopLogger(describe = "批量申请使用接口", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "批量申请使用接口", description = "批量申请使用接口")
+    @PostMapping("/add-batch")
+    public Result<?> applyApiBatch(@RequestBody List<AbilityApiApplyEntity> applyList, @LoginUserToken UserApproveRequest userApproveRequest) {
+        abilityApiApplyBizService.saveApiApplyBatch(applyList, userApproveRequest);
+        return Result.success("能力申请完毕！请等待审核...");
+    }
 
     @AopLogger(describe = "批量删除接口申请", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "批量删除接口申请")

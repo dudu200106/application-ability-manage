@@ -1,4 +1,4 @@
-package com.dsj.csp.common.annotation;
+package com.dsj.csp.common.aop.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -32,10 +32,9 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     private final AbilityApiReqService abilityApiReqService;
     private final AbilityApiRespService abilityApiRespService;
     private final AbilityService abilityService;
-    private final UserApproveService userApproveService;
 
     @Override
-    public void saveApi(AbilityApiVO apiVO, String accessToken) {
+    public void saveApi(AbilityApiVO apiVO, UserApproveRequest userApproveRequest) {
         long cnt = abilityApiService.count(Wrappers.lambdaQuery(AbilityApiEntity.class)
                 .or().and(i->i.eq(AbilityApiEntity::getAbilityId, apiVO.getAbilityId())
                         .eq(AbilityApiEntity::getApiName, apiVO.getApiName()))
@@ -46,8 +45,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         // 插入能力基本信息
         AbilityApiEntity api = new AbilityApiEntity();
         BeanUtil.copyProperties(apiVO, api, true);
-        UserApproveRequest userApprove = userApproveService.identify(accessToken);
-        api.setUserId(Long.parseLong(userApprove.getUserId()));
+        api.setUserId(Long.parseLong(userApproveRequest.getUserId()));
         api.setApiDesc(apiVO.getApiDesc());
         abilityApiService.save(api);
         // 插入接口的出参入参列表
@@ -180,7 +178,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         // 审核的接口是否还存在
         AbilityApiEntity api = abilityApiService.getById(apiId);
         if (api==null){
-            throw new BusinessException("审核失败! 接口不存在,请刷新页面后重试...");
+            throw new BusinessException("接口不存在!");
         }
         // 审核操作是否有效
         // 审核流程限制: 状态(0未提交 1待审核 2审核未通过 3未发布 4已发布 5已下线)
@@ -280,7 +278,6 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
             return apiVO;
         }).toList();
     }
-
 
     @Override
     public Page<AbilityApiVO> pagePassedApis(Long userId, Long appId, Long abilityId, String keyword, int current, int size, Date startTime, Date endTime) {

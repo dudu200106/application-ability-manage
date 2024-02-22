@@ -3,14 +3,14 @@ package com.dsj.csp.manage.biz;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.csp.manage.dto.AbilityApiVO;
 import com.dsj.csp.manage.dto.AbilityAuditVO;
+import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
 
 import java.util.Date;
 import java.util.List;
 
 public interface AbilityApiBizService {
-    void saveApi(AbilityApiVO apiVO, String accessToken);
-
+    void saveApi(AbilityApiVO apiVO, UserApproveRequest userApproveRequest);
 
     String auditApi(AbilityAuditVO auditVO);
     String auditWithdraw(Long apiId, String note);
@@ -19,9 +19,6 @@ public interface AbilityApiBizService {
     String auditPass(Long apiId, String note);
     String auditPublish(Long apiId, String note);
     String auditOffline(Long apiId, String note);
-
-
-
 
     boolean updateApi(AbilityApiVO apiVO);
 

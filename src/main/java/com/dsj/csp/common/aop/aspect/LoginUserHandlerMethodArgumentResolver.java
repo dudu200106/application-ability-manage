@@ -1,6 +1,7 @@
-package com.dsj.csp.common.annotation;
+package com.dsj.csp.common.aop.aspect;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.dsj.csp.common.aop.annotation.LoginUserToken;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.service.UserApproveService;
 import jakarta.annotation.Resource;
@@ -36,7 +37,7 @@ public class LoginUserHandlerMethodArgumentResolver implements HandlerMethodArgu
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = request.getHeader(annotation.value());
         if (StringUtils.isEmpty(token)){
-            // 一般来说前端请求头中都会在Accesstoken和Authorization中包含token，取其一就行
+            // 一般来说请求头中都会在Accesstoken和Authorization中包含token，取其一就行
             token = request.getHeader("Authorization");
         }
         return userApproveService.identify(token);

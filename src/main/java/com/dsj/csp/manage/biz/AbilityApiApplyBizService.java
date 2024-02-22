@@ -3,14 +3,16 @@ package com.dsj.csp.manage.biz;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.csp.manage.dto.AbilityApiApplyDTO;
 import com.dsj.csp.manage.dto.AbilityAuditVO;
+import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 public interface AbilityApiApplyBizService {
 
-    void saveApiApply(AbilityApiApplyEntity applyVO, String accessToken);
+    void saveApiApply(AbilityApiApplyEntity applyVO, UserApproveRequest userApproveRequest);
 
     // 获取接口申请信息
     AbilityApiApplyDTO getApplyInfo(Long apiApplyId);
@@ -31,5 +33,6 @@ public interface AbilityApiApplyBizService {
 
     Set<String> getAppIds(Long userId, String keyword);
 
-
+    // 批量申请接口
+    void saveApiApplyBatch(List<AbilityApiApplyEntity> applyList, UserApproveRequest userApproveRequest);
 }

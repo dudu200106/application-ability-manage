@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
-import com.dsj.csp.common.annotation.LoginUserToken;
+import com.dsj.csp.common.aop.annotation.LoginUserToken;
 import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.AbilityApiApplyBizService;

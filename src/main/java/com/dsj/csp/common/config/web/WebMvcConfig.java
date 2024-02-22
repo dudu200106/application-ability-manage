@@ -1,6 +1,5 @@
 package com.dsj.csp.common.config.web;
 
-import com.dsj.csp.common.annotation.LoginUserHandlerMethodArgumentResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;

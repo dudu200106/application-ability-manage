@@ -129,7 +129,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
 
     @Override
     public String auditPass(Long applyId, String note) {
-        boolean isValid = isApplyValid(applyId, 2) || isApplyValid(applyId, 2);
+        boolean isValid = isApplyValid(applyId, 1) || isApplyValid(applyId, 4);
         if (!isValid) {
             throw new BusinessException("只有'待审核'或者'停用'的申请才能审核通过!请刷新页面后重试");
         }

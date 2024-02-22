@@ -1,7 +1,6 @@
 package com.dsj.csp.common.config.web;
 
 import com.dsj.csp.common.aop.aspect.LoginUserHandlerMethodArgumentResolver;
-import com.dsj.csp.common.filter.TokenValidationFilter;
 import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;

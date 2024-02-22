@@ -12,7 +12,6 @@ import java.util.List;
 public interface AbilityApiBizService {
     void saveApi(AbilityApiVO apiVO, UserApproveRequest userApproveRequest);
 
-
     String auditApi(AbilityAuditVO auditVO);
     String auditWithdraw(Long apiId, String note);
     String auditSubmit(Long apiId, String note);
@@ -20,9 +19,6 @@ public interface AbilityApiBizService {
     String auditPass(Long apiId, String note);
     String auditPublish(Long apiId, String note);
     String auditOffline(Long apiId, String note);
-
-
-
 
     boolean updateApi(AbilityApiVO apiVO);
 

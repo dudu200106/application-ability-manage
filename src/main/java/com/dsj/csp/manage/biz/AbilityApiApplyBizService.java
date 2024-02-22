@@ -33,6 +33,6 @@ public interface AbilityApiApplyBizService {
 
     Set<String> getAppIds(Long userId, String keyword);
 
-
+    // 批量申请接口
     void saveApiApplyBatch(List<AbilityApiApplyEntity> applyList, UserApproveRequest userApproveRequest);
 }

@@ -266,12 +266,12 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                     .in(AbilityApiApplyEntity::getApiId, apply.getApiId())
                     // 状态0:未提交 1:待审核 2审核通过
                     .in(AbilityApiApplyEntity::getStatus, 0, 1, 2));
-            if (cntApplyNum == 1){
+            if (cntApplyNum != 0){
                 throw new BusinessException("申请无效！所选应用已保存或者已经申请过该能力接口");
             }
             // 对userId属性赋值
             apply.setUserId(Long.parseLong(userApproveRequest.getUserId()));
-        });
+        }).toList();
         abilityApiApplyService.saveBatch(applyList);
     }
 

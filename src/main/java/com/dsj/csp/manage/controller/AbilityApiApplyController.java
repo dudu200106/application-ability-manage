@@ -36,7 +36,6 @@ public class AbilityApiApplyController {
     @Operation(summary = "批量申请使用接口", description = "批量申请使用接口")
     @PostMapping("/add-batch")
     public Result<?> applyApiBatch(@RequestBody List<AbilityApiApplyEntity> applyList, @LoginUserToken UserApproveRequest userApproveRequest) {
-
         abilityApiApplyBizService.saveApiApplyBatch(applyList, userApproveRequest);
         return Result.success("能力申请完毕！请等待审核...");
     }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
+import com.dsj.csp.common.annotation.LoginUserToken;
 import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
@@ -12,6 +13,7 @@ import com.dsj.csp.manage.biz.AbilityBizService;
 import com.dsj.csp.manage.dto.AbilityApiVO;
 import com.dsj.csp.manage.dto.AbilityAuditVO;
 import com.dsj.csp.manage.dto.AbilityDeleteDTO;
+import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
 import com.dsj.csp.manage.entity.AbilityEntity;
 import com.dsj.csp.manage.service.AbilityApiApplyService;
@@ -24,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -92,8 +93,8 @@ public class AbilityController {
     @AopLogger(describe = "新增接口", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增接口")
     @PostMapping("add-api")
-    public Result<?> addApi(@RequestBody AbilityApiVO apiVO, @RequestHeader("accessToken") String accessToken){
-        abilityApiBizService.saveApi(apiVO, accessToken);
+    public Result<?> addApi(@RequestBody AbilityApiVO apiVO, @LoginUserToken UserApproveRequest userApproveRequest){
+        abilityApiBizService.saveApi(apiVO, userApproveRequest);
         return Result.success("添加接口成功!");
     }
 
@@ -182,8 +183,8 @@ public class AbilityController {
     @AopLogger(describe = "新增接口使用申请", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增接口使用申请", description = "申请使用接口")
     @PostMapping("/add-api-apply")
-    public Result<?> applyApi(@RequestBody AbilityApiApplyEntity apply, @RequestHeader("accessToken") String accessToken) {
-        abilityApiApplyBizService.saveApiApply(apply, accessToken);
+    public Result<?> applyApi(@RequestBody AbilityApiApplyEntity apply, @LoginUserToken UserApproveRequest userApproveRequest) {
+        abilityApiApplyBizService.saveApiApply(apply, userApproveRequest);
         return Result.success("能力申请完毕！请等待审核...");
     }
 

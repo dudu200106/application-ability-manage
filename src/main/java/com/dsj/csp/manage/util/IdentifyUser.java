@@ -3,7 +3,6 @@ package com.dsj.csp.manage.util;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dsj.common.dto.BusinessException;
-import com.dsj.csp.common.dto.UserDTO;
 import com.dsj.csp.common.enums.CodeEnum;
 import com.dsj.csp.common.exception.FlowException;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;

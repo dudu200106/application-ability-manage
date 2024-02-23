@@ -22,10 +22,8 @@ import com.dsj.csp.manage.util.IdentifyUser;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
 import java.util.Objects;
@@ -88,7 +86,6 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
 
     @Override
     public Result<Boolean> updatePassword(UserApproveResponse userApproveResponse) {
-//        UserApproveRequest identify = identify(accessToken);
         UserApproveRequest identify = IdentifyUser.getUserInfo();
         // 密码格式要求：包含至少一个数字、一个字母和一个符号
         if(!isPasswordValid(userApproveResponse.getNewPassword()) && !isPasswordValid(userApproveResponse.getNewPassword2())){

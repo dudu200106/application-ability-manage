@@ -18,6 +18,7 @@ import com.dsj.csp.manage.dto.response.UserApproveResponse;
 import com.dsj.csp.manage.entity.UserApproveEntity;
 import com.dsj.csp.manage.mapper.UserApproveMapper;
 import com.dsj.csp.manage.service.UserApproveService;
+import com.dsj.csp.manage.util.IdentifyUser;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -43,31 +44,31 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     private RpcUserApi rpcUserApi;
 
     //远程调用用户接口，根据token识别用户
-    @Override
-    public UserApproveRequest identify(String accessToken) throws RuntimeException {
-        RestTemplate restTemplate = new RestTemplate();
-        String serverURL = "http://106.227.94.62:8001";
-        HttpHeaders headers = new HttpHeaders();
-        MediaType type = MediaType.parseMediaType("application/json;charset=UTF-8");
-        headers.setContentType(type);
-        headers.add("Accept", MediaType.APPLICATION_JSON.toString());
-        String url = serverURL + "/auth/userInfo?accessToken=" + accessToken;
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
-        String responseBody = response.getBody();
-        JSONObject responseJson = JSON.parseObject(responseBody);
-        JSONObject dataJson = JSON.parseObject(responseJson.getString("data"));
-        int code = responseJson.getInteger("code");
-        if (code==-1) {
-            throw new FlowException(CodeEnum.TOKEN_ERROR);
-        }
-        UserApproveRequest userApproveRequest = new UserApproveRequest();
-        userApproveRequest.setUserId(dataJson.getString("id"));
-        userApproveRequest.setUserName(dataJson.getString("name"));
-        userApproveRequest.setStatus(dataJson.getInteger("smzt"));
-        userApproveRequest.setPhone(dataJson.getString("phone"));
-        userApproveRequest.setLoginName(dataJson.getString("loginName"));
-        return userApproveRequest;
-    }
+//    @Override
+//    public UserApproveRequest identify(String accessToken) throws RuntimeException {
+//        RestTemplate restTemplate = new RestTemplate();
+//        String serverURL = "http://106.227.94.62:8001";
+//        HttpHeaders headers = new HttpHeaders();
+//        MediaType type = MediaType.parseMediaType("application/json;charset=UTF-8");
+//        headers.setContentType(type);
+//        headers.add("Accept", MediaType.APPLICATION_JSON.toString());
+//        String url = serverURL + "/auth/userInfo?accessToken=" + accessToken;
+//        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
+//        String responseBody = response.getBody();
+//        JSONObject responseJson = JSON.parseObject(responseBody);
+//        JSONObject dataJson = JSON.parseObject(responseJson.getString("data"));
+//        int code = responseJson.getInteger("code");
+//        if (code==-1) {
+//            throw new FlowException(CodeEnum.TOKEN_ERROR);
+//        }
+//        UserApproveRequest userApproveRequest = new UserApproveRequest();
+//        userApproveRequest.setUserId(dataJson.getString("id"));
+//        userApproveRequest.setUserName(dataJson.getString("name"));
+//        userApproveRequest.setStatus(dataJson.getInteger("smzt"));
+//        userApproveRequest.setPhone(dataJson.getString("phone"));
+//        userApproveRequest.setLoginName(dataJson.getString("loginName"));
+//        return userApproveRequest;
+//    }
 
     //远程调用用户实名状态更新接口
     @Override
@@ -86,8 +87,9 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     }
 
     @Override
-    public Result<Boolean> updatePassword(UserApproveResponse userApproveResponse, String accessToken) {
-        UserApproveRequest identify = identify(accessToken);
+    public Result<Boolean> updatePassword(UserApproveResponse userApproveResponse) {
+//        UserApproveRequest identify = identify(accessToken);
+        UserApproveRequest identify = IdentifyUser.getUserInfo();
         // 密码格式要求：包含至少一个数字、一个字母和一个符号
         if(!isPasswordValid(userApproveResponse.getNewPassword()) && !isPasswordValid(userApproveResponse.getNewPassword2())){
             throw new FlowException(CodeEnum.PASSWORD_FORMAT_ERROR);
@@ -109,8 +111,8 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
      * 用户实名认证申请模块
      */
     @Override
-    public String approve(UserApproveEntity user, String accessToken) {
-        UserApproveRequest user2 = identify(accessToken);
+    public String approve(UserApproveEntity user) {
+        UserApproveRequest user2 = IdentifyUser.getUserInfo();
         user.setUserId(user2.getUserId());
         user.setUserName(user2.getUserName());
         UserApproveEntity userApproveEntity = baseMapper.selectById(user);
@@ -147,8 +149,9 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
 
     //回显用户信息到前端
     @Override
-    public UserApproveEntity echo(String accessToken) {
-        UserApproveRequest identify = identify(accessToken);
+    public UserApproveEntity echo() {
+//        UserApproveRequest identify = identify(accessToken);
+        UserApproveRequest identify=IdentifyUser.getUserInfo();
         return baseMapper.selectById(identify.getUserId());
     }
 
@@ -178,8 +181,9 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     }
 
     @Override
-    public void approveSuccess(UserApproveRequest user, String accessToken) {
-        identify(accessToken);
+    public void approveSuccess(UserApproveRequest user) {
+//        identify(accessToken);
+        IdentifyUser.getUserInfo();
         UserApproveEntity userApproveEntity = baseMapper.selectById(user.getUserId());
         boolean updateResult = this.lambdaUpdate()
                 .eq(Objects.nonNull(userApproveEntity.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())
@@ -198,8 +202,8 @@ public class UserApproveApproveServiceImpl extends ServiceImpl<UserApproveMapper
     }
 
     @Override
-    public void approveFail(UserApproveRequest user, String accessToken) {
-        identify(accessToken);
+    public void approveFail(UserApproveRequest user) {
+        IdentifyUser.getUserInfo();
         UserApproveEntity userApproveEntity = baseMapper.selectById(user.getUserId());
         boolean updateResult = this.lambdaUpdate()
                 .eq(Objects.nonNull(userApproveEntity.getStatus()), UserApproveEntity::getStatus, UserStatusEnum.WAIT.getStatus())

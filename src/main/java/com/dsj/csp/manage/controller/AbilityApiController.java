@@ -28,7 +28,7 @@ public class AbilityApiController {
     private final AbilityApiBizService abilityApiBizService;
     private final AbilityApiService abilityApiService;
 
-    @AopLogger(describe = "查询接口简单目录", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
+//    @AopLogger(describe = "查询接口简单目录", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查询接口简单目录", description = "查询接口简单目录")
     @GetMapping("/get-api-catalog")
     public Result<?> getApiCatalog(@Parameter(description = "是否过滤未发布的接口") boolean onlyPublished,

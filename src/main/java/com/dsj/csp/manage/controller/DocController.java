@@ -18,6 +18,7 @@ import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.DocCatalogService;
 import com.dsj.csp.manage.service.DocService;
+import com.dsj.csp.manage.util.IdentifyUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,7 +48,7 @@ public class DocController {
     @AopLogger(describe = "新增文档", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增文档")
     @PostMapping("/add")
-    public Result<?> add(@RequestBody DocEntity doc, @LoginUserToken UserApproveRequest userApproveRequest){
+    public Result<?> add(@RequestBody DocEntity doc){
         // 是否该目录下已存在同名文档
         long cntSameDoc = docService.count(Wrappers.lambdaQuery(DocEntity.class)
                 .eq(DocEntity::getDocName, doc.getDocName())
@@ -66,12 +67,13 @@ public class DocController {
                 throw new BusinessException("该文档关联的Api已被其他文档关联!");
             }
         }
+        UserApproveRequest userApproveRequest = IdentifyUser.getUserInfo();
         doc.setCreator(userApproveRequest.getUserName());
         boolean addFlag = docService.save(doc);
         return Result.success("文档保存" +(addFlag ? "成功!" : "失败!"));
     }
 
-    @AopLogger(describe = "查看文档", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
+//    @AopLogger(describe = "查看文档", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查看文档")
     @GetMapping("/info")
     public Result<?> info(Long docId){
@@ -87,7 +89,7 @@ public class DocController {
         return Result.success(docDto);
     }
 
-    @AopLogger(describe = "分页查询文档", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
+//    @AopLogger(describe = "分页查询文档", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询文档")
     @GetMapping("/page")
     public Result<?> page(@Parameter(description = "是否过滤未发布的文档") boolean onlySubmit,

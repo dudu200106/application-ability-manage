@@ -1,6 +1,7 @@
 package com.dsj.csp.common.config.web;
 
 import com.dsj.csp.common.aop.aspect.LoginUserHandlerMethodArgumentResolver;
+import com.dsj.csp.common.filter.TokenValidationFilter;
 import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -31,7 +32,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         resolvers.add(resolver);
     }
 
-//    /*注册过滤器*/
+//    /*注册该过滤器入容器*/
 //    @Bean
 //    public FilterRegistrationBean<Filter> orderFilter() {
 //        // 利用工厂给容器外的对象注入所需组件
@@ -44,7 +45,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
 //        filter.setFilter(filterBean);//指定优先级
 //        filter.setOrder(-1);
 //        return filter;
-//
 //    }
 
 }

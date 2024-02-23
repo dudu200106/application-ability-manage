@@ -49,14 +49,14 @@ public class DcoCatalogController {
         return Result.success("添加文档目录" + (addFlag ? "成功!" : "失败!"), addFlag);
     }
 
-    @AopLogger(describe = "查看目录详情", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
+//    @AopLogger(describe = "查看目录详情", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查看目录详情")
     @GetMapping("/info")
     public Result<?> queryInfo(@Parameter(description = "目录Id") Long catalogId){
         return Result.success(docCatalogService.getById(catalogId));
     }
 
-    @AopLogger(describe = "分页查询目录列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
+//    @AopLogger(describe = "分页查询目录列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询目录列表")
     @GetMapping("/page")
     public Result<?> page(@Parameter(description = "当前页数") Integer current, @Parameter(description = "分页页数") Integer size){
@@ -82,7 +82,7 @@ public class DcoCatalogController {
         return Result.success("删除目录" + (delFlag ? "成功!" : "失败!"), delFlag);
     }
 
-    @AopLogger(describe = "查询所有目录及其文档列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
+//    @AopLogger(describe = "查询所有目录及其文档列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查询所有目录及其文档列表")
     @GetMapping("/doc-list")
     public Result<?> queryAllCatalogAndDoc(){

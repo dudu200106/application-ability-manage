@@ -9,6 +9,7 @@ import com.dsj.csp.manage.dto.AbilityDeleteDTO;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
 import com.dsj.csp.manage.service.AbilityApiApplyService;
+import com.dsj.csp.manage.util.IdentifyUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,8 @@ public class AbilityApiApplyController {
     @AopLogger(describe = "批量申请使用接口", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "批量申请使用接口", description = "批量申请使用接口")
     @PostMapping("/add-batch")
-    public Result<?> applyApiBatch(@RequestBody List<AbilityApiApplyEntity> applyList, @LoginUserToken UserApproveRequest userApproveRequest) {
+    public Result<?> applyApiBatch(@RequestBody List<AbilityApiApplyEntity> applyList) {
+        UserApproveRequest userApproveRequest = IdentifyUser.getUserInfo();
         abilityApiApplyBizService.saveApiApplyBatch(applyList, userApproveRequest);
         return Result.success("能力申请完毕！请等待审核...");
     }

@@ -99,7 +99,7 @@ public class AbilityController {
         return Result.success("添加接口成功!");
     }
 
-    @AopLogger(describe = "查询接口信息", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
+//    @AopLogger(describe = "查询接口信息", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查询接口信息", description = "查询特定接口的信息")
     @GetMapping("/query-api-info")
     public Result<?> queryApiInfo(@Parameter(description = "接口ID") @RequestParam Long apiId) {

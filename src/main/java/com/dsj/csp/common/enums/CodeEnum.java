@@ -12,7 +12,7 @@ public enum CodeEnum {
     //正常
     SUCCESS(200,"OK"),
     //登录信息异常
-    TOKEN_ERROR(601,"登录状态过期,请重新登录"),
+    TOKEN_ERROR(601,"用户未登录或登录状态过期,请重新登录"),
     //重复提交异常
     APPROVE_ERROR(602,"正在审核中，不可重复提交实名认证申请"),
     //更新异常

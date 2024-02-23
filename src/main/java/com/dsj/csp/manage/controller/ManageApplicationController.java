@@ -45,7 +45,7 @@ public class ManageApplicationController {
     /**
      * 分页查询
      */
-    @AopLogger(describe = "分页查询应用",operateType =LogEnum.SELECT,logType= LogEnum.OPERATETYPE)
+//    @AopLogger(describe = "分页查询应用",operateType =LogEnum.SELECT,logType= LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询")
     @GetMapping("/selectPage")
     public Result<Page<ManageApplictionVo>> selectPage(@Parameter(description = "用户id") String appUserId, @Parameter(description = "查询关键字 Id或名称") String keyword, @Parameter(description = "开始时间") Date startTime, @Parameter(description = "结束时间") Date endTime, @Parameter int size, @Parameter int pages) {
@@ -74,7 +74,7 @@ public class ManageApplicationController {
     //查询appid和name
     @Operation(summary = "查询应用")
     @GetMapping("/selectappID")
-    @AopLogger(describe = "查询应用",operateType =LogEnum.SELECT,logType= LogEnum.OPERATETYPE)
+//    @AopLogger(describe = "查询应用",operateType =LogEnum.SELECT,logType= LogEnum.OPERATETYPE)
     public Result selectappID(@Parameter(description = "appID") String appId, @Parameter(description = "用户Id") String appUserId) {
         return Result.success(manageApplicationService.selectappID(appId, appUserId));
     }
@@ -91,7 +91,7 @@ public class ManageApplicationController {
     //统计个人应用总数
     @Operation(summary = "统计个人应用总数")
     @GetMapping("/countAppUser")
-    @AopLogger(describe = "统计个人应用总数",operateType =LogEnum.SELECT,logType=LogEnum.OPERATETYPE)
+//    @AopLogger(describe = "统计个人应用总数",operateType =LogEnum.SELECT,logType=LogEnum.OPERATETYPE)
     public Result<?> countAppUser(@Parameter String appUserId) {
         return Result.success(manageApplicationService.countAppUser(appUserId));
     }

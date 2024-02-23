@@ -19,18 +19,18 @@ public interface UserApproveService extends IService<UserApproveEntity> {
      * 用户模块
      */
     //用户申请实名认证
-    String approve(UserApproveEntity user,String accessToken);
+    String approve(UserApproveEntity user);
     //回显用户信息到前端
-    UserApproveEntity echo(String accessToken);
+    UserApproveEntity echo();
 
     //用户修改实名认证信息
 
     //远程调用用户接口，根据token识别用户
-    UserApproveRequest identify(String accessToken);
+//    UserApproveRequest identify(String accessToken);
     //远程调用用户实名状态更新接口
     void approveFeign(String userId,Integer status);
     //用户修改密码
-    Result<Boolean> updatePassword(UserApproveResponse userApproveResponse, String accessToken);
+    Result<Boolean> updatePassword(UserApproveResponse userApproveResponse);
 
     /**
      * 管理员实名认证审核模块
@@ -40,9 +40,9 @@ public interface UserApproveService extends IService<UserApproveEntity> {
     //查看实名认证申请详情
     UserApproveEntity find(String userId);
     //实名认证审核通过
-    void approveSuccess(UserApproveRequest user, String accessToken);
+    void approveSuccess(UserApproveRequest user);
     //实名认证审核未通过
-    void approveFail(UserApproveRequest user,String accessToken);
+    void approveFail(UserApproveRequest user);
     //条件分页查询平台当前用户
     Page<UserApproveEntity> selectUser(String keyword, Date startTime, Date endTime, int page, int size);
     //统计用户总数

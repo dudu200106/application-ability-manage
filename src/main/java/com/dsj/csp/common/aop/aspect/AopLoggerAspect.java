@@ -3,9 +3,12 @@ package com.dsj.csp.common.aop.aspect;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.enums.LogEnum;
+import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.LogEntity;
 import com.dsj.csp.manage.service.LogService;
+import com.dsj.csp.manage.util.IdentifyUser;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.val;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -131,9 +134,12 @@ public class AopLoggerAspect {
         // 记录日志
         System.out.println("Method " + methodSignature.getMethod().getName() +
                 " called with parameters: " + parameters);
-        logEntity.setCreateBy("管理员");
-        logEntity.setUpdateBy("管理员");
-        logEntity.setUsername("管理员");
+        UserApproveRequest userInfo = IdentifyUser.getUserInfo();
+        userInfo.getUserName();
+
+        logEntity.setCreateBy(userInfo.getUserName());
+        logEntity.setUpdateBy(userInfo.getUserName());
+        logEntity.setUsername(userInfo.getUserName());
         logService.save(logEntity);
         return result;
     }

@@ -55,8 +55,8 @@ public class AdminApproveController {
     @Operation(summary = "实名认证审核通过")
     @PostMapping("/approveSuccess")
     @AopLogger(describe = "实名认证审核通过",operateType = LogEnum.UPDATE,logType = LogEnum.OPERATETYPE)
-    public Result<String> approveSuccess(@RequestBody UserApproveRequest user,@RequestHeader String accessToken){
-        userApproveService.approveSuccess(user,accessToken);
+    public Result<String> approveSuccess(@RequestBody UserApproveRequest user){
+        userApproveService.approveSuccess(user);
         return Result.success("审核通过");
     }
 //
@@ -73,8 +73,8 @@ public class AdminApproveController {
     @Operation(summary = "实名认证审核未通过")
     @PostMapping("/approveFail")
     @AopLogger(describe = "实名认证审核未通过",operateType = LogEnum.UPDATE,logType = LogEnum.OPERATETYPE)
-    public Result<?> approveFail(@RequestBody UserApproveRequest user,@RequestHeader String accessToken){
-        userApproveService.approveFail(user,accessToken);
+    public Result<?> approveFail(@RequestBody UserApproveRequest user){
+        userApproveService.approveFail(user);
         return Result.success("审核未通过");
     }
 

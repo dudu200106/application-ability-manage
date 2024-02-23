@@ -30,7 +30,6 @@ public class UserApproveController {
         return Result.success(userApproveService.approve(user));
     }
 
-    @AopLogger(describe = "根据token获取ID回显用户信息/根据token查看用户实名信息",operateType = LogEnum.SELECT,logType = LogEnum.OPERATETYPE)
     @Operation(summary = "根据token获取ID回显用户信息/根据token查看用户实名信息")
     @GetMapping("/echo")
     public Result<?> echo(){

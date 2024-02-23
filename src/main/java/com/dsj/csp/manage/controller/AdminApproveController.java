@@ -30,7 +30,6 @@ public class AdminApproveController {
      */
     @Operation(summary = "按条件分页查询实名认证申请")
     @GetMapping("/select")
-    @AopLogger(describe = "按条件分页查询实名认证申请",operateType = LogEnum.SELECT,logType = LogEnum.OPERATETYPE)
     public Result<Page<UserApproveEntity>> select(@Parameter(description = "实名状态（可为空）")String status, @Parameter(description = "名称关键字（可为空）")String keyword, @Parameter(description = "开始时间（可为空）") Date startTime, @Parameter(description = "最后时间（可为空）")Date endTime, int page, int size){
         return Result.success(userApproveService.select(status,keyword, startTime, endTime,page,size));
     }
@@ -42,7 +41,6 @@ public class AdminApproveController {
      */
     @Operation(summary = "查看实名申请详情")
     @GetMapping("/find")
-    @AopLogger(describe = "查看实名申请详情",operateType = LogEnum.SELECT,logType = LogEnum.OPERATETYPE)
     public Result<UserApproveEntity> find(@Parameter(description = "用户ID")String userId){
         return Result.success(userApproveService.find(userId));
     }
@@ -89,7 +87,6 @@ public class AdminApproveController {
      */
     @Operation(summary = "按条件分页查询用户")
     @GetMapping("/selectUser")
-    @AopLogger(describe = "按条件分页查询用户",operateType = LogEnum.SELECT,logType = LogEnum.OPERATETYPE)
     public Result<Page<UserApproveEntity>> selectUser(@Parameter(description = "名称关键字（可为空）")String keyword, @Parameter(description = "开始时间（可为空）") Date startTime, @Parameter(description = "最后时间（可为空）")Date endTime, int page, int size){
         return Result.success(userApproveService.selectUser(keyword, startTime, endTime,page,size));
     }

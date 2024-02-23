@@ -54,7 +54,6 @@ public class MinioController {
     @Operation(summary = "文件上传")
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     @ResponseBody
-    @AopLogger(describe = "文件上传",operateType = LogEnum.INSERT,logType=LogEnum.OPERATETYPE)
     public Result upload(@RequestPart("file") MultipartFile file) {
         try {
             //创建一个MinIO的Java客户端

@@ -153,7 +153,7 @@ public class DocController {
             docDto.setApiName(apiMap.getOrDefault(doc.getApiId(), new AbilityApiEntity()).getApiName());
             Long abilityId = apiMap.getOrDefault(doc.getApiId(), new AbilityApiEntity()).getAbilityId();
             docDto.setAbilityId(abilityId);
-            docDto.setAbilityName(abilityMap.get(abilityId).getAbilityName());
+            docDto.setAbilityName(abilityMap.getOrDefault(abilityId, new AbilityEntity()).getAbilityName());
             return docDto;
         }).toList();
         // 初始化返回分页

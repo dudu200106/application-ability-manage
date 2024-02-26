@@ -5,6 +5,7 @@ import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.aop.annotation.LoginAuthentication;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
+import com.dsj.csp.manage.dto.AbilityAuditVO;
 import com.dsj.csp.manage.dto.AbilityDeleteDTO;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
 import com.dsj.csp.manage.service.AbilityApiService;
@@ -58,6 +59,18 @@ public class AbilityApiController {
     public Result<?> removeApi(@RequestBody AbilityApiEntity apiEntityi){
         Boolean delFlag = abilityApiService.removeById(apiEntityi.getApiId());
         return Result.success("删除接口完成! ", delFlag);
+    }
+
+
+    @AopLogger(describe = "批量审核接口注册", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "批量审核接口注册", description = "批量审核接口注册")
+    @PostMapping("/batch-audit-api")
+    @LoginAuthentication
+    public Result<?> auditApiBatch(@RequestBody List<AbilityAuditVO> auditVOList){
+        auditVOList.stream().peek(auditVO -> {
+            abilityApiBizService.auditApi(auditVO);
+        }).toList();
+        return Result.success("批量审核接口完毕!");
     }
 
 }

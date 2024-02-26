@@ -5,6 +5,7 @@ import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.aop.annotation.LoginAuthentication;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
+import com.dsj.csp.manage.dto.AbilityAuditVO;
 import com.dsj.csp.manage.dto.AbilityDeleteDTO;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
@@ -36,6 +37,17 @@ public class AbilityApiApplyController {
         UserApproveRequest userApproveRequest = IdentifyUser.getUserInfo();
         abilityApiApplyBizService.saveApiApplyBatch(applyList, userApproveRequest);
         return Result.success("能力申请完毕！请等待审核...");
+    }
+
+    @AopLogger(describe = "批量审核使用接口", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "批量审核使用接口", description = "批量审核使用接口")
+    @PostMapping("/audit-batch")
+    @LoginAuthentication
+    public Result<?> auditApplyBatch(@RequestBody List<AbilityApiApplyEntity> applyList) {
+        applyList.stream().peek( apply -> {
+            abilityApiApplyBizService.auditApply(new AbilityAuditVO(apply.getApiApplyId(), null, null, null, apply.getStatus(), apply.getNote()));
+        }).toList();
+        return Result.success("批量审核完毕！");
     }
 
     @AopLogger(describe = "批量删除接口申请", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)

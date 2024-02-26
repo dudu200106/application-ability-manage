@@ -128,6 +128,7 @@ public class AbilityController {
         return Result.success(msg);
     }
 
+
 //    @AopLogger(describe = "统计能力数", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "统计能力数")
     @GetMapping("/count-avail-ability")

@@ -119,8 +119,8 @@ public class AbilityApiController {
         return Result.success("发布接口成功!");
     }
 
-    @AopLogger(describe = "下线接口", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "下线接口")
+    @AopLogger(describe = "审核下线接口", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "审核下线接口")
     @LoginAuthentication
     @PostMapping("/audit-offline")
     public Result<?> auditOffline(@RequestBody AbilityApiEntity api){

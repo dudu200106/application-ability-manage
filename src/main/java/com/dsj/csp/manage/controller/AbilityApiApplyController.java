@@ -71,7 +71,6 @@ public class AbilityApiApplyController {
         return Result.success("删除接口申请完成! ", delFlag);
     }
 
-
     @AopLogger(describe = "提交接口申请", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "提交接口申请")
     @PostMapping("/audit-submit")
@@ -120,7 +119,7 @@ public class AbilityApiApplyController {
     @AopLogger(describe = "审核启用接口申请", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "审核启用接口申请")
     @LoginAuthentication
-    @PostMapping("/audit-Enable")
+    @PostMapping("/audit-enable")
     public Result<?> auditEnable(@RequestBody AbilityApiApplyEntity apiApply){
         abilityApiApplyBizService.auditPass(apiApply.getApiApplyId(), apiApply.getNote());
         return Result.success("接口申请启用成功!");

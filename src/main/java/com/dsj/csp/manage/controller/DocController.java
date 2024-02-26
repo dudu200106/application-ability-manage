@@ -16,6 +16,7 @@ import com.dsj.csp.manage.dto.DocDto;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.AbilityApiService;
+import com.dsj.csp.manage.service.AbilityService;
 import com.dsj.csp.manage.service.DocCatalogService;
 import com.dsj.csp.manage.service.DocService;
 import com.dsj.csp.manage.util.IdentifyUser;
@@ -44,6 +45,7 @@ public class DocController {
     private final DocBizService docBizService;
     private final DocCatalogService docCatalogService;
     private final AbilityApiService abilityApiService;
+    private final AbilityService abilityService;
 
     @AopLogger(describe = "新增文档", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增文档")
@@ -83,9 +85,13 @@ public class DocController {
         BeanUtil.copyProperties(doc, docDto);
         DocCatalogEntity catalog = docCatalogService.getById(doc.getCatalogId());
         docDto.setCatalogName(catalog.getCatalogName());
+        //文档是否关联了能力接口
         if (doc.getApiId()!=null){
             AbilityApiEntity api = abilityApiService.getById(doc.getApiId());
+            AbilityEntity ability = abilityService.getById(api.getAbilityId());
             docDto.setApiName(api.getApiName());
+            docDto.setAbilityId(api.getAbilityId());
+            docDto.setAbilityName(ability.getAbilityName());
         }
         return Result.success(docDto);
     }
@@ -136,12 +142,18 @@ public class DocController {
                 .in(DocCatalogEntity::getCatalogId, catalogIds), DocCatalogEntity::getCatalogId);
         Map<Long, AbilityApiEntity> apiMap= SimpleQuery.keyMap(Wrappers.lambdaQuery(AbilityApiEntity.class)
                 .in(AbilityApiEntity::getApiId, apiIds), AbilityApiEntity::getApiId);
+        List<Long> abilityIds = apiMap.values().stream().map(AbilityApiEntity::getAbilityId).toList();
+        Map<Long, AbilityEntity> abilityMap= SimpleQuery.keyMap(Wrappers.lambdaQuery(AbilityEntity.class)
+                .in(AbilityEntity::getAbilityId, abilityIds), AbilityEntity::getAbilityId);
+
         List<DocDto> resRecords = records.stream().map(doc -> {
             DocDto docDto = new DocDto();
             BeanUtil.copyProperties(doc, docDto);
-            docDto.setCatalogName(catalogMap.get(doc.getCatalogId())==null ? null : catalogMap.get(doc.getCatalogId()).getCatalogName());
-            docDto.setApiName(apiMap.get(doc.getApiId())==null ? null : apiMap.get(doc.getApiId()).getApiName());
-            docDto.setAbilityId(apiMap.get(doc.getApiId())==null ? null : apiMap.get(doc.getApiId()).getAbilityId());
+            docDto.setCatalogName(catalogMap.getOrDefault(doc.getCatalogId(), new DocCatalogEntity()).getCatalogName());
+            docDto.setApiName(apiMap.getOrDefault(doc.getApiId(), new AbilityApiEntity()).getApiName());
+            Long abilityId = apiMap.getOrDefault(doc.getApiId(), new AbilityApiEntity()).getAbilityId();
+            docDto.setAbilityId(abilityId);
+            docDto.setAbilityName(abilityMap.get(abilityId).getAbilityName());
             return docDto;
         }).toList();
         // 初始化返回分页

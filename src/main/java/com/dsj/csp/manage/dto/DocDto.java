@@ -122,6 +122,10 @@ public class DocDto  implements Serializable {
     @Schema(description = "接口能力分类ID")
     private Long abilityId;
 
-
+    /**
+     * 接口能力分类名称
+     */
+    @Schema(description = "接口能力分类名称")
+    private String abilityName;
 
 }

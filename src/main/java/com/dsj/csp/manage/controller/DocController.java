@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.toolkit.SimpleQuery;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.common.aop.annotation.AopLogger;
+import com.dsj.csp.common.aop.annotation.LoginAuthentication;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.DocBizService;
 import com.dsj.csp.manage.dto.DocDto;
@@ -47,6 +48,7 @@ public class DocController {
     @AopLogger(describe = "新增文档", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增文档")
     @PostMapping("/add")
+    @LoginAuthentication
     public Result<?> add(@RequestBody DocEntity doc){
         // 是否该目录下已存在同名文档
         long cntSameDoc = docService.count(Wrappers.lambdaQuery(DocEntity.class)
@@ -150,6 +152,7 @@ public class DocController {
     @AopLogger(describe = "提交文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "提交文档")
     @PostMapping("/audit-submit")
+    @LoginAuthentication
     public Result<?> auditSubmit(@RequestBody DocEntity doc){
         docBizService.auditSubmit(doc.getDocId());
         return Result.success("文档提交完成!");
@@ -158,6 +161,7 @@ public class DocController {
     @AopLogger(describe = "撤回文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "撤回文档")
     @PostMapping("/audit-withdraw")
+    @LoginAuthentication
     public Result<?> auditWithdraw(@RequestBody DocEntity doc){
         docBizService.auditWithdraw(doc.getDocId());
         return Result.success("文档撤回完成!");
@@ -166,6 +170,7 @@ public class DocController {
     @AopLogger(describe = "文档审核通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "文档审核通过")
     @PostMapping("/audit-pass")
+    @LoginAuthentication
     public Result<?> auditPass(@RequestBody DocEntity doc){
         docBizService.auditPass(doc.getDocId(), doc.getNote());
         return Result.success("文档审核通过!");
@@ -174,6 +179,7 @@ public class DocController {
     @AopLogger(describe = "文档审核不通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "文档审核不通过")
     @PostMapping("/audit-not-pass")
+    @LoginAuthentication
     public Result<?> auditNotPass(@RequestBody DocEntity doc){
         docBizService.auditNotPass(doc.getDocId(), doc.getNote());
         return Result.success("文档审核不通过!");
@@ -182,6 +188,7 @@ public class DocController {
 
     @AopLogger(describe = "发布文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "发布文档")
+    @LoginAuthentication
     @PostMapping("/audit-publish")
     public Result<?> auditPublish(@RequestBody DocEntity doc){
         docBizService.auditPublish(doc.getDocId(), null);
@@ -198,26 +205,29 @@ public class DocController {
 //        return Result.success("文档上线成功!");
 //    }
 
-    @AopLogger(describe = "下线文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "下线文档")
-    @PostMapping("/audit-offline")
-    public Result<?> abortPublish(@RequestBody DocEntity doc){
-        docBizService.auditOffline(doc.getDocId(), doc.getNote());
-        return Result.success("文档下线成功!");
-    }
-
     @AopLogger(describe = "编辑文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "编辑文档")
     @PostMapping("/edit")
+    @LoginAuthentication
     public Result<?> edit(@RequestBody DocEntity docEntity){
         docEntity.setUpdateTime(new Date());
         boolean editFlag = docService.updateById(docEntity);
         return Result.success("文档编辑完成!", editFlag );
     }
 
+    @AopLogger(describe = "下线文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "下线文档")
+    @PostMapping("/audit-offline")
+    @LoginAuthentication
+    public Result<?> abortPublish(@RequestBody DocEntity doc){
+        docBizService.auditOffline(doc.getDocId(), doc.getNote());
+        return Result.success("文档下线成功!");
+    }
+
     @AopLogger(describe = "删除文档", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "删除文档")
     @PostMapping("/delete")
+    @LoginAuthentication
     public Result<?> delete(@RequestBody DocEntity docEntity){
         boolean deleteFlag = docService.removeById(docEntity);
         return Result.success(deleteFlag+"", "文档删除完成!");

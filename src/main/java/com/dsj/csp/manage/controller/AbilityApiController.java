@@ -2,6 +2,7 @@ package com.dsj.csp.manage.controller;
 
 import com.dsj.common.dto.Result;
 import com.dsj.csp.common.aop.annotation.AopLogger;
+import com.dsj.csp.common.aop.annotation.LoginAuthentication;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.dto.AbilityDeleteDTO;
@@ -42,6 +43,7 @@ public class AbilityApiController {
     @AopLogger(describe = "批量删除接口", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "批量删除接口")
     @PostMapping("/delete-batch")
+    @LoginAuthentication
     public Result<?> removeApiBatch(@RequestBody AbilityDeleteDTO deleteDTO){
         String apiIds = deleteDTO.getApiIds();
         List<Long> ids = Arrays.stream(apiIds.split(",")).map(Long::parseLong).toList();
@@ -52,6 +54,7 @@ public class AbilityApiController {
     @AopLogger(describe = "删除接口", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "删除接口")
     @PostMapping("/delete")
+    @LoginAuthentication
     public Result<?> removeApi(@RequestBody AbilityApiEntity apiEntityi){
         Boolean delFlag = abilityApiService.removeById(apiEntityi.getApiId());
         return Result.success("删除接口完成! ", delFlag);

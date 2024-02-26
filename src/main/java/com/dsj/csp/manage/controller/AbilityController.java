@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.common.aop.annotation.AopLogger;
+import com.dsj.csp.common.aop.annotation.LoginAuthentication;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
@@ -49,6 +50,7 @@ public class AbilityController {
     @AopLogger(describe = "新增能力", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增能力", description = "新增一个新的能力")
     @PostMapping("/add-login")
+    @LoginAuthentication
     public Result<?> addAbility(@RequestBody AbilityEntity ability) {
         long cnt = abilityService.count(Wrappers.lambdaQuery(AbilityEntity.class)
                 .eq(AbilityEntity::getAbilityName, ability.getAbilityName()));
@@ -84,6 +86,7 @@ public class AbilityController {
     @AopLogger(describe = "编辑能力", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "编辑能力")
     @PostMapping("edit-login")
+    @LoginAuthentication
     public Result<?> updateAbility(@RequestBody AbilityEntity ability){
         ability.setUpdateTime(new Date());
         Boolean editFlag = abilityService.updateById(ability);
@@ -93,6 +96,7 @@ public class AbilityController {
     @AopLogger(describe = "新增接口", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增接口")
     @PostMapping("add-api")
+    @LoginAuthentication
     public Result<?> addApi(@RequestBody AbilityApiVO apiVO){
         UserApproveRequest userApproveRequest = IdentifyUser.getUserInfo();
         abilityApiBizService.saveApi(apiVO, userApproveRequest);
@@ -109,6 +113,7 @@ public class AbilityController {
     @AopLogger(describe = "更新接口", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "更新接口")
     @PostMapping("edit-api")
+    @LoginAuthentication
     public Result<?> editApi(@RequestBody AbilityApiVO apiVO){
         Boolean editApiflag = abilityApiBizService.updateApi(apiVO);
         return Result.success("已修改接口完毕! ", editApiflag);
@@ -117,6 +122,7 @@ public class AbilityController {
     @AopLogger(describe = "审核接口注册", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "审核接口注册", description = "审核接口注册")
     @PostMapping("/audit-api")
+    @LoginAuthentication
     public Result<?> auditApi(@RequestBody AbilityAuditVO auditVO){
         String  msg = abilityApiBizService.auditApi(auditVO);
         return Result.success(msg);
@@ -153,6 +159,7 @@ public class AbilityController {
     @AopLogger(describe = "删除能力", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "删除能力")
     @PostMapping("/delete-ability-api")
+    @LoginAuthentication
     public Result<?> removeAbility(@Parameter(description = "能力id列表") @RequestBody AbilityDeleteDTO deleteDTO){
         String abilityIds = deleteDTO.getAbilityIds();
         boolean delFlag = abilityBizService.removeAbilityByIds(abilityIds);
@@ -184,6 +191,7 @@ public class AbilityController {
     @AopLogger(describe = "新增接口使用申请", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增接口使用申请", description = "申请使用接口")
     @PostMapping("/add-api-apply")
+    @LoginAuthentication
     public Result<?> applyApi(@RequestBody AbilityApiApplyEntity apply) {
         UserApproveRequest userApproveRequest = IdentifyUser.getUserInfo();
         abilityApiApplyBizService.saveApiApply(apply, userApproveRequest);
@@ -200,6 +208,7 @@ public class AbilityController {
     @AopLogger(describe = "审核能力使用申请", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "审核能力使用申请", description = "审核能力使用申请")
     @PostMapping("/audit-api-apply")
+    @LoginAuthentication
     public Result<?> auditApiApply(@RequestBody AbilityAuditVO auditVO){
         String  msg = abilityApiApplyBizService.auditApply(auditVO);
         return Result.success(msg);
@@ -260,6 +269,7 @@ public class AbilityController {
     @AopLogger(describe = "编辑接口使用申请", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "编辑接口使用申请", description = "编辑接口使用申请")
     @PostMapping("/edit-api-apply")
+    @LoginAuthentication
     public Result<?> editApiApply(@RequestBody AbilityApiApplyEntity apiApplyEntity){
         apiApplyEntity.setUpdateTime(new Date());
         LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate(AbilityApiApplyEntity.class)

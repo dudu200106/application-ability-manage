@@ -2,6 +2,7 @@ package com.dsj.csp.manage.controller;
 
 import com.dsj.common.dto.Result;
 import com.dsj.csp.common.aop.annotation.AopLogger;
+import com.dsj.csp.common.aop.annotation.LoginAuthentication;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
 import com.dsj.csp.manage.dto.AbilityDeleteDTO;
@@ -30,6 +31,7 @@ public class AbilityApiApplyController {
     @AopLogger(describe = "批量申请使用接口", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "批量申请使用接口", description = "批量申请使用接口")
     @PostMapping("/add-batch")
+    @LoginAuthentication
     public Result<?> applyApiBatch(@RequestBody List<AbilityApiApplyEntity> applyList) {
         UserApproveRequest userApproveRequest = IdentifyUser.getUserInfo();
         abilityApiApplyBizService.saveApiApplyBatch(applyList, userApproveRequest);
@@ -39,6 +41,7 @@ public class AbilityApiApplyController {
     @AopLogger(describe = "批量删除接口申请", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "批量删除接口申请")
     @PostMapping("/delete-batch")
+    @LoginAuthentication
     public Result<?> removeApiApplyBatch(@RequestBody AbilityDeleteDTO deleteDTO){
         String apiApplyIds = deleteDTO.getApiApplyIds();
         List<Long> ids = Arrays.stream(apiApplyIds.split(",")).map(Long::parseLong).toList();
@@ -49,6 +52,7 @@ public class AbilityApiApplyController {
     @AopLogger(describe = "删除接口申请", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "删除接口申请")
     @PostMapping("/delete")
+    @LoginAuthentication
     public Result<?> removeApiApply(@RequestBody AbilityApiApplyEntity apiApplyEntity){
         Boolean delFlag = abilityApiApplyService.removeById(apiApplyEntity.getApiApplyId());
         return Result.success("删除接口申请完成! ", delFlag);

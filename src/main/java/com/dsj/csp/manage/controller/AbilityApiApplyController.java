@@ -111,10 +111,19 @@ public class AbilityApiApplyController {
     @AopLogger(describe = "停用接口申请", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "停用接口申请")
     @LoginAuthentication
-    @PostMapping("/audit-block-up")
+    @PostMapping("/audit-disable")
     public Result<?> auditOffline(@RequestBody AbilityApiApplyEntity apiApply){
         abilityApiApplyBizService.auditBlockUp(apiApply.getApiApplyId(), apiApply.getNote());
         return Result.success("接口申请停用成功!");
+    }
+
+    @AopLogger(describe = "审核启用接口申请", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "审核启用接口申请")
+    @LoginAuthentication
+    @PostMapping("/audit-Enable")
+    public Result<?> auditEnable(@RequestBody AbilityApiApplyEntity apiApply){
+        abilityApiApplyBizService.auditPass(apiApply.getApiApplyId(), apiApply.getNote());
+        return Result.success("接口申请启用成功!");
     }
 
 }

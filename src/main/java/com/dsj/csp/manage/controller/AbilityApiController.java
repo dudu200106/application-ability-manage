@@ -92,8 +92,8 @@ public class AbilityApiController {
         return Result.success("撤回接口注册完成!");
     }
 
-    @AopLogger(describe = "接口注册审核通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "接口注册审核通过")
+    @AopLogger(describe = "审核接口注册通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "审核接口注册通过")
     @PostMapping("/audit-pass")
     @LoginAuthentication
     public Result<?> auditPass(@RequestBody AbilityApiEntity api){
@@ -101,8 +101,8 @@ public class AbilityApiController {
         return Result.success("接口注册审核通过!");
     }
 
-    @AopLogger(describe = "接口注册审核不通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "接口注册审核不通过")
+    @AopLogger(describe = "审核接口注册不通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "审核接口注册不通过")
     @PostMapping("/audit-not-pass")
     @LoginAuthentication
     public Result<?> auditNotPass(@RequestBody AbilityApiEntity api){
@@ -110,8 +110,8 @@ public class AbilityApiController {
         return Result.success("接口注册审核不通过!");
     }
 
-    @AopLogger(describe = "发布接口", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "发布接口")
+    @AopLogger(describe = "审核发布接口", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "审核发布接口")
     @LoginAuthentication
     @PostMapping("/audit-publish")
     public Result<?> auditPublish(@RequestBody AbilityApiEntity api){

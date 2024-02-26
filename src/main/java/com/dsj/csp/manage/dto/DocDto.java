@@ -120,6 +120,7 @@ public class DocDto  implements Serializable {
      * 接口能力分类ID
      */
     @Schema(description = "接口能力分类ID")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long abilityId;
 
     /**

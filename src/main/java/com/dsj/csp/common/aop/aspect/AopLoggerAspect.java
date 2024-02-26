@@ -99,7 +99,7 @@ public class AopLoggerAspect {
         logEntity.setRequestType(request.getMethod());
         // 打印调用 controller 的全路径以及执行方法
         logger.info("Class Method   : {}.{}", point.getSignature().getDeclaringTypeName(), point.getSignature().getName());
-        logEntity.setMethod(point.getSignature().getDeclaringTypeName() + point.getSignature().getName());
+        logEntity.setMethod(point.getSignature().getDeclaringTypeName() +"."+ point.getSignature().getName());
         // 打印请求的 IP
         logger.info("IP             : {}", request.getRemoteAddr());
 

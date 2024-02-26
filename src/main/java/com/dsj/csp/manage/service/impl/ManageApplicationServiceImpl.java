@@ -64,6 +64,18 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
         if (count > 0) {
             throw new FlowException(CodeEnum.APPNAME);
         } else {
+            Map<String, String> sm2Map = Sm2.sm2Test();
+//        应用key
+            String appKey = sm2Map.get("publicEncode");
+            String secretKey = sm2Map.get("privateEncode");
+            manageApplication.setAppKey(appKey);
+            manageApplication.setAppSecret(secretKey);
+//网关key
+            Map<String, String> sm2Map2 = Sm2.sm2Test();
+            String wgKey = sm2Map2.get("publicEncode");
+            String wgSecre = sm2Map2.get("privateEncode");
+            manageApplication.setAppWgKey(wgKey);
+            manageApplication.setAppWgSecret(wgSecre);
             manageApplication.setAppCreatetime(new Date());
             manageApplication.setAppUpdatetime(new Date());
             manageApplication.setAppIsdelete(0);

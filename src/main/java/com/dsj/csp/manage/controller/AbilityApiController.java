@@ -8,6 +8,7 @@ import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.dto.AbilityAuditVO;
 import com.dsj.csp.manage.dto.AbilityDeleteDTO;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
+import com.dsj.csp.manage.entity.DocEntity;
 import com.dsj.csp.manage.service.AbilityApiService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -71,6 +72,60 @@ public class AbilityApiController {
             abilityApiBizService.auditApi(auditVO);
         }).toList();
         return Result.success("批量审核接口完毕!");
+    }
+
+    @AopLogger(describe = "提交接口注册", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "提交接口注册")
+    @PostMapping("/audit-submit")
+    @LoginAuthentication
+    public Result<?> auditSubmit(@RequestBody AbilityApiEntity api){
+        abilityApiBizService.auditSubmit(api.getApiId(), api.getNote());
+        return Result.success("文档提交完成!");
+    }
+
+    @AopLogger(describe = "撤回接口注册", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "撤回接口注册")
+    @PostMapping("/audit-withdraw")
+    @LoginAuthentication
+    public Result<?> auditWithdraw(@RequestBody AbilityApiEntity api){
+        abilityApiBizService.auditWithdraw(api.getApiId(), api.getNote());
+        return Result.success("撤回接口注册完成!");
+    }
+
+    @AopLogger(describe = "接口注册审核通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "接口注册审核通过")
+    @PostMapping("/audit-pass")
+    @LoginAuthentication
+    public Result<?> auditPass(@RequestBody AbilityApiEntity api){
+        abilityApiBizService.auditPass(api.getApiId(), api.getNote());
+        return Result.success("接口注册审核通过!");
+    }
+
+    @AopLogger(describe = "接口注册审核不通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "接口注册审核不通过")
+    @PostMapping("/audit-not-pass")
+    @LoginAuthentication
+    public Result<?> auditNotPass(@RequestBody AbilityApiEntity api){
+        abilityApiBizService.auditNotPass(api.getApiId(), api.getNote());
+        return Result.success("接口注册审核不通过!");
+    }
+
+    @AopLogger(describe = "发布接口", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "发布接口")
+    @LoginAuthentication
+    @PostMapping("/audit-publish")
+    public Result<?> auditPublish(@RequestBody AbilityApiEntity api){
+        abilityApiBizService.auditPublish(api.getApiId(), api.getNote());
+        return Result.success("发布接口成功!");
+    }
+
+    @AopLogger(describe = "下线接口", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "下线接口")
+    @LoginAuthentication
+    @PostMapping("/audit-offline")
+    public Result<?> auditOffline(@RequestBody AbilityApiEntity api){
+        abilityApiBizService.auditOffline(api.getApiId(), api.getNote());
+        return Result.success("下线接口成功!");
     }
 
 }

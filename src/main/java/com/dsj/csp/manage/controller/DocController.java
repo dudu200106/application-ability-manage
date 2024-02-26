@@ -141,6 +141,7 @@ public class DocController {
             BeanUtil.copyProperties(doc, docDto);
             docDto.setCatalogName(catalogMap.get(doc.getCatalogId())==null ? null : catalogMap.get(doc.getCatalogId()).getCatalogName());
             docDto.setApiName(apiMap.get(doc.getApiId())==null ? null : apiMap.get(doc.getApiId()).getApiName());
+            docDto.setAbilityId(apiMap.get(doc.getApiId())==null ? null : apiMap.get(doc.getApiId()).getAbilityId());
             return docDto;
         }).toList();
         // 初始化返回分页

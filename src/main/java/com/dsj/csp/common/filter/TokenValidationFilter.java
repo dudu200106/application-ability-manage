@@ -43,7 +43,7 @@ public class TokenValidationFilter implements Filter {
         }catch (FlowException e){
             // Token验证失败，返回错误响应或重定向到登录页面
             HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
-            Result result = Result.failed(-1, e.getMessage());
+            Result result = Result.failed(e.getCode(), e.getMessage());
             httpServletResponse.setContentType("application/json;charset=UTF-8");
             httpServletResponse.getWriter().write(new ObjectMapper().writeValueAsString(result));
             // 重定向回首页

@@ -119,15 +119,6 @@ public class AbilityController {
         return Result.success("已修改接口完毕! ", editApiflag);
     }
 
-    @AopLogger(describe = "审核接口注册", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "审核接口注册", description = "审核接口注册")
-    @PostMapping("/audit-api")
-    @LoginAuthentication
-    public Result<?> auditApi(@RequestBody AbilityAuditVO auditVO){
-        String  msg = abilityApiBizService.auditApi(auditVO);
-        return Result.success(msg);
-    }
-
 
 //    @AopLogger(describe = "统计能力数", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "统计能力数")
@@ -206,14 +197,6 @@ public class AbilityController {
         return Result.success(abilityApiApplyBizService.getApplyInfo(apiApplyId));
     }
 
-    @AopLogger(describe = "审核能力使用申请", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "审核能力使用申请", description = "审核能力使用申请")
-    @PostMapping("/audit-api-apply")
-    @LoginAuthentication
-    public Result<?> auditApiApply(@RequestBody AbilityAuditVO auditVO){
-        String  msg = abilityApiApplyBizService.auditApply(auditVO);
-        return Result.success(msg);
-    }
 
 //    @AopLogger(describe = "分页查询api目录列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询api目录列表")

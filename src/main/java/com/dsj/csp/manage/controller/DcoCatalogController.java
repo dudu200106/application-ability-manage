@@ -16,6 +16,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -36,55 +40,64 @@ public class DcoCatalogController {
     private final DocCatalogService docCatalogService;
     private final DocService docService;
 
-    @AopLogger(describe = "新增目录", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "新增目录")
+    @AopLogger(describe = "新增文档目录", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "新增文档目录")
     @PostMapping("/add")
+    @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager")
     public Result<?> add(@RequestBody DocCatalogEntity catalogEntity){
         long cntCatalog = docCatalogService.count(Wrappers.lambdaQuery(DocCatalogEntity.class)
                 .eq(DocCatalogEntity::getCatalogName, catalogEntity.getCatalogName()));
         if (cntCatalog>0){
-            throw new BusinessException("目录名称已存在!");
+            throw new BusinessException("文档目录名称已存在!");
         }
         Boolean addFlag = docCatalogService.save(catalogEntity);
         return Result.success("添加文档目录" + (addFlag ? "成功!" : "失败!"), addFlag);
     }
 
 //    @AopLogger(describe = "查看目录详情", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "查看目录详情")
+    @Operation(summary = "查看文档目录详情")
     @GetMapping("/info")
+    @Cacheable(key = "'catalogId_' + #catalogId()", cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager")
     public Result<?> queryInfo(@Parameter(description = "目录Id") Long catalogId){
         return Result.success(docCatalogService.getById(catalogId));
     }
 
 //    @AopLogger(describe = "分页查询目录列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "分页查询目录列表")
+    @Operation(summary = "分页查询文档目录列表")
     @GetMapping("/page")
     public Result<?> page(@Parameter(description = "当前页数") Integer current, @Parameter(description = "分页页数") Integer size){
         return Result.success(docCatalogService.page(new Page<>(current, size), Wrappers.lambdaQuery()));
     }
 
-    @AopLogger(describe = "编辑目录", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "编辑目录")
+    @AopLogger(describe = "编辑文档目录", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "编辑文档目录")
     @PostMapping("/edit")
+    @CacheEvict(key = "'catalogId_' + #catalogEntity.getCatalogId()", cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager")
     public Result<?> edit(@RequestBody DocCatalogEntity catalogEntity){
         boolean editFlag = docCatalogService.updateById(catalogEntity);
-        return Result.success("编辑目录" + (editFlag ? "成功!" : "失败!"), editFlag);
+        return Result.success("编辑文档目录" + (editFlag ? "成功!" : "失败!"), editFlag);
     }
 
-    @AopLogger(describe = "删除目录", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "删除目录")
+    @AopLogger(describe = "删除文档目录", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "删除文档目录")
     @PostMapping("/delete")
+    @Transactional
+    @CacheEvict(key = "'catalogId_' + #catalogEntity.getCatalogId()", cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager")
     public Result<?> delete(@RequestBody DocCatalogEntity catalogEntity){
         // 删除目录下的所有文档
         docService.remove(Wrappers.lambdaQuery(DocEntity.class).eq(DocEntity::getCatalogId, catalogEntity.getCatalogId()));
         // 删除目录
         boolean delFlag = docCatalogService.removeById(catalogEntity.getCatalogId());
-        return Result.success("删除目录" + (delFlag ? "成功!" : "失败!"), delFlag);
+        return Result.success("删除文档目录" + (delFlag ? "成功!" : "失败!"), delFlag);
     }
 
 //    @AopLogger(describe = "查询所有目录及其文档列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "查询所有目录及其文档列表")
+    @Operation(summary = "查询所有文档目录及其文档列表")
     @GetMapping("/doc-list")
+    @Caching(cacheable ={
+            @Cacheable(key = "'docId'", cacheNames = "Doc", cacheManager = "caffeineCacheManager"),
+            @Cacheable(key = "'catalogId'", cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager")
+    })
     public Result<?> queryAllCatalogAndDoc(){
         // 查出所有目录列表
         List<DocCatalogEntity> catalogs = docCatalogService.list();

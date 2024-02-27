@@ -15,6 +15,8 @@ import com.dsj.csp.manage.util.IdentifyUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -55,6 +57,7 @@ public class AbilityApiApplyController {
     @Operation(summary = "批量删除接口申请")
     @PostMapping("/delete-batch")
     @LoginAuthentication
+    @CacheEvict(cacheManager = "caffeineCacheManager", cacheNames = "Apply", allEntries=true)
     public Result<?> removeApiApplyBatch(@RequestBody AbilityDeleteDTO deleteDTO){
         String apiApplyIds = deleteDTO.getApiApplyIds();
         List<Long> ids = Arrays.stream(apiApplyIds.split(",")).map(Long::parseLong).toList();
@@ -66,6 +69,7 @@ public class AbilityApiApplyController {
     @Operation(summary = "删除接口申请")
     @PostMapping("/delete")
     @LoginAuthentication
+    @CacheEvict(key = "'applyId' + #apiApplyEntity.getApiApplyId()", cacheManager = "caffeineCacheManager", cacheNames = "Apply")
     public Result<?> removeApiApply(@RequestBody AbilityApiApplyEntity apiApplyEntity){
         Boolean delFlag = abilityApiApplyService.removeById(apiApplyEntity.getApiApplyId());
         return Result.success("删除接口申请完成! ", delFlag);

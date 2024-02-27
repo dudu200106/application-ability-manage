@@ -24,7 +24,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -51,6 +55,7 @@ public class DocController {
     @Operation(summary = "新增文档")
     @PostMapping("/add")
     @LoginAuthentication
+    @CacheEvict(key = "'docId' + #docId", allEntries = true, cacheManager = "caffeineCacheManager")
     public Result<?> add(@RequestBody DocEntity doc){
         // 是否该目录下已存在同名文档
         long cntSameDoc = docService.count(Wrappers.lambdaQuery(DocEntity.class)
@@ -79,6 +84,7 @@ public class DocController {
 //    @AopLogger(describe = "查看文档", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查看文档")
     @GetMapping("/info")
+    @Cacheable(key = "'docId' + #docId", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
     public Result<?> info(Long docId){
         DocEntity doc = docService.getById(docId);
         DocDto docDto = new DocDto();
@@ -99,6 +105,7 @@ public class DocController {
 //    @AopLogger(describe = "分页查询文档", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询文档")
     @GetMapping("/page")
+    @Transactional(propagation = Propagation.REQUIRED)
     public Result<?> page(@Parameter(description = "是否过滤未发布的文档") boolean onlySubmit,
                           @Parameter(description = "接口ID") Long apiId,
                           @Parameter(description = "目录ID") Long catalogId,
@@ -166,6 +173,7 @@ public class DocController {
     @Operation(summary = "提交文档")
     @PostMapping("/audit-submit")
     @LoginAuthentication
+    @CacheEvict(key = "'docId' + #doc.getDocId()", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
     public Result<?> auditSubmit(@RequestBody DocEntity doc){
         docBizService.auditSubmit(doc.getDocId());
         return Result.success("文档提交完成!");
@@ -175,6 +183,7 @@ public class DocController {
     @Operation(summary = "撤回文档")
     @PostMapping("/audit-withdraw")
     @LoginAuthentication
+    @CacheEvict(key = "'docId' + #doc.getDocId()", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
     public Result<?> auditWithdraw(@RequestBody DocEntity doc){
         docBizService.auditWithdraw(doc.getDocId());
         return Result.success("文档撤回完成!");
@@ -184,6 +193,7 @@ public class DocController {
     @Operation(summary = "文档审核通过")
     @PostMapping("/audit-pass")
     @LoginAuthentication
+    @CacheEvict(key = "'docId' + #doc.getDocId()", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
     public Result<?> auditPass(@RequestBody DocEntity doc){
         docBizService.auditPass(doc.getDocId(), doc.getNote());
         return Result.success("文档审核通过!");
@@ -193,6 +203,7 @@ public class DocController {
     @Operation(summary = "文档审核不通过")
     @PostMapping("/audit-not-pass")
     @LoginAuthentication
+    @CacheEvict(key = "'docId' + #doc.getDocId()", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
     public Result<?> auditNotPass(@RequestBody DocEntity doc){
         docBizService.auditNotPass(doc.getDocId(), doc.getNote());
         return Result.success("文档审核不通过!");
@@ -201,8 +212,9 @@ public class DocController {
 
     @AopLogger(describe = "发布文档", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "发布文档")
-    @LoginAuthentication
     @PostMapping("/audit-publish")
+    @LoginAuthentication
+    @CacheEvict(key = "'docId' + #doc.getDocId()", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
     public Result<?> auditPublish(@RequestBody DocEntity doc){
         docBizService.auditPublish(doc.getDocId(), null);
         return Result.success("文档发布成功!");
@@ -222,9 +234,10 @@ public class DocController {
     @Operation(summary = "编辑文档")
     @PostMapping("/edit")
     @LoginAuthentication
-    public Result<?> edit(@RequestBody DocEntity docEntity){
-        docEntity.setUpdateTime(new Date());
-        boolean editFlag = docService.updateById(docEntity);
+    @CacheEvict(key = "'docId' + #doc.getDocId()", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
+    public Result<?> edit(@RequestBody DocEntity doc){
+        doc.setUpdateTime(new Date());
+        boolean editFlag = docService.updateById(doc);
         return Result.success("文档编辑完成!", editFlag );
     }
 
@@ -232,6 +245,7 @@ public class DocController {
     @Operation(summary = "下线文档")
     @PostMapping("/audit-offline")
     @LoginAuthentication
+    @CacheEvict(key = "'docId' + #doc.getDocId()", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
     public Result<?> abortPublish(@RequestBody DocEntity doc){
         docBizService.auditOffline(doc.getDocId(), doc.getNote());
         return Result.success("文档下线成功!");
@@ -241,6 +255,7 @@ public class DocController {
     @Operation(summary = "删除文档")
     @PostMapping("/delete")
     @LoginAuthentication
+    @CacheEvict(key = "'docId' + #docEntity.getDocId()", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
     public Result<?> delete(@RequestBody DocEntity docEntity){
         boolean deleteFlag = docService.removeById(docEntity);
         return Result.success(deleteFlag+"", "文档删除完成!");

@@ -80,7 +80,7 @@ public class AbilityApiController {
     @LoginAuthentication
     public Result<?> auditSubmit(@RequestBody AbilityApiEntity api){
         abilityApiBizService.auditSubmit(api.getApiId(), api.getNote());
-        return Result.success("文档提交完成!");
+        return Result.success("接口注册提交完成!");
     }
 
     @AopLogger(describe = "撤回接口注册", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)

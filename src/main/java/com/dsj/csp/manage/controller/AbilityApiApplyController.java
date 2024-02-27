@@ -77,7 +77,7 @@ public class AbilityApiApplyController {
     @LoginAuthentication
     public Result<?> auditSubmit(@RequestBody AbilityApiApplyEntity apiApply){
         abilityApiApplyBizService.auditSubmit(apiApply.getApiApplyId(), apiApply.getNote());
-        return Result.success("文档提交完成!");
+        return Result.success("接口申请提交完成!");
     }
 
     @AopLogger(describe = "撤回接口申请", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)

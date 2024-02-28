@@ -1,4 +1,4 @@
-package com.dsj.csp.common.config;
+package com.dsj.csp.common.config.cache;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.cache.CacheManager;

@@ -57,7 +57,6 @@ public class DcoCatalogController {
 //    @AopLogger(describe = "查看目录详情", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查看文档目录详情")
     @GetMapping("/info")
-    @Cacheable(key = "'catalogId_' + #catalogId()", cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager")
     public Result<?> queryInfo(@Parameter(description = "目录Id") Long catalogId){
         return Result.success(docCatalogService.getById(catalogId));
     }
@@ -72,7 +71,7 @@ public class DcoCatalogController {
     @AopLogger(describe = "编辑文档目录", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "编辑文档目录")
     @PostMapping("/edit")
-    @CacheEvict(key = "'catalogId_' + #catalogEntity.getCatalogId()", cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager")
+    @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager")
     public Result<?> edit(@RequestBody DocCatalogEntity catalogEntity){
         boolean editFlag = docCatalogService.updateById(catalogEntity);
         return Result.success("编辑文档目录" + (editFlag ? "成功!" : "失败!"), editFlag);
@@ -82,7 +81,10 @@ public class DcoCatalogController {
     @Operation(summary = "删除文档目录")
     @PostMapping("/delete")
     @Transactional
-    @CacheEvict(key = "'catalogId_' + #catalogEntity.getCatalogId()", cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager")
+    @Caching(evict = {
+            @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager"),
+            @CacheEvict(allEntries = true, cacheNames = "Doc", cacheManager = "caffeineCacheManager")
+    })
     public Result<?> delete(@RequestBody DocCatalogEntity catalogEntity){
         // 删除目录下的所有文档
         docService.remove(Wrappers.lambdaQuery(DocEntity.class).eq(DocEntity::getCatalogId, catalogEntity.getCatalogId()));
@@ -94,10 +96,7 @@ public class DcoCatalogController {
 //    @AopLogger(describe = "查询所有目录及其文档列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查询所有文档目录及其文档列表")
     @GetMapping("/doc-list")
-    @Caching(cacheable ={
-            @Cacheable(key = "'docId'", cacheNames = "Doc", cacheManager = "caffeineCacheManager"),
-            @Cacheable(key = "'catalogId'", cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager")
-    })
+    @Cacheable(key = "'docList'", cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager")
     public Result<?> queryAllCatalogAndDoc(){
         // 查出所有目录列表
         List<DocCatalogEntity> catalogs = docCatalogService.list();

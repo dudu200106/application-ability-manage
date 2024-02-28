@@ -10,6 +10,8 @@ import com.dsj.csp.manage.entity.DocEntity;
 import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.DocService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,10 @@ public class DocBizServiceImpl implements DocBizService {
     private final DocService docService;
     
     @Override
+    @Caching(evict = {
+            @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager"),
+            @CacheEvict(key = "'docId_' + #docId", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
+    })
     public void auditSubmit(Long docId) {
         boolean isValid = isValidJudge(docId, 6);
         if (!isValid){
@@ -44,6 +50,10 @@ public class DocBizServiceImpl implements DocBizService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager"),
+            @CacheEvict(key = "'docId_' + #docId", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
+    })
     public void auditWithdraw(Long docId) {
         boolean isValid = isValidJudge(docId, 0);
         if (!isValid){
@@ -58,6 +68,10 @@ public class DocBizServiceImpl implements DocBizService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager"),
+            @CacheEvict(key = "'docId_' + #docId", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
+    })
     public void auditPass(Long docId, String note) {
         boolean isValid = isValidJudge(docId, 0);
         if (!isValid){
@@ -74,6 +88,10 @@ public class DocBizServiceImpl implements DocBizService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager"),
+            @CacheEvict(key = "'docId_' + #docId", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
+    })
     public void auditNotPass(Long docId, String note) {
         boolean isValid = isValidJudge(docId, 0);
         if (!isValid){
@@ -89,6 +107,10 @@ public class DocBizServiceImpl implements DocBizService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager"),
+            @CacheEvict(key = "'docId_' + #docId", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
+    })
     public void auditPublish(Long docId, String note) {
         DocEntity docEntity = docService.getById(docId);
         if (docEntity==null){
@@ -130,6 +152,10 @@ public class DocBizServiceImpl implements DocBizService {
 //    }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager"),
+            @CacheEvict(key = "'docId_' + #docId", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
+    })
     public void auditOffline(Long docId, String note) {
         boolean isValid = isValidJudge(docId, 3) || isValidJudge(docId, 4);
         if (!isValid){

@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
@@ -103,11 +104,24 @@ public class AbilityController {
     @Operation(summary = "删除能力")
     @PostMapping("/delete-ability-api")
     @LoginAuthentication
-    @CacheEvict(key = "'abilityCatalog'", cacheNames = "Ability", cacheManager = "caffeineCacheManager")
+    @Caching(evict = {
+            @CacheEvict(key = "'abilityCatalog'", cacheNames = "Ability", cacheManager = "caffeineCacheManager"),
+            @CacheEvict(key = "'apiCatalog'", cacheNames = "Api", cacheManager = "caffeineCacheManager")
+    })
     public Result<?> removeAbility(@Parameter(description = "能力id列表") @RequestBody AbilityDeleteDTO deleteDTO){
         String abilityIds = deleteDTO.getAbilityIds();
         boolean delFlag = abilityBizService.removeAbilityByIds(abilityIds);
         return Result.success("删除能力及其接口完成! ", delFlag);
+    }
+
+    //    @AopLogger(describe = "获取能力简单信息目录", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "获取能力简单信息目录")
+    @GetMapping("/get-ability-catalog")
+    @Cacheable(key = "'abilityCatalog'", cacheNames = "Ability", cacheManager = "caffeineCacheManager")
+    public Result<?> getAbilityCatalog(){
+        List<AbilityEntity> abilityIds = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
+                .select(AbilityEntity::getAbilityId ,AbilityEntity::getAbilityName));
+        return Result.success(abilityIds);
     }
 
 
@@ -140,6 +154,39 @@ public class AbilityController {
         return Result.success("已修改接口完毕! ", editApiflag);
     }
 
+    //    @AopLogger(describe = "分页查询api目录列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "分页查询api目录列表")
+    @GetMapping("page-api-catalog")
+    public Result<?> pageApiList(@Parameter(description = "是否过滤未发布的接口") boolean onlyPublished,
+                                 @Parameter(description = "请求方式") String reqMethod,
+                                 @Parameter(description = "状态") Integer status,
+                                 @Parameter(description = "用户ID") Long userId,
+                                 @Parameter(description = "能力ID") Long abilityId,
+                                 @Parameter(description = "分页条数", required = true) int size,
+                                 @Parameter(description = "当前页数", required = true) int current,
+                                 @Parameter(description = "搜索关键字") String keyword,
+                                 @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", fallbackPatterns = {"yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss"})
+                                 @Parameter(description = "开始时间") Date startTime,
+                                 @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", fallbackPatterns = {"yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss"})
+                                 @Parameter(description = "结束时间") Date endTime) {
+        return Result.success(abilityApiBizService.pageApiCatalog(onlyPublished, reqMethod, status, userId, abilityId, keyword, current, size, startTime, endTime));
+    }
+
+    //    @AopLogger(describe = "分页查询申请通过的接口列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "分页查询申请通过的接口列表", description = "分页查询申请通过的接口列表")
+    @GetMapping("/page-passed-apis")
+    public Result<?> pagePassedApi(@Parameter(description = "用户ID") Long userId,
+                                   @Parameter(description = "应用ID") Long appId,
+                                   @Parameter(description = "能力ID") Long abilityId,
+                                   @Parameter(description = "分页条数", required = true) int size,
+                                   @Parameter(description = "当前页数", required = true) int current,
+                                   @Parameter(description = "搜索关键字(匹配接口名称/描述/路径)") String keyword,
+                                   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", fallbackPatterns = {"yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss"})
+                                   @Parameter(description = "开始时间") Date startTime,
+                                   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", fallbackPatterns = {"yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss"})
+                                   @Parameter(description = "结束时间") Date endTime) {
+        return Result.success(abilityApiBizService.pagePassedApis(userId, appId, abilityId, keyword, current, size, startTime, endTime));
+    }
 
 
 
@@ -210,25 +257,6 @@ public class AbilityController {
         return Result.success(abilityApiApplyBizService.getApplyInfo(apiApplyId));
     }
 
-
-//    @AopLogger(describe = "分页查询api目录列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "分页查询api目录列表")
-    @GetMapping("page-api-catalog")
-    public Result<?> pageApiList(@Parameter(description = "是否过滤未发布的接口") boolean onlyPublished,
-                                 @Parameter(description = "请求方式") String reqMethod,
-                                 @Parameter(description = "状态") Integer status,
-                                 @Parameter(description = "用户ID") Long userId,
-                                 @Parameter(description = "能力ID") Long abilityId,
-                                 @Parameter(description = "分页条数", required = true) int size,
-                                 @Parameter(description = "当前页数", required = true) int current,
-                                 @Parameter(description = "搜索关键字") String keyword,
-                                 @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", fallbackPatterns = {"yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss"})
-                                 @Parameter(description = "开始时间") Date startTime,
-                                 @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", fallbackPatterns = {"yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss"})
-                                 @Parameter(description = "结束时间") Date endTime) {
-        return Result.success(abilityApiBizService.pageApiCatalog(onlyPublished, reqMethod, status, userId, abilityId, keyword, current, size, startTime, endTime));
-    }
-
 //    @AopLogger(describe = "分页查询接口申请列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询接口申请列表", description = "分页查询接口申请列表")
     @GetMapping("/page-api-apply")
@@ -247,21 +275,7 @@ public class AbilityController {
         return Result.success(abilityApiApplyBizService.pageApiApply(onlySubmitted, appId, userId, abilityId, keyword, status, startTime, endTime, current, size));
     }
 
-//    @AopLogger(describe = "分页查询申请通过的接口列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "分页查询申请通过的接口列表", description = "分页查询申请通过的接口列表")
-    @GetMapping("/page-passed-apis")
-    public Result<?> pagePassedApi(@Parameter(description = "用户ID") Long userId,
-                                   @Parameter(description = "应用ID") Long appId,
-                                   @Parameter(description = "能力ID") Long abilityId,
-                                   @Parameter(description = "分页条数", required = true) int size,
-                                   @Parameter(description = "当前页数", required = true) int current,
-                                   @Parameter(description = "搜索关键字(匹配接口名称/描述/路径)") String keyword,
-                                   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", fallbackPatterns = {"yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss"})
-                                   @Parameter(description = "开始时间") Date startTime,
-                                   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", fallbackPatterns = {"yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss"})
-                                   @Parameter(description = "结束时间") Date endTime) {
-        return Result.success(abilityApiBizService.pagePassedApis(userId, appId, abilityId, keyword, current, size, startTime, endTime));
-    }
+
 
     @AopLogger(describe = "编辑接口使用申请", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "编辑接口使用申请", description = "编辑接口使用申请")
@@ -272,16 +286,6 @@ public class AbilityController {
         LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate(AbilityApiApplyEntity.class)
                 .eq(AbilityApiApplyEntity::getApiApplyId, apiApplyEntity.getApiApplyId());
         return Result.success(abilityApiApplyService.update(apiApplyEntity, updateWrapper));
-    }
-
-//    @AopLogger(describe = "获取能力简单信息目录", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "获取能力简单信息目录")
-    @GetMapping("/get-ability-catalog")
-    @Cacheable(key = "'abilityCatalog'", cacheNames = "Ability", cacheManager = "caffeineCacheManager")
-    public Result<?> getAbilityCatalog(){
-        List<AbilityEntity> abilityIds = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
-                        .select(AbilityEntity::getAbilityId ,AbilityEntity::getAbilityName));
-        return Result.success(abilityIds);
     }
 
 

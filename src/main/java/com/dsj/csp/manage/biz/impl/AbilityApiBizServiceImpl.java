@@ -392,7 +392,6 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     @Override
-    @Cacheable(keyGenerator = "selfKeyGenerate", cacheNames = "ApiSimpleList", cacheManager = "caffeineCacheManager")
     public List<AbilityApiEntity> getApiCatalog(boolean onlyPublished, String reqMethod, Integer status, Long userId, Long abilityId) {
         // 构造分页条件构造器
         LambdaQueryWrapper<AbilityApiEntity> queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)

@@ -77,7 +77,7 @@ public class AbilityController {
 //    @AopLogger(describe = "分页查询能力目录列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询能力目录列表", description = "分页查询能力目录列表")
     @GetMapping ("/page-ability-catalog")
-    @Cacheable(key = "selfKeyGenerate", cacheNames = "Ability", cacheManager = "caffeineCacheManager")
+    @Cacheable(keyGenerator = "selfKeyGenerate", cacheNames = "Ability", cacheManager = "caffeineCacheManager")
     public Result<?> queryAbilityCatalog(@Parameter(description = "用户ID") Long userId,
                                          @Parameter(description = "分页条数", required = true) int size,
                                          @Parameter(description = "当前页数", required = true) int current,

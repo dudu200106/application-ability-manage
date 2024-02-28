@@ -36,7 +36,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     private final AbilityService abilityService;
 
     @Override
-    @CacheEvict(key = "'apiCatalog'", cacheNames = "Api", cacheManager = "caffeineCacheManager")
+    @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public void saveApi(AbilityApiVO apiVO, UserApproveRequest userApproveRequest) {
         long cnt = abilityApiService.count(Wrappers.lambdaQuery(AbilityApiEntity.class)
                 .or().and(i->i.eq(AbilityApiEntity::getAbilityId, apiVO.getAbilityId())
@@ -57,6 +57,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     @Override
+    @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public String auditApi(AbilityAuditVO auditVO) {
         Long apiId = auditVO.getApiId();
         String note = auditVO.getNote();
@@ -72,7 +73,6 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     @Override
-    @CacheEvict(key = "'apiCatalog'", cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public String auditWithdraw(Long apiId, String note) {
         boolean isValid = isApiValid(apiId, 1) ;
         if (!isValid) {
@@ -88,7 +88,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     @Override
-    @CacheEvict(key = "'apiCatalog'", cacheNames = "Api", cacheManager = "caffeineCacheManager")
+    @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public String auditSubmit(Long apiId, String note) {
         boolean isValid = isApiValid(apiId, 0) ;
         if (!isValid) {
@@ -104,7 +104,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     @Override
-    @CacheEvict(key = "'apiCatalog'", cacheNames = "Api", cacheManager = "caffeineCacheManager")
+    @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public String auditNotPass(Long apiId, String note) {
         boolean isValid = isApiValid(apiId, 1) ;
         if (!isValid) {
@@ -121,7 +121,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     @Override
-    @CacheEvict(key = "'apiCatalog'", cacheNames = "Api", cacheManager = "caffeineCacheManager")
+    @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public String auditPass(Long apiId, String note) {
         boolean isValid = isApiValid(apiId, 1) ;
         if (!isValid) {
@@ -138,7 +138,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     @Override
-    @CacheEvict(key = "'apiCatalog'", cacheNames = "Api", cacheManager = "caffeineCacheManager")
+    @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public String auditPublish(Long apiId, String note) {
         boolean isValid = isApiValid(apiId, 3) || isApiValid(apiId, 5) ;
         if (!isValid) {
@@ -155,7 +155,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     @Override
-    @CacheEvict(key = "'apiCatalog'", cacheNames = "Api", cacheManager = "caffeineCacheManager")
+    @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public String auditOffline(Long apiId, String note) {
         boolean isValid = isApiValid(apiId, 4) ;
         if (!isValid) {
@@ -196,7 +196,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
 
     @Override
-    @CacheEvict(key = "'apiCatalog'", cacheNames = "Api", cacheManager = "caffeineCacheManager")
+    @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public boolean updateApi(AbilityApiVO apiVO) {
         AbilityApiEntity api = new AbilityApiEntity();
         BeanUtil.copyProperties(apiVO, api, true);
@@ -392,6 +392,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     @Override
+    @Cacheable(keyGenerator = "selfKeyGenerate", cacheNames = "ApiSimpleList", cacheManager = "caffeineCacheManager")
     public List<AbilityApiEntity> getApiCatalog(boolean onlyPublished, String reqMethod, Integer status, Long userId, Long abilityId) {
         // 构造分页条件构造器
         LambdaQueryWrapper<AbilityApiEntity> queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)

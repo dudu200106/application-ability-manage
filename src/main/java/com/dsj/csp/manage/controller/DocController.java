@@ -247,7 +247,10 @@ public class DocController {
     @Operation(summary = "编辑文档")
     @PostMapping("/edit")
     @LoginAuthentication
-    @CachePut(key = "'docId_' + #doc.getDocId()", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
+    @Caching(
+            evict = @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager"),
+            put = @CachePut(key = "'docId_' + #doc.getDocId()", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
+    )
     public Result<?> edit(@RequestBody DocEntity doc){
         doc.setUpdateTime(new Date());
         boolean editFlag = docService.updateById(doc);

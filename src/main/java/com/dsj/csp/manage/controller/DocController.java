@@ -25,6 +25,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -56,6 +57,7 @@ public class DocController {
     @Operation(summary = "新增文档")
     @PostMapping("/add")
     @LoginAuthentication
+    @Transactional
     @Caching(evict = {
             @CacheEvict(allEntries = true, cacheNames = "Doc", cacheManager = "caffeineCacheManager"),
             @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager")
@@ -91,6 +93,9 @@ public class DocController {
     @Cacheable(key = "'docId_' + #docId", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
     public Result<?> info(Long docId){
         DocEntity doc = docService.getById(docId);
+        if (doc == null){
+            return Result.success("文档不存在!", doc);
+        }
         DocDto docDto = new DocDto();
         BeanUtil.copyProperties(doc, docDto);
         DocCatalogEntity catalog = docCatalogService.getById(doc.getCatalogId());
@@ -242,7 +247,7 @@ public class DocController {
     @Operation(summary = "编辑文档")
     @PostMapping("/edit")
     @LoginAuthentication
-    @CacheEvict(key = "'docId_' + #doc.getDocId()", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
+    @CachePut(key = "'docId_' + #doc.getDocId()", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
     public Result<?> edit(@RequestBody DocEntity doc){
         doc.setUpdateTime(new Date());
         boolean editFlag = docService.updateById(doc);

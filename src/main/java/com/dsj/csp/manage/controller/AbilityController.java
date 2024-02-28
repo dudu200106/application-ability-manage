@@ -24,7 +24,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,6 +54,7 @@ public class AbilityController {
     @Operation(summary = "新增能力", description = "新增一个新的能力")
     @PostMapping("/add-login")
     @LoginAuthentication
+    @CacheEvict(key = "'abilityCatalog'", cacheNames = "Ability", cacheManager = "caffeineCacheManager")
     public Result<?> addAbility(@RequestBody AbilityEntity ability) {
         long cnt = abilityService.count(Wrappers.lambdaQuery(AbilityEntity.class)
                 .eq(AbilityEntity::getAbilityName, ability.getAbilityName()));
@@ -88,16 +91,32 @@ public class AbilityController {
     @Operation(summary = "编辑能力")
     @PostMapping("edit-login")
     @LoginAuthentication
+    @CacheEvict(key = "'abilityCatalog'", cacheNames = "Ability", cacheManager = "caffeineCacheManager")
     public Result<?> updateAbility(@RequestBody AbilityEntity ability){
         ability.setUpdateTime(new Date());
         Boolean editFlag = abilityService.updateById(ability);
         return Result.success("编辑注册能力成功!", editFlag);
     }
 
+
+    @AopLogger(describe = "删除能力", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "删除能力")
+    @PostMapping("/delete-ability-api")
+    @LoginAuthentication
+    @CacheEvict(key = "'abilityCatalog'", cacheNames = "Ability", cacheManager = "caffeineCacheManager")
+    public Result<?> removeAbility(@Parameter(description = "能力id列表") @RequestBody AbilityDeleteDTO deleteDTO){
+        String abilityIds = deleteDTO.getAbilityIds();
+        boolean delFlag = abilityBizService.removeAbilityByIds(abilityIds);
+        return Result.success("删除能力及其接口完成! ", delFlag);
+    }
+
+
+
     @AopLogger(describe = "新增接口", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增接口")
     @PostMapping("add-api")
     @LoginAuthentication
+    @CacheEvict(key = "'apiCatalog'", cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public Result<?> addApi(@RequestBody AbilityApiVO apiVO){
         UserApproveRequest userApproveRequest = IdentifyUser.getUserInfo();
         abilityApiBizService.saveApi(apiVO, userApproveRequest);
@@ -115,10 +134,13 @@ public class AbilityController {
     @Operation(summary = "更新接口")
     @PostMapping("edit-api")
     @LoginAuthentication
+    @CacheEvict(key = "'apiCatalog'", cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public Result<?> editApi(@RequestBody AbilityApiVO apiVO){
         Boolean editApiflag = abilityApiBizService.updateApi(apiVO);
         return Result.success("已修改接口完毕! ", editApiflag);
     }
+
+
 
 
 //    @AopLogger(describe = "统计能力数", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
@@ -147,16 +169,6 @@ public class AbilityController {
     @GetMapping("/count-user-api")
     public Result<?> countUserApi(String userId){
         return Result.success(abilityApiApplyService.countUserApi(userId));
-    }
-
-    @AopLogger(describe = "删除能力", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "删除能力")
-    @PostMapping("/delete-ability-api")
-    @LoginAuthentication
-    public Result<?> removeAbility(@Parameter(description = "能力id列表") @RequestBody AbilityDeleteDTO deleteDTO){
-        String abilityIds = deleteDTO.getAbilityIds();
-        boolean delFlag = abilityBizService.removeAbilityByIds(abilityIds);
-        return Result.success("删除能力及其接口完成! ", delFlag);
     }
 
 
@@ -265,6 +277,7 @@ public class AbilityController {
 //    @AopLogger(describe = "获取能力简单信息目录", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "获取能力简单信息目录")
     @GetMapping("/get-ability-catalog")
+    @Cacheable(key = "'abilityCatalog'", cacheNames = "Ability", cacheManager = "caffeineCacheManager")
     public Result<?> getAbilityCatalog(){
         List<AbilityEntity> abilityIds = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
                         .select(AbilityEntity::getAbilityId ,AbilityEntity::getAbilityName));

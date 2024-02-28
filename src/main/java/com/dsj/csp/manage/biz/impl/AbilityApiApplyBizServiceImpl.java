@@ -13,11 +13,7 @@ import com.dsj.csp.manage.dto.*;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.*;
-import com.dsj.csp.manage.util.Sm2;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +35,6 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     private final AbilityApiRespService abilityApiRespService;
 
     @Override
-    @CacheEvict(allEntries = true, cacheManager = "caffeineCacheManager", cacheNames = "Apply")
     public void saveApiApply(AbilityApiApplyEntity applyEntity, UserApproveRequest userApproveRequest) {
         // 判断调用接口是否已下线
         AbilityApiEntity apiEntity = abilityApiService.getById(applyEntity.getApiId());
@@ -60,7 +55,6 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     }
 
     @Override
-    @Cacheable(key = "'applyId' + #apiApplyId", cacheManager = "caffeineCacheManager", cacheNames = "Apply")
     public AbilityApiApplyDTO getApplyInfo(Long apiApplyId) {
         AbilityApiApplyEntity apply = abilityApiApplyService.getById(apiApplyId);
         if (apply==null){
@@ -91,7 +85,6 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     }
 
     @Override
-    @CacheEvict(key = "'applyId' + #applyId", cacheManager = "caffeineCacheManager", cacheNames = "Apply")
     public String auditApply(AbilityAuditVO auditVO) {
         // 审核
         Long applyId = auditVO.getApiApplyId();
@@ -106,7 +99,6 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     }
 
     @Override
-    @CacheEvict(key = "'applyId' + #applyId", cacheManager = "caffeineCacheManager", cacheNames = "Apply")
     public String auditWithdraw(Long applyId, String note) {
         boolean isValid = isApplyValid(applyId, 1);
         if (!isValid) {
@@ -121,7 +113,6 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     }
 
     @Override
-    @CacheEvict(key = "'applyId' + #applyId", cacheManager = "caffeineCacheManager", cacheNames = "Apply")
     public String auditSubmit(Long applyId, String note) {
         boolean isValid = isApplyValid(applyId, 0);
         if (!isValid) {
@@ -136,7 +127,6 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     }
 
     @Override
-    @CacheEvict(key = "'applyId' + #applyId", cacheManager = "caffeineCacheManager", cacheNames = "Apply")
     public String auditPass(Long applyId, String note) {
         boolean isValid = isApplyValid(applyId, 1) || isApplyValid(applyId, 4);
         if (!isValid) {
@@ -180,7 +170,6 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     }
 
     @Override
-    @CacheEvict(key = "'applyId' + #applyId", cacheManager = "caffeineCacheManager", cacheNames = "Apply")
     public String auditNotPass(Long applyId, String note) {
         boolean isValid = isApplyValid(applyId, 1);
         if (!isValid) {
@@ -197,7 +186,6 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     }
 
     @Override
-    @CacheEvict(key = "'applyId' + #applyId", cacheManager = "caffeineCacheManager", cacheNames = "Apply")
     public String auditBlockUp(Long applyId, String note) {
         boolean isValid = isApplyValid(applyId, 2);
         if (!isValid) {

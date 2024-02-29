@@ -3,6 +3,7 @@ package com.dsj.csp.manage.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dsj.common.dto.BusinessException;
+import com.dsj.csp.manage.entity.AbilityApiReq;
 import com.dsj.csp.manage.entity.AbilityApiResp;
 import com.dsj.csp.manage.mapper.AbilityApiRespMapper;
 import com.dsj.csp.manage.service.AbilityApiRespService;
@@ -24,7 +25,10 @@ public class AbilityApiRespServiceImpl extends ServiceImpl<AbilityApiRespMapper,
 
     @Override
     public Boolean saveRespList(List<AbilityApiResp> respParams, Long apiId) {
-        Set<String> paramNames = respParams.stream().map(param -> param.getRespName()).collect(Collectors.toSet());
+        if (respParams==null){
+            return true;
+        }
+        Set<String> paramNames = respParams.stream().map(AbilityApiResp::getRespName).collect(Collectors.toSet());
         if (respParams.size() != paramNames.size()){
             throw new BusinessException("新增接口异常: 接口响应参数存在重名");
         }

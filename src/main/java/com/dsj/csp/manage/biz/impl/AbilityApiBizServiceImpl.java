@@ -1,6 +1,5 @@
 package com.dsj.csp.manage.biz.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -198,8 +197,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     @Override
     @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public boolean updateApi(AbilityApiVO apiVO) {
-        AbilityApiEntity api = new AbilityApiEntity();
-        BeanUtil.copyProperties(apiVO, api, true);
+        AbilityApiEntity api = AbilityApiConvertor.INSTANCE.toEntity(apiVO);
         api.setUpdateTime(new Date());
         // 覆盖参数列表
         abilityApiReqService.lambdaUpdate()
@@ -216,7 +214,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
     @Override
     public AbilityApiVO getApiInfo(Long apiId) {
-        AbilityApiVO res = new AbilityApiVO();
+
         AbilityApiEntity apiEntity = abilityApiService.getById(apiId);
 
         String abilityName = abilityService.getById(apiEntity.getAbilityId()).getAbilityName();
@@ -224,7 +222,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                 Wrappers.lambdaQuery(AbilityApiResp.class).eq(AbilityApiResp::getApiId, apiId));
         List<AbilityApiReq> reqs = abilityApiReqService.getBaseMapper().selectList(
                 Wrappers.lambdaQuery(AbilityApiReq.class).eq(AbilityApiReq::getApiId, apiId));
-        BeanUtil.copyProperties(apiEntity, res, true);
+
+        AbilityApiVO res = AbilityApiConvertor.INSTANCE.toVO(apiEntity);
         res.setAbilityName(abilityName);
         res.setRespList(resps);
         res.setReqList(reqs);
@@ -258,8 +257,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         Set<Long> abilityIds = apiList.stream().map(AbilityApiEntity::getAbilityId).collect(Collectors.toSet());
         Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
         return apiList.stream().map(api->{
-            AbilityApiVO apiVO = new AbilityApiVO();
-            BeanUtil.copyProperties(api, apiVO, true);
+            AbilityApiVO apiVO = AbilityApiConvertor.INSTANCE.toVO(api);
             apiVO.setAbilityName(abilityMap.getOrDefault(api.getAbilityId(), new AbilityEntity()).getAbilityName());
             return apiVO;
         }).toList();
@@ -284,8 +282,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         Set<Long> abilityIds = apiList.stream().map(AbilityApiEntity::getAbilityId).collect(Collectors.toSet());
         Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
         return apiList.stream().map(api->{
-            AbilityApiVO apiVO = new AbilityApiVO();
-            BeanUtil.copyProperties(api, apiVO, true);
+            AbilityApiVO apiVO = AbilityApiConvertor.INSTANCE.toVO(api);
             apiVO.setAbilityName(abilityMap.getOrDefault(api.getAbilityId(), new AbilityEntity()).getAbilityName());
             return apiVO;
         }).toList();
@@ -329,8 +326,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
         Page<AbilityApiVO> resPage = new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         List<AbilityApiVO> resRecords = preRecords.stream().map(api -> {
-            AbilityApiVO apiVO = new AbilityApiVO();
-            BeanUtil.copyProperties(api, apiVO);
+            AbilityApiVO apiVO = AbilityApiConvertor.INSTANCE.toVO(api);
             apiVO.setAbilityName(abilityMap.getOrDefault(api.getAbilityId(), new AbilityEntity()).getAbilityName());
             return apiVO;
         }).toList();

@@ -1,6 +1,5 @@
 package com.dsj.csp.manage.biz.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -10,6 +9,7 @@ import com.baomidou.mybatisplus.extension.toolkit.SimpleQuery;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
 import com.dsj.csp.manage.dto.*;
+import com.dsj.csp.manage.dto.convertor.AbilityApiApplyConvertor;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.*;
@@ -71,8 +71,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         List<AbilityApiReq> reqParams = abilityApiReqService.list(Wrappers.lambdaQuery(AbilityApiReq.class).eq(AbilityApiReq::getApiId, api.getApiId()));
         List<AbilityApiResp> respParams = abilityApiRespService.list(Wrappers.lambdaQuery(AbilityApiResp.class).eq(AbilityApiResp::getApiId, api.getApiId()));
         //构造返回能力申请信息DTO
-        AbilityApiApplyDTO resApply = new AbilityApiApplyDTO();
-        BeanUtil.copyProperties(apply, resApply,true);
+        AbilityApiApplyDTO resApply = AbilityApiApplyConvertor.INSTANCE.toDTO(apply);
         resApply.setApi(api);
         resApply.setApiName(api.getApiName());
         resApply.setAbilityName(ability.getAbilityName());
@@ -330,8 +329,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         // 3.初始化返回的分页, 并为必要的返回属性赋值
         Page<AbilityApiApplyDTO> newPage = new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         List<AbilityApiApplyDTO> resRecords = records.stream().map(apply ->{
-            AbilityApiApplyDTO applyDTO = new AbilityApiApplyDTO();
-            BeanUtil.copyProperties(apply, applyDTO, true);
+            AbilityApiApplyDTO applyDTO = AbilityApiApplyConvertor.INSTANCE.toDTO(apply);
             applyDTO.setApiName(apiMap.getOrDefault(apply.getApiId(), new AbilityApiEntity()).getApiName());
             applyDTO.setApiDesc(apiMap.getOrDefault(apply.getApiId(), new AbilityApiEntity()).getApiDesc());
             applyDTO.setAbilityName(abilityMap.getOrDefault(apply.getAbilityId(), new AbilityEntity()).getAbilityName());

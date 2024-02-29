@@ -1,6 +1,5 @@
 package com.dsj.csp.manage.controller;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.BusinessException;
@@ -8,6 +7,7 @@ import com.dsj.common.dto.Result;
 import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.dto.DocCatalogDto;
+import com.dsj.csp.manage.dto.convertor.DocCatalogConvertor;
 import com.dsj.csp.manage.entity.DocCatalogEntity;
 import com.dsj.csp.manage.entity.DocEntity;
 import com.dsj.csp.manage.service.DocCatalogService;
@@ -116,8 +116,7 @@ public class DcoCatalogController {
         });
         // 构造返回结果
         List<DocCatalogDto> catalogDtoList = catalogs.stream().map(catalog->{
-            DocCatalogDto catalogDto = new DocCatalogDto();
-            BeanUtil.copyProperties(catalog, catalogDto);
+            DocCatalogDto catalogDto = DocCatalogConvertor.INSTANCE.toDTO(catalog);
             List<DocEntity> docList = docEntityMap.getOrDefault(catalog.getCatalogId(), new ArrayList<>());
             catalogDto.setDocList(docList);
             return catalogDto;

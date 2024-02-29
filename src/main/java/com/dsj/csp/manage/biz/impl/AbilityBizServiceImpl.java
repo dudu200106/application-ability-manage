@@ -1,10 +1,10 @@
 package com.dsj.csp.manage.biz.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.biz.AbilityBizService;
 import com.dsj.csp.manage.dto.AbilityDTO;
+import com.dsj.csp.manage.dto.convertor.AbilityConvertor;
 import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
 import com.dsj.csp.manage.entity.AbilityEntity;
@@ -37,8 +37,7 @@ public class AbilityBizServiceImpl implements AbilityBizService {
     @Override
     public AbilityDTO getAbilityInfo(Long abilityId) {
         AbilityEntity ability = abilityService.getById(abilityId);
-        AbilityDTO abilityDTO = new AbilityDTO();
-        BeanUtil.copyProperties(ability, abilityDTO, true);
+        AbilityDTO abilityDTO = AbilityConvertor.INSTANCE.toDTO(ability);
         List<AbilityApiEntity> apis = abilityApiService.lambdaQuery().eq(AbilityApiEntity::getAbilityId, abilityId).list();
         abilityDTO.setApiList(apis);
         return abilityDTO;

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,7 +26,10 @@ public class AbilityApiReqServiceImpl extends ServiceImpl<AbilityApiReqMapper, A
 
     @Override
     public Boolean saveReqList(List<AbilityApiReq> reqParams, Long apiId) {
-        Set<String> paramNames = reqParams.stream().map(param -> param.getReqName()).collect(Collectors.toSet());
+        if (reqParams==null){
+            return true;
+        }
+        Set<String> paramNames = reqParams.stream().map(AbilityApiReq::getReqName).collect(Collectors.toSet());
         if (reqParams.size() != paramNames.size()){
             throw new BusinessException("新增接口异常: 接口请求参数存在重名");
         }

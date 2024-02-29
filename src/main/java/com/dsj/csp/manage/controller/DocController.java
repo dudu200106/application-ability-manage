@@ -1,6 +1,6 @@
 package com.dsj.csp.manage.controller;
 
-import cn.hutool.core.bean.BeanUtil;
+
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -13,6 +13,7 @@ import com.dsj.csp.common.aop.annotation.LoginAuthentication;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.DocBizService;
 import com.dsj.csp.manage.dto.DocDto;
+import com.dsj.csp.manage.dto.convertor.DocConvertor;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.AbilityApiService;
@@ -25,7 +26,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -96,8 +96,7 @@ public class DocController {
         if (doc == null){
             return Result.success("文档不存在!", doc);
         }
-        DocDto docDto = new DocDto();
-        BeanUtil.copyProperties(doc, docDto);
+        DocDto docDto = DocConvertor.INSTANCE.toDTO(doc);
         DocCatalogEntity catalog = docCatalogService.getById(doc.getCatalogId());
         docDto.setCatalogName(catalog.getCatalogName());
         //文档是否关联了能力接口
@@ -163,8 +162,7 @@ public class DocController {
                 .in(AbilityEntity::getAbilityId, abilityIds), AbilityEntity::getAbilityId);
 
         List<DocDto> resRecords = records.stream().map(doc -> {
-            DocDto docDto = new DocDto();
-            BeanUtil.copyProperties(doc, docDto);
+            DocDto docDto = DocConvertor.INSTANCE.toDTO(doc);
             docDto.setCatalogName(catalogMap.getOrDefault(doc.getCatalogId(), new DocCatalogEntity()).getCatalogName());
             docDto.setApiName(apiMap.getOrDefault(doc.getApiId(), new AbilityApiEntity()).getApiName());
             Long abilityId = apiMap.getOrDefault(doc.getApiId(), new AbilityApiEntity()).getAbilityId();

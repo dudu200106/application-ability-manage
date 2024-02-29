@@ -11,7 +11,6 @@ import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.biz.AbilityBizService;
 import com.dsj.csp.manage.dto.AbilityApiVO;
-import com.dsj.csp.manage.dto.AbilityAuditVO;
 import com.dsj.csp.manage.dto.AbilityDeleteDTO;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
@@ -25,7 +24,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -220,6 +218,8 @@ public class AbilityController {
     }
 
 
+
+
 //    @AopLogger(describe = "查询能力的接口列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查询能力的接口列表", description = "查询能力的接口列表")
     @GetMapping("/query-api-list")
@@ -240,6 +240,8 @@ public class AbilityController {
     public Result<?> queryAppApis(@Parameter(description = "应用ID") @RequestParam Long appId) {
         return Result.success(abilityApiBizService.getAppApiList(appId));
     }
+
+
 
     @AopLogger(describe = "新增接口使用申请", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增接口使用申请", description = "申请使用接口")

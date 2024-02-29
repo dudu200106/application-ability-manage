@@ -3,11 +3,8 @@ package com.dsj.csp.manage.biz.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.biz.AbilityBizService;
-import com.dsj.csp.manage.dto.AbilityDTO;
-import com.dsj.csp.manage.dto.convertor.AbilityConvertor;
 import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
-import com.dsj.csp.manage.entity.AbilityEntity;
 import com.dsj.csp.manage.service.AbilityApiApplyService;
 import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.AbilityService;
@@ -33,15 +30,6 @@ public class AbilityBizServiceImpl implements AbilityBizService {
     private final AbilityService abilityService;
     private final AbilityApiService abilityApiService;
     private final AbilityApiApplyService abilityApiApplyService;
-
-    @Override
-    public AbilityDTO getAbilityInfo(Long abilityId) {
-        AbilityEntity ability = abilityService.getById(abilityId);
-        AbilityDTO abilityDTO = AbilityConvertor.INSTANCE.toDTO(ability);
-        List<AbilityApiEntity> apis = abilityApiService.lambdaQuery().eq(AbilityApiEntity::getAbilityId, abilityId).list();
-        abilityDTO.setApiList(apis);
-        return abilityDTO;
-    }
 
     @Override
     public Boolean removeAbilityByIds(String abilityIds) {

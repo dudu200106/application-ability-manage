@@ -39,9 +39,7 @@ public class AbilityBizServiceImpl implements AbilityBizService {
         AbilityEntity ability = abilityService.getById(abilityId);
         AbilityDTO abilityDTO = new AbilityDTO();
         BeanUtil.copyProperties(ability, abilityDTO, true);
-        List<AbilityApiEntity> apis = abilityApiService.list(
-                Wrappers.lambdaQuery(AbilityApiEntity.class).eq(AbilityApiEntity::getAbilityId, abilityId)
-        );
+        List<AbilityApiEntity> apis = abilityApiService.lambdaQuery().eq(AbilityApiEntity::getAbilityId, abilityId).list();
         abilityDTO.setApiList(apis);
         return abilityDTO;
     }

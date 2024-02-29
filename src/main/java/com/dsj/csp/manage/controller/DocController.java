@@ -84,7 +84,7 @@ public class DocController {
         UserApproveRequest userApproveRequest = IdentifyUser.getUserInfo();
         doc.setCreator(userApproveRequest.getUserName());
         boolean addFlag = docService.save(doc);
-        return Result.success("文档保存" +(addFlag ? "成功!" : "失败!"));
+        return Result.success(addFlag+"", "文档保存成功!");
     }
 
 //    @AopLogger(describe = "查看文档", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
@@ -247,14 +247,14 @@ public class DocController {
     @Operation(summary = "编辑文档")
     @PostMapping("/edit")
     @LoginAuthentication
-    @Caching(
-            evict = @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager"),
-            put = @CachePut(key = "'docId_' + #doc.getDocId()", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
-    )
+    @Caching(evict = {
+            @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager"),
+            @CacheEvict(key = "'docId_' + #doc.getDocId()", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
+    })
     public Result<?> edit(@RequestBody DocEntity doc){
         doc.setUpdateTime(new Date());
         boolean editFlag = docService.updateById(doc);
-        return Result.success("文档编辑完成!", editFlag );
+        return Result.success(editFlag+"","文档编辑完成!" );
     }
 
     @AopLogger(describe = "删除文档", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)

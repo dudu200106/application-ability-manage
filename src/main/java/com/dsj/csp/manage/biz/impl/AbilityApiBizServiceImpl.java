@@ -11,6 +11,7 @@ import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.dto.AbilityApiVO;
 import com.dsj.csp.manage.dto.AbilityAuditVO;
+import com.dsj.csp.manage.dto.convertor.AbilityApiConvertor;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.*;
@@ -46,8 +47,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
             throw new BusinessException("保存api信息出错! 接口URL重名或者能力下已有同名接口");
         }
         // 插入能力基本信息
-        AbilityApiEntity api = new AbilityApiEntity();
-        BeanUtil.copyProperties(apiVO, api, true);
+        AbilityApiEntity api = AbilityApiConvertor.INSTANCE.toEntity(apiVO);
         api.setUserId(Long.parseLong(userApproveRequest.getUserId()));
         api.setApiDesc(apiVO.getApiDesc());
         abilityApiService.save(api);
@@ -202,10 +202,12 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         BeanUtil.copyProperties(apiVO, api, true);
         api.setUpdateTime(new Date());
         // 覆盖参数列表
-        abilityApiReqService.remove(Wrappers.lambdaQuery(AbilityApiReq.class)
-                .eq(AbilityApiReq::getApiId, apiVO.getApiId()));
-        abilityApiRespService.remove(Wrappers.lambdaQuery(AbilityApiResp.class)
-                .eq(AbilityApiResp::getApiId, apiVO.getApiId()));
+        abilityApiReqService.lambdaUpdate()
+                .eq(AbilityApiReq::getApiId, apiVO.getApiId())
+                .remove();
+        abilityApiRespService.lambdaUpdate()
+                .eq(AbilityApiResp::getApiId, apiVO.getApiId())
+                .remove();
         Long apiId = apiVO.getApiId();
         return abilityApiService.updateById(api) &&
                 abilityApiReqService.saveReqList(apiVO.getReqList(), apiId) &&
@@ -380,8 +382,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         // 构造返回分页
         Page<AbilityApiVO> resPage = new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
         List<AbilityApiVO> resRecords = preRecords.stream().map(api -> {
-            AbilityApiVO apiVO = new AbilityApiVO();
-            BeanUtil.copyProperties(api, apiVO);
+            AbilityApiVO apiVO = AbilityApiConvertor.INSTANCE.toVO(api);
             apiVO.setAbilityName(abilityMap.getOrDefault(api.getAbilityId(), new AbilityEntity())
                     .getAbilityName());
             apiVO.setDocId(docMap.get(api.getApiId()));

@@ -41,12 +41,11 @@ public class DocBizServiceImpl implements DocBizService {
         if (!isValid){
             throw new BusinessException("只有'待提交'的文档才能提交,请刷新后重试!");
         }
-        LambdaUpdateWrapper<DocEntity> updateWrapper = Wrappers.lambdaUpdate();
-        updateWrapper.eq(DocEntity::getDocId, docId);
-        // 状态0: 待审核
-        updateWrapper.set(DocEntity::getStatus, 0);
-        updateWrapper.set(DocEntity::getUpdateTime, new Date());
-        docService.update(updateWrapper);
+        docService.lambdaUpdate().eq(DocEntity::getDocId, docId)
+                // 状态0: 待审核
+                .set(DocEntity::getStatus, 0)
+                .set(DocEntity::getUpdateTime, new Date())
+                .update();
     }
 
     @Override
@@ -59,12 +58,11 @@ public class DocBizServiceImpl implements DocBizService {
         if (!isValid){
             throw new BusinessException("只有'待审核'的文档才能撤回,请刷新后重试!");
         }
-        LambdaUpdateWrapper<DocEntity> updateWrapper = Wrappers.lambdaUpdate();
-        updateWrapper.eq(DocEntity::getDocId, docId);
-        // 状态6: 未提交
-        updateWrapper.set(DocEntity::getStatus, 6);
-        updateWrapper.set(DocEntity::getUpdateTime, new Date());
-        docService.update(updateWrapper);
+        docService.lambdaUpdate().eq(DocEntity::getDocId, docId)
+                // 状态6: 未提交
+                .set(DocEntity::getStatus, 6)
+                .set(DocEntity::getUpdateTime, new Date())
+                .update();
     }
 
     @Override

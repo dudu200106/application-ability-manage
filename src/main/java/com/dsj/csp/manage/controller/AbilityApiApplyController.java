@@ -14,7 +14,6 @@ import com.dsj.csp.manage.util.IdentifyUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -112,7 +111,7 @@ public class AbilityApiApplyController {
     @LoginAuthentication
     @PostMapping("/audit-disable")
     public Result<?> auditOffline(@RequestBody AbilityApiApplyEntity apiApply){
-        abilityApiApplyBizService.auditBlockUp(apiApply.getApiApplyId(), apiApply.getNote());
+        abilityApiApplyBizService.auditStop(apiApply.getApiApplyId(), apiApply.getNote());
         return Result.success("接口申请停用成功!");
     }
 

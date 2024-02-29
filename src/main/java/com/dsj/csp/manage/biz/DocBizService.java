@@ -24,7 +24,7 @@ public interface DocBizService {
 
     void auditPublish(Long docId, String note);
 
-    // 取消'已上线'状态
+//    // 取消'已上线'状态
 //    void auditOnline(Long docId, String note);
 
     void auditOffline(Long docId, String note);

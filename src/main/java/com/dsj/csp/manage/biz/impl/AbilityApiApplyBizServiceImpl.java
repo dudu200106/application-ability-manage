@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.toolkit.SimpleQuery;
 import com.dsj.common.dto.BusinessException;
+import com.dsj.csp.common.enums.ApiStatusEnum;
+import com.dsj.csp.common.enums.ApplyStatusEnum;
 import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
 import com.dsj.csp.manage.dto.*;
 import com.dsj.csp.manage.dto.convertor.AbilityApiApplyConvertor;
@@ -38,7 +40,8 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     public void saveApiApply(AbilityApiApplyEntity applyEntity, UserApproveRequest userApproveRequest) {
         // 判断调用接口是否已下线
         AbilityApiEntity apiEntity = abilityApiService.getById(applyEntity.getApiId());
-        if (apiEntity ==null || apiEntity.getStatus()!=4){
+        ApiStatusEnum apiStatus = ApiStatusEnum.of(apiEntity.getStatus());
+        if (apiEntity ==null || apiStatus!= ApiStatusEnum.PUBLISHED){
             throw new BusinessException("申请的接口不存在或者已下线！");
         }
         // 判断是否已存在未提交/待审核/审核通过的接口申请记录
@@ -46,7 +49,11 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                 .eq(AbilityApiApplyEntity::getAppId, applyEntity.getAppId())
                 .eq(AbilityApiApplyEntity::getApiId,applyEntity.getApiId())
                 // 状态0:未提交 1:待审核 2审核通过
-                .in(AbilityApiApplyEntity::getStatus, 0, 1, 2));
+                .in(AbilityApiApplyEntity::getStatus,
+                        ApplyStatusEnum.NOT_SUBMIT.getCode(),
+                        ApplyStatusEnum.WAIT_AUDIT.getCode(),
+                        ApplyStatusEnum.PASSED.getCode()
+                ));
         if (cnt!=0){
             throw new BusinessException("申请无效！所选应用已保存或者已经申请过该能力接口");
         }
@@ -93,48 +100,48 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
             case 1 -> auditSubmit(applyId, note);
             case 2 -> auditPass(applyId, note);
             case 3 -> auditNotPass(applyId, note);
-            default -> auditBlockUp(applyId, note);
+            default -> auditStop(applyId, note);
         };
     }
 
     @Override
     public String auditWithdraw(Long applyId, String note) {
-        boolean isValid = isApplyValid(applyId, 1);
+        boolean isValid = isApplyValid(applyId, ApplyStatusEnum.WAIT_AUDIT);
         if (!isValid) {
             throw new BusinessException("只有'待审核'的申请才能撤回!请刷新页面后重试");
         }
         // 创建更新条件构造器
         LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(AbilityApiApplyEntity::getApiApplyId, applyId);
-        updateWrapper.set(AbilityApiApplyEntity::getStatus, 0);
+        updateWrapper.set(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.NOT_SUBMIT.getCode());
         abilityApiApplyService.update(updateWrapper);
         return "提交完成!";
     }
 
     @Override
     public String auditSubmit(Long applyId, String note) {
-        boolean isValid = isApplyValid(applyId, 0);
+        boolean isValid = isApplyValid(applyId, ApplyStatusEnum.NOT_SUBMIT);
         if (!isValid) {
             throw new BusinessException("只有'未提交'的申请才能提交!请刷新页面后重试");
         }
         // 创建更新条件构造器
         LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(AbilityApiApplyEntity::getApiApplyId, applyId);
-        updateWrapper.set(AbilityApiApplyEntity::getStatus, 1);
+        updateWrapper.set(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.WAIT_AUDIT.getCode());
         abilityApiApplyService.update(updateWrapper);
         return "提交完成!";
     }
 
     @Override
     public String auditPass(Long applyId, String note) {
-        boolean isValid = isApplyValid(applyId, 1) || isApplyValid(applyId, 4);
+        boolean isValid = isApplyValid(applyId, ApplyStatusEnum.WAIT_AUDIT) || isApplyValid(applyId, ApplyStatusEnum.STOPPED);
         if (!isValid) {
             throw new BusinessException("只有'待审核'或者'停用'的申请才能审核通过!请刷新页面后重试");
         }
         // 创建更新条件构造器
         LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(AbilityApiApplyEntity::getApiApplyId, applyId);
-        updateWrapper.set(AbilityApiApplyEntity::getStatus, 2);
+        updateWrapper.set(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.PASSED.getCode());
         updateWrapper.set(AbilityApiApplyEntity::getNote, note);
         updateWrapper.set(AbilityApiApplyEntity::getApproveTime, new Date());
         abilityApiApplyService.update(updateWrapper);
@@ -170,14 +177,14 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
 
     @Override
     public String auditNotPass(Long applyId, String note) {
-        boolean isValid = isApplyValid(applyId, 1);
+        boolean isValid = isApplyValid(applyId, ApplyStatusEnum.WAIT_AUDIT);
         if (!isValid) {
             throw new BusinessException("只有'待审核'的申请才能审核不通过!请刷新页面后重试");
         }
         // 创建更新条件构造器
         LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(AbilityApiApplyEntity::getApiApplyId, applyId);
-        updateWrapper.set(AbilityApiApplyEntity::getStatus, 3);
+        updateWrapper.set(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.NOT_PASSED);
         updateWrapper.set(AbilityApiApplyEntity::getNote, note);
         updateWrapper.set(AbilityApiApplyEntity::getApproveTime, new Date());
         abilityApiApplyService.update(updateWrapper);
@@ -185,15 +192,15 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     }
 
     @Override
-    public String auditBlockUp(Long applyId, String note) {
-        boolean isValid = isApplyValid(applyId, 2);
+    public String auditStop(Long applyId, String note) {
+        boolean isValid = isApplyValid(applyId, ApplyStatusEnum.PASSED);
         if (!isValid) {
             throw new BusinessException("只有'审核通过'的申请才能停用!请刷新页面后重试");
         }
         // 创建更新条件构造器
         LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(AbilityApiApplyEntity::getApiApplyId, applyId);
-        updateWrapper.set(AbilityApiApplyEntity::getStatus, 4);
+        updateWrapper.set(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.STOPPED);
         updateWrapper.set(AbilityApiApplyEntity::getNote, note);
         updateWrapper.set(AbilityApiApplyEntity::getApproveTime, new Date());
         abilityApiApplyService.update(updateWrapper);
@@ -206,18 +213,19 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
      * @param targetPrevStatus 期待的前任审核状态
      * @return 审核操作是否有效
      */
-    public boolean isApplyValid(Long applyId, int targetPrevStatus){
+    public boolean isApplyValid(Long applyId, ApplyStatusEnum targetPrevStatus){
         AbilityApiApplyEntity apply = abilityApiApplyService.getById(applyId);
         if (apply==null){
             throw new BusinessException("审核通过失败!找不到该申请记录!");
         }
         AbilityApiEntity api = abilityApiService.getById(apply.getApiId());
-        if (api==null || api.getStatus()!=4){
+        ApiStatusEnum apiStatus = ApiStatusEnum.of(api.getStatus());
+        if (api==null || apiStatus != ApiStatusEnum.PUBLISHED){
             throw new BusinessException("申请的接口不存在,或者已下线！");
         }
         // 审核流程限制: 状态(0待提交 1待审核 2审核通过 3审核不通过 4已停用 )
         // 审核操作是否有效
-        return apply.getStatus()==targetPrevStatus;
+        return apply.getStatus()==targetPrevStatus.getCode();
     }
 
     @Override

@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.toolkit.SimpleQuery;
 import com.dsj.common.dto.BusinessException;
+import com.dsj.csp.common.enums.ApiStatusEnum;
+import com.dsj.csp.common.enums.ApplyStatusEnum;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.dto.AbilityApiVO;
 import com.dsj.csp.manage.dto.AbilityAuditVO;
@@ -73,13 +75,13 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
     @Override
     public String auditWithdraw(Long apiId, String note) {
-        boolean isValid = isApiValid(apiId, 1) ;
+        boolean isValid = isApiValid(apiId, ApiStatusEnum.WAIT_AUDIT) ;
         if (!isValid) {
             throw new BusinessException("只用待审核的接口才能撤回,请刷新页面后重试!");
         }
         LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(AbilityApiEntity::getApiId, apiId);
-        updateWrapper.set(AbilityApiEntity::getStatus, 0);
+        updateWrapper.set(AbilityApiEntity::getStatus, ApiStatusEnum.NOT_SUBMIT.getCode());
         updateWrapper.set(AbilityApiEntity::getNote, note);
         updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
         abilityApiService.update(updateWrapper);
@@ -89,13 +91,13 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     @Override
     @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public String auditSubmit(Long apiId, String note) {
-        boolean isValid = isApiValid(apiId, 0) ;
+        boolean isValid = isApiValid(apiId, ApiStatusEnum.NOT_SUBMIT) ;
         if (!isValid) {
             throw new BusinessException("只用待提交状态的接口才能够提交,请刷新页面后重试!");
         }
         LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(AbilityApiEntity::getApiId, apiId);
-        updateWrapper.set(AbilityApiEntity::getStatus, 1);
+        updateWrapper.set(AbilityApiEntity::getStatus, ApiStatusEnum.WAIT_AUDIT.getCode());
         updateWrapper.set(AbilityApiEntity::getNote, note);
         updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
         abilityApiService.update(updateWrapper);
@@ -105,13 +107,13 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     @Override
     @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public String auditNotPass(Long apiId, String note) {
-        boolean isValid = isApiValid(apiId, 1) ;
+        boolean isValid = isApiValid(apiId, ApiStatusEnum.WAIT_AUDIT) ;
         if (!isValid) {
             throw new BusinessException("只用待审核的接口才能审核不通过,请刷新页面后重试!");
         }
         LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(AbilityApiEntity::getApiId, apiId);
-        updateWrapper.set(AbilityApiEntity::getStatus, 2);
+        updateWrapper.set(AbilityApiEntity::getStatus, ApiStatusEnum.NOT_PASSED.getCode());
         updateWrapper.set(AbilityApiEntity::getNote, note);
         updateWrapper.set(AbilityApiEntity::getApproveTime, new Date());
         updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
@@ -122,13 +124,13 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     @Override
     @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public String auditPass(Long apiId, String note) {
-        boolean isValid = isApiValid(apiId, 1) ;
+        boolean isValid = isApiValid(apiId, ApiStatusEnum.WAIT_AUDIT) ;
         if (!isValid) {
             throw new BusinessException("只用待审核的接口才能审核通过,请刷新页面后重试!");
         }
         LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(AbilityApiEntity::getApiId, apiId);
-        updateWrapper.set(AbilityApiEntity::getStatus, 3);
+        updateWrapper.set(AbilityApiEntity::getStatus, ApiStatusEnum.PASSED.getCode());
         updateWrapper.set(AbilityApiEntity::getNote, note);
         updateWrapper.set(AbilityApiEntity::getApproveTime, new Date());
         updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
@@ -139,13 +141,13 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     @Override
     @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public String auditPublish(Long apiId, String note) {
-        boolean isValid = isApiValid(apiId, 3) || isApiValid(apiId, 5) ;
+        boolean isValid = isApiValid(apiId, ApiStatusEnum.PASSED) || isApiValid(apiId, ApiStatusEnum.OFFLINE) ;
         if (!isValid) {
             throw new BusinessException("只用审核通过的接口才能发布,请刷新页面后重试!");
         }
         LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(AbilityApiEntity::getApiId, apiId);
-        updateWrapper.set(AbilityApiEntity::getStatus, 4);
+        updateWrapper.set(AbilityApiEntity::getStatus, ApiStatusEnum.PUBLISHED.getCode());
         updateWrapper.set(AbilityApiEntity::getNote, note);
         updateWrapper.set(AbilityApiEntity::getApproveTime, new Date());
         updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
@@ -156,24 +158,48 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     @Override
     @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public String auditOffline(Long apiId, String note) {
-        boolean isValid = isApiValid(apiId, 4) ;
+        boolean isValid = isApiValid(apiId, ApiStatusEnum.PUBLISHED) ;
         if (!isValid) {
             throw new BusinessException("只用发布的接口才能下线,请刷新页面后重试!");
         }
         long cntUsing = abilityApiApplyService.count(Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
                 .eq(AbilityApiApplyEntity::getApiId, apiId)
-                .eq(AbilityApiApplyEntity::getStatus, 2));
+                .eq(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.PASSED.getCode()));
         if (cntUsing>0){
             throw new BusinessException("该接口还有应用正在使用!");
         }
         LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(AbilityApiEntity::getApiId, apiId);
-        updateWrapper.set(AbilityApiEntity::getStatus, 5);
+        updateWrapper.set(AbilityApiEntity::getStatus, ApiStatusEnum.OFFLINE.getCode());
         updateWrapper.set(AbilityApiEntity::getNote, note);
         updateWrapper.set(AbilityApiEntity::getApproveTime, new Date());
         updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
         abilityApiService.update(updateWrapper);
         return "接口下线完毕!";
+    }
+
+    @Override
+    public boolean deleteApi(AbilityApiEntity api) {
+        long countApply = abilityApiApplyService.lambdaQuery()
+                .eq(AbilityApiApplyEntity::getApiId, api.getApiId())
+                .eq(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.PASSED.getCode()).count();
+        if (countApply>0){
+            throw new BusinessException("删除接口失败:该接口还有应用在使用!");
+        }
+        return abilityApiService.removeById(api);
+    }
+
+    @Override
+    public boolean deleteApiBatch(List<AbilityApiEntity> apiList) {
+        List<Long> apiIds = apiList.stream().map(AbilityApiEntity::getApiId).toList();
+        long countApply = abilityApiApplyService.lambdaQuery()
+                .in(AbilityApiApplyEntity::getApiId, apiIds)
+                .eq(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.PASSED.getCode())
+                .count();
+        if (countApply>0){
+            throw new BusinessException("删除接口失败:该接口还有应用在使用!");
+        }
+        return abilityApiService.removeBatchByIds(apiList);
     }
 
     /**
@@ -182,7 +208,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
      * @param targetPrevStatus 期待的前任审核状态
      * @return 审核操作是否有效
      */
-    public boolean isApiValid(Long apiId, int targetPrevStatus){
+    public boolean isApiValid(Long apiId, ApiStatusEnum targetPrevStatus){
         // 审核的接口是否还存在
         AbilityApiEntity api = abilityApiService.getById(apiId);
         if (api==null){
@@ -190,7 +216,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         }
         // 审核操作是否有效
         // 审核流程限制: 状态(0未提交 1待审核 2审核未通过 3未发布 4已发布 5已下线)
-        return api.getStatus()==targetPrevStatus;
+        return api.getStatus()==targetPrevStatus.getCode();
     }
 
 

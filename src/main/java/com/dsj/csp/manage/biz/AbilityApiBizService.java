@@ -19,6 +19,10 @@ public interface AbilityApiBizService {
     String auditPass(Long apiId, String note);
     String auditPublish(Long apiId, String note);
     String auditOffline(Long apiId, String note);
+    // 删除接口
+    boolean deleteApi(AbilityApiEntity api);
+    // 批量删除接口
+    boolean deleteApiBatch(List<AbilityApiEntity> apiList);
 
     boolean updateApi(AbilityApiVO apiVO);
 

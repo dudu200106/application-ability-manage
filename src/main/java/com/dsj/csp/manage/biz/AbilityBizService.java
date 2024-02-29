@@ -1,5 +1,9 @@
 package com.dsj.csp.manage.biz;
 
+import com.dsj.csp.manage.entity.AbilityEntity;
+
+import java.util.List;
+
 /**
  * 功能说明：
  *
@@ -8,7 +12,8 @@ package com.dsj.csp.manage.biz;
  */
 public interface AbilityBizService {
 
-    Boolean removeAbilityByIds(String abilityId);
+    boolean removeAbilityBatch(List<AbilityEntity> abilityList);
 
 
+    boolean removeAbility(AbilityEntity ability);
 }

@@ -99,18 +99,30 @@ public class AbilityController {
     }
 
 
-    @AopLogger(describe = "删除能力", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "删除能力")
-    @PostMapping("/delete-ability-api")
+    @AopLogger(describe = "批量删除能力", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "批量删除能力")
+    @PostMapping("/delete-Batch")
     @LoginAuthentication
     @Caching(evict = {
             @CacheEvict(allEntries = true, cacheNames = "Ability", cacheManager = "caffeineCacheManager"),
             @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     })
-    public Result<?> removeAbility(@Parameter(description = "能力id列表") @RequestBody AbilityDeleteDTO deleteDTO){
-        String abilityIds = deleteDTO.getAbilityIds();
-        boolean delFlag = abilityBizService.removeAbilityByIds(abilityIds);
-        return Result.success("删除能力及其接口完成! ", delFlag);
+    public Result<?> removeAbility(@Parameter(description = "能力id列表") @RequestBody List<AbilityEntity> abilityList){
+        boolean delFlag = abilityBizService.removeAbilityBatch(abilityList);
+        return Result.success("批量删除能力及其接口完成! ", delFlag);
+    }
+
+    @AopLogger(describe = "删除能力", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "删除能力")
+    @PostMapping("/delete")
+    @LoginAuthentication
+    @Caching(evict = {
+            @CacheEvict(allEntries = true, cacheNames = "Ability", cacheManager = "caffeineCacheManager"),
+            @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
+    })
+    public Result<?> removeAbility(@RequestBody AbilityEntity ability){
+        boolean delFlag = abilityBizService.removeAbility(ability);
+        return Result.success("批量删除能力及其接口完成! ", delFlag);
     }
 
     //    @AopLogger(describe = "获取能力简单信息目录", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)

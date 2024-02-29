@@ -27,7 +27,7 @@ public interface AbilityApiApplyBizService {
     String auditSubmit(Long applyId, String note);
     String auditPass(Long applyId, String note);
     String auditNotPass(Long applyId, String note);
-    String auditBlockUp(Long applyId, String note);
+    String auditStop(Long applyId, String note);
 
     Set<String> getUserIds(String keyword);
 

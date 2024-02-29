@@ -5,20 +5,14 @@ import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.aop.annotation.LoginAuthentication;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
-import com.dsj.csp.manage.dto.AbilityAuditVO;
-import com.dsj.csp.manage.dto.AbilityDeleteDTO;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
-import com.dsj.csp.manage.entity.DocEntity;
-import com.dsj.csp.manage.service.AbilityApiService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -28,10 +22,7 @@ import java.util.List;
 @Tag(name = "能力接口管理", description = "用于管理能力api接口")
 public class AbilityApiController {
 
-    // TODO  之前忘记划分控制层, 之后在进行接口的划分
-
     private final AbilityApiBizService abilityApiBizService;
-    private final AbilityApiService abilityApiService;
 
 //    @AopLogger(describe = "查询接口简单目录", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查询接口简单目录", description = "查询接口简单目录")
@@ -49,11 +40,9 @@ public class AbilityApiController {
     @PostMapping("/delete-batch")
     @LoginAuthentication
     @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
-    public Result<?> removeApiBatch(@RequestBody AbilityDeleteDTO deleteDTO){
-        String apiIds = deleteDTO.getApiIds();
-        List<Long> ids = Arrays.stream(apiIds.split(",")).map(Long::parseLong).toList();
-        Boolean delFlag = abilityApiService.removeBatchByIds(ids);
-        return Result.success("批量删除接口完成! ", delFlag);
+    public Result<?> removeApiBatch(@RequestBody List<AbilityApiEntity> apiEntityList){
+        boolean delFlag = abilityApiBizService.deleteApiBatch(apiEntityList);
+        return Result.success(delFlag+"", "批量删除接口完成!");
     }
 
     @AopLogger(describe = "删除接口", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
@@ -61,22 +50,18 @@ public class AbilityApiController {
     @PostMapping("/delete")
     @LoginAuthentication
     @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
-    public Result<?> removeApi(@RequestBody AbilityApiEntity apiEntityi){
-        Boolean delFlag = abilityApiService.removeById(apiEntityi.getApiId());
-        return Result.success("删除接口完成! ", delFlag);
+    public Result<?> removeApi(@RequestBody AbilityApiEntity abilityApi){
+        boolean delFlag = abilityApiBizService.deleteApi(abilityApi);
+        return Result.success(delFlag+"", "删除接口完成!");
     }
 
-
-    @AopLogger(describe = "批量审核接口注册", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "批量审核接口注册", description = "批量审核接口注册")
-    @PostMapping("/batch-audit-api")
-    @LoginAuthentication
-    public Result<?> auditApiBatch(@RequestBody List<AbilityAuditVO> auditVOList){
-        auditVOList.stream().peek(auditVO -> {
-            abilityApiBizService.auditApi(auditVO);
-        }).toList();
-        return Result.success("批量审核接口完毕!");
-    }
+//    @AopLogger(describe = "批量审核接口注册", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+//    @Operation(summary = "批量审核接口注册", description = "批量审核接口注册")
+//    @PostMapping("/batch-audit-api")
+//    @LoginAuthentication
+//    public Result<?> auditApiBatch(@RequestBody List<AbilityApiEntity> apiEntityList){
+//        return Result.success();
+//    }
 
     @AopLogger(describe = "提交接口注册", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "提交接口注册")

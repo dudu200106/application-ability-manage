@@ -29,11 +29,12 @@ public class LoginAuthenticateAspect {
         try {
             IdentifyUser.getUserInfo();
         } catch (Throwable throwable) {
+            logger.info("用户未登录或登录状态过期!");
 //            //获取response
 //            RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
 //            ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) requestAttributes;
 //            HttpServletResponse response = servletRequestAttributes.getResponse();
-//            // 重定向回首页
+//            logger.info("重定向回首页!");
 //            httpServletResponse.sendRedirect("/");
             throw throwable;
         }

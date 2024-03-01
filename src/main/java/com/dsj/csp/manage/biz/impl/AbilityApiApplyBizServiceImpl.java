@@ -184,7 +184,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         // 创建更新条件构造器
         LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(AbilityApiApplyEntity::getApiApplyId, applyId);
-        updateWrapper.set(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.NOT_PASSED);
+        updateWrapper.set(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.NOT_PASSED.getCode());
         updateWrapper.set(AbilityApiApplyEntity::getNote, note);
         updateWrapper.set(AbilityApiApplyEntity::getApproveTime, new Date());
         abilityApiApplyService.update(updateWrapper);
@@ -200,7 +200,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         // 创建更新条件构造器
         LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(AbilityApiApplyEntity::getApiApplyId, applyId);
-        updateWrapper.set(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.STOPPED);
+        updateWrapper.set(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.STOPPED.getCode());
         updateWrapper.set(AbilityApiApplyEntity::getNote, note);
         updateWrapper.set(AbilityApiApplyEntity::getApproveTime, new Date());
         abilityApiApplyService.update(updateWrapper);

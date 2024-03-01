@@ -143,7 +143,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     public String auditPublish(Long apiId, String note) {
         boolean isValid = isApiValid(apiId, ApiStatusEnum.PASSED) || isApiValid(apiId, ApiStatusEnum.OFFLINE) ;
         if (!isValid) {
-            throw new BusinessException("只用审核通过的接口才能发布,请刷新页面后重试!");
+            throw new BusinessException("只用审核通过过的接口才能发布,请刷新页面后重试!");
         }
         LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(AbilityApiEntity::getApiId, apiId);
@@ -182,7 +182,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     public boolean deleteApi(AbilityApiEntity api) {
         long countApply = abilityApiApplyService.lambdaQuery()
                 .eq(AbilityApiApplyEntity::getApiId, api.getApiId())
-                .eq(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.PASSED.getCode()).count();
+                .eq(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.PASSED.getCode())
+                .count();
         if (countApply>0){
             throw new BusinessException("删除接口失败:该接口还有应用在使用!");
         }

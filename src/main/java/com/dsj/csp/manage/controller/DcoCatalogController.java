@@ -51,7 +51,7 @@ public class DcoCatalogController {
             throw new BusinessException("文档目录名称已存在!");
         }
         Boolean addFlag = docCatalogService.save(catalogEntity);
-        return Result.success("添加文档目录" + (addFlag ? "成功!" : "失败!"), addFlag);
+        return Result.success(addFlag+"", "添加文档目录" + (addFlag ? "成功!" : "失败!"));
     }
 
 //    @AopLogger(describe = "查看目录详情", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
@@ -74,7 +74,7 @@ public class DcoCatalogController {
     @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager")
     public Result<?> edit(@RequestBody DocCatalogEntity catalogEntity){
         boolean editFlag = docCatalogService.updateById(catalogEntity);
-        return Result.success("编辑文档目录" + (editFlag ? "成功!" : "失败!"), editFlag);
+        return Result.success(editFlag + "", "编辑文档目录完毕!");
     }
 
     @AopLogger(describe = "删除文档目录", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
@@ -90,7 +90,7 @@ public class DcoCatalogController {
         docService.remove(Wrappers.lambdaQuery(DocEntity.class).eq(DocEntity::getCatalogId, catalogEntity.getCatalogId()));
         // 删除目录
         boolean delFlag = docCatalogService.removeById(catalogEntity.getCatalogId());
-        return Result.success("删除文档目录" + (delFlag ? "成功!" : "失败!"), delFlag);
+        return Result.success(delFlag+"", "删除文档目录完毕!");
     }
 
 //    @AopLogger(describe = "查询所有目录及其文档列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)

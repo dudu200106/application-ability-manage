@@ -10,6 +10,7 @@ import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.aop.annotation.LoginAuthentication;
+import com.dsj.csp.common.enums.DocStatusEnum;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.DocBizService;
 import com.dsj.csp.manage.dto.DocDto;
@@ -132,7 +133,8 @@ public class DocController {
                 .eq(status!=null, DocEntity::getStatus, status)
                 .ge(Objects.nonNull(startTime), DocEntity::getCreateTime, startTime)
                 .le(Objects.nonNull(endTime), DocEntity::getCreateTime, endTime)
-                .in(onlySubmit, DocEntity::getStatus, 3)
+                // 过滤未提交状态的文档
+                .ne(onlySubmit, DocEntity::getStatus, DocStatusEnum.NOT_SUBMIT.getCode())
                 // 排序
                 .orderByDesc(DocEntity::getCreateTime)
                 .orderByAsc(DocEntity::getStatus);

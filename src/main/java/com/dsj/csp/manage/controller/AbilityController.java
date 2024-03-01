@@ -11,7 +11,6 @@ import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.biz.AbilityBizService;
 import com.dsj.csp.manage.dto.AbilityApiVO;
-import com.dsj.csp.manage.dto.AbilityDeleteDTO;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
 import com.dsj.csp.manage.entity.AbilityEntity;
@@ -122,7 +121,7 @@ public class AbilityController {
     })
     public Result<?> removeAbility(@RequestBody AbilityEntity ability){
         boolean delFlag = abilityBizService.removeAbility(ability);
-        return Result.success("批量删除能力及其接口完成! ", delFlag);
+        return Result.success("删除能力及其接口完成! ", delFlag);
     }
 
     //    @AopLogger(describe = "获取能力简单信息目录", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)

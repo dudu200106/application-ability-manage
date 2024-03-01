@@ -44,21 +44,31 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         if (apiEntity ==null || apiStatus!= ApiStatusEnum.PUBLISHED){
             throw new BusinessException("申请的接口不存在或者已下线！");
         }
+        if(isAppAppliedApi(applyEntity.getAppId(), applyEntity.getApiId())){
+            throw new BusinessException("申请无效！所选应用已保存或者已经申请过该能力接口");
+        }
+        applyEntity.setUserId(Long.parseLong(userApproveRequest.getUserId()));
+        abilityApiApplyService.save(applyEntity);
+    }
+
+    /**
+     * app是否已经申请过该接口
+     * @param appId
+     * @param apiId
+     * @return true:有 false:没有
+     */
+    public boolean isAppAppliedApi(Long appId, Long apiId) throws BusinessException{
         // 判断是否已存在未提交/待审核/审核通过的接口申请记录
         long cnt =abilityApiApplyService.count(Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
-                .eq(AbilityApiApplyEntity::getAppId, applyEntity.getAppId())
-                .eq(AbilityApiApplyEntity::getApiId,applyEntity.getApiId())
+                .eq(AbilityApiApplyEntity::getAppId, appId)
+                .eq(AbilityApiApplyEntity::getApiId,apiId)
                 // 状态0:未提交 1:待审核 2审核通过
                 .in(AbilityApiApplyEntity::getStatus,
                         ApplyStatusEnum.NOT_SUBMIT.getCode(),
                         ApplyStatusEnum.WAIT_AUDIT.getCode(),
                         ApplyStatusEnum.PASSED.getCode()
                 ));
-        if (cnt!=0){
-            throw new BusinessException("申请无效！所选应用已保存或者已经申请过该能力接口");
-        }
-        applyEntity.setUserId(Long.parseLong(userApproveRequest.getUserId()));
-        abilityApiApplyService.save(applyEntity);
+        return cnt == 1;
     }
 
     @Override
@@ -254,26 +264,31 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
 
     @Override
     public void saveApiApplyBatch(List<AbilityApiApplyEntity> applyList, UserApproveRequest userApproveRequest) {
+        // 判断调用接口列表中是否存在已下线的接口
+        List<Long> apiIds = applyList.stream().map(AbilityApiApplyEntity::getApiId).toList();
+        long cntApi = abilityApiService.lambdaQuery()
+                .in(AbilityApiEntity::getApiId, apiIds)
+                .ne(AbilityApiEntity::getStatus, ApiStatusEnum.PUBLISHED.getCode())
+                .count();
+        if (cntApi > 0){
+            throw new BusinessException("批量申请的接口中存在已下线或者不存在的接口！");
+        }
+        // 判断应用是否已申请过接口
+        Long appId = applyList.get(0).getAppId();
+        long cntApply = abilityApiApplyService.count(Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
+                // 查询条件: 该应用下存在相同的Api申请, 且申请状态为未提交/待审核/审核通过
+                .eq(AbilityApiApplyEntity::getAppId, appId)
+                .in(AbilityApiApplyEntity::getApiId, apiIds)
+                // 状态0:未提交 1:待审核 2审核通过
+                .in(AbilityApiApplyEntity::getStatus,
+                        ApplyStatusEnum.NOT_SUBMIT.getCode(),
+                        ApplyStatusEnum.WAIT_AUDIT.getCode(),
+                        ApplyStatusEnum.PASSED.getCode()));
+        if (cntApply > 0){
+            throw new BusinessException("申请无效！所选应用已保存或者已经申请过该能力接口");
+        }
+        // 对userId属性赋值
         applyList.stream().peek(apply -> {
-            // 判断调用接口列表中是否存在已下线的接口
-            long cntApiNum = abilityApiService.count(Wrappers.lambdaQuery(AbilityApiEntity.class)
-                    // 查询条件: 接口存在且状态为'已发布'
-                    .eq(AbilityApiEntity::getApiId, apply.getApiId())
-                    .eq(AbilityApiEntity::getStatus, 4));
-            if (cntApiNum != 1){
-                throw new BusinessException("批量申请的接口中存在已下线或者不存在的接口！");
-            }
-            // 判断应用是否存在Api相同的未提交/待审核/审核通过的申请记录
-            long cntApplyNum = abilityApiApplyService.count(Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
-                    // 查询条件: 相同应用下 存在相同Api申请 且 申请状态为未提交/待审核/审核通过
-                    .eq(AbilityApiApplyEntity::getAppId, apply.getAppId())
-                    .in(AbilityApiApplyEntity::getApiId, apply.getApiId())
-                    // 状态0:未提交 1:待审核 2审核通过
-                    .in(AbilityApiApplyEntity::getStatus, 0, 1, 2));
-            if (cntApplyNum != 0){
-                throw new BusinessException("申请无效！所选应用已保存或者已经申请过该能力接口");
-            }
-            // 对userId属性赋值
             apply.setUserId(Long.parseLong(userApproveRequest.getUserId()));
         }).toList();
         abilityApiApplyService.saveBatch(applyList);

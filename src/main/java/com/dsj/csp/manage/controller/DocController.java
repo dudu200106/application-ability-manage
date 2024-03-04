@@ -152,6 +152,7 @@ public class DocController {
         if (page.getRecords().isEmpty()){
             return Result.success(new Page<>(page.getCurrent(), page.getSize(), page.getTotal()));
         }
+        // 单表一次查询相关要返回数据
         List<DocEntity> records = page.getRecords();
         Set<Long> catalogIds = records.stream().map(DocEntity::getCatalogId).collect(Collectors.toSet());
         Set<Long> apiIds = records.stream().map(DocEntity::getApiId).collect(Collectors.toSet());
@@ -162,7 +163,6 @@ public class DocController {
         List<Long> abilityIds = apiMap.values().stream().map(AbilityApiEntity::getAbilityId).toList();
         Map<Long, AbilityEntity> abilityMap= SimpleQuery.keyMap(Wrappers.lambdaQuery(AbilityEntity.class)
                 .in(AbilityEntity::getAbilityId, abilityIds), AbilityEntity::getAbilityId);
-
         List<DocDto> resRecords = records.stream().map(doc -> {
             DocDto docDto = DocConvertor.INSTANCE.toDTO(doc);
             docDto.setCatalogName(catalogMap.getOrDefault(doc.getCatalogId(), new DocCatalogEntity()).getCatalogName());

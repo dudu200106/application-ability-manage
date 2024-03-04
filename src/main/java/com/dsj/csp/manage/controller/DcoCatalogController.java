@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.common.aop.annotation.AopLogger;
+import com.dsj.csp.common.enums.DocStatusEnum;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.dto.DocCatalogDto;
 import com.dsj.csp.manage.dto.convertor.DocCatalogConvertor;
@@ -103,10 +104,11 @@ public class DcoCatalogController {
         // 查出目录列表下的所有文档列表(一次性查出, 减少DB查询次数)
         Set<Long> catalogIds = catalogs.stream().map(DocCatalogEntity::getCatalogId).collect(Collectors.toSet());
         // 状态3: 已发布
-        List<DocEntity> docs = docService.list(Wrappers.lambdaQuery(DocEntity.class)
+        List<DocEntity> docs = docService.lambdaQuery()
                 .select(DocEntity::getDocId, DocEntity::getCatalogId, DocEntity::getDocName)
                 .in(DocEntity::getCatalogId, catalogIds)
-                .eq(DocEntity::getStatus, 3));
+                .eq(DocEntity::getStatus, DocStatusEnum.PUBLISHED.getCode())
+                .list();
         Map<Long, List<DocEntity>> docEntityMap = new HashMap<>();
         // 将文档存入目录-文档键值对
         docs.forEach(doc -> {

@@ -11,8 +11,6 @@ import com.dsj.csp.manage.mapper.AbilityMapper;
 import com.dsj.csp.manage.service.AbilityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,7 +22,6 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional(propagation = Propagation.REQUIRED)
 public class AbilityServiceImpl extends ServiceImpl<AbilityMapper, AbilityEntity> implements AbilityService  {
 
     @Override

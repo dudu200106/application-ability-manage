@@ -27,7 +27,6 @@ import java.util.Date;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional(propagation = Propagation.REQUIRED)
 public class DocBizServiceImpl implements DocBizService {
     
     private final AbilityApiService abilityApiService;

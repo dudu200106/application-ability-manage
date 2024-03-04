@@ -1,6 +1,5 @@
 package com.dsj.csp.manage.service.impl;
 
-
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.manage.entity.AbilityApiReq;
@@ -16,8 +15,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
-@Transactional(propagation = Propagation.REQUIRED)
 @Service
 @RequiredArgsConstructor
 public class AbilityApiRespServiceImpl extends ServiceImpl<AbilityApiRespMapper, AbilityApiResp>

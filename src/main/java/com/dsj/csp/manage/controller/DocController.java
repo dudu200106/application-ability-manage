@@ -1,6 +1,5 @@
 package com.dsj.csp.manage.controller;
 
-
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -30,8 +29,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -58,7 +55,6 @@ public class DocController {
     @Operation(summary = "新增文档")
     @PostMapping("/add")
     @LoginAuthentication
-    @Transactional
     @Caching(evict = {
             @CacheEvict(allEntries = true, cacheNames = "Doc", cacheManager = "caffeineCacheManager"),
             @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager")
@@ -114,7 +110,6 @@ public class DocController {
 //    @AopLogger(describe = "分页查询文档", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询文档")
     @GetMapping("/page")
-    @Transactional(propagation = Propagation.REQUIRED)
     public Result<?> page(@Parameter(description = "是否过滤未发布的文档") boolean onlySubmit,
                           @Parameter(description = "接口ID") Long apiId,
                           @Parameter(description = "目录ID") Long catalogId,

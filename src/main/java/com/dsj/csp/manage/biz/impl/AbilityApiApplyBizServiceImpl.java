@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(propagation = Propagation.REQUIRED)
 public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService {
 
     private final AbilityApiApplyService abilityApiApplyService;

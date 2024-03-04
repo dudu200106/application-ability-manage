@@ -26,6 +26,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -160,8 +161,8 @@ public class AbilityController {
     @LoginAuthentication
     @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public Result<?> editApi(@RequestBody AbilityApiVO apiVO){
-        Boolean editApiflag = abilityApiBizService.updateApi(apiVO);
-        return Result.success("已修改接口完毕! ", editApiflag);
+        Boolean editApiFlag = abilityApiBizService.updateApi(apiVO);
+        return Result.success("已修改接口完毕! ", editApiFlag);
     }
 
     //    @AopLogger(describe = "分页查询api目录列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
@@ -297,9 +298,8 @@ public class AbilityController {
     @LoginAuthentication
     public Result<?> editApiApply(@RequestBody AbilityApiApplyEntity apiApplyEntity){
         apiApplyEntity.setUpdateTime(new Date());
-        LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate(AbilityApiApplyEntity.class)
-                .eq(AbilityApiApplyEntity::getApiApplyId, apiApplyEntity.getApiApplyId());
-        return Result.success(abilityApiApplyService.update(apiApplyEntity, updateWrapper));
+        boolean editFlag = abilityApiApplyService.updateById(apiApplyEntity);
+        return Result.success(editFlag+"", "编辑接口使用申请完毕!");
     }
 
 

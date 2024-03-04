@@ -81,7 +81,7 @@ public class DcoCatalogController {
     @AopLogger(describe = "删除文档目录", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "删除文档目录")
     @PostMapping("/delete")
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Caching(evict = {
             @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager"),
             @CacheEvict(allEntries = true, cacheNames = "Doc", cacheManager = "caffeineCacheManager")

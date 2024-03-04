@@ -6,7 +6,6 @@ import com.dsj.csp.common.aop.annotation.LoginAuthentication;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
 import com.dsj.csp.manage.dto.AbilityAuditVO;
-import com.dsj.csp.manage.dto.AbilityDeleteDTO;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
 import com.dsj.csp.manage.service.AbilityApiApplyService;
@@ -16,7 +15,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -25,7 +23,6 @@ import java.util.List;
 @Tag(name = "能力接口申请管理", description = "用于管理接口使用申请")
 public class AbilityApiApplyController {
 
-    // TODO  之前忘记划分控制层, 之后在进行接口的划分
     private final AbilityApiApplyService abilityApiApplyService;
     private final AbilityApiApplyBizService abilityApiApplyBizService;
 
@@ -54,10 +51,8 @@ public class AbilityApiApplyController {
     @Operation(summary = "批量删除接口申请")
     @PostMapping("/delete-batch")
     @LoginAuthentication
-    public Result<?> removeApiApplyBatch(@RequestBody AbilityDeleteDTO deleteDTO){
-        String apiApplyIds = deleteDTO.getApiApplyIds();
-        List<Long> ids = Arrays.stream(apiApplyIds.split(",")).map(Long::parseLong).toList();
-        Boolean delFlag = abilityApiApplyService.removeBatchByIds(ids);
+    public Result<?> removeApiApplyBatch(@RequestBody List<AbilityApiApplyEntity> applyEntities){
+        Boolean delFlag = abilityApiApplyService.removeBatchByIds(applyEntities);
         return Result.success("批量删除能力申请完成! ", delFlag);
     }
 

@@ -20,7 +20,6 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional(propagation = Propagation.REQUIRED)
 public class DocCatalogServiceImpl extends ServiceImpl<DocCatalogMapper, DocCatalogEntity> implements DocCatalogService {
     @Override
     public List<Long> matchCatalogIdList(String keyword) {

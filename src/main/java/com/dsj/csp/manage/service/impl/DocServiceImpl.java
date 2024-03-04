@@ -22,6 +22,5 @@ import java.util.Date;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class DocServiceImpl extends ServiceImpl<DocMapper, DocEntity> implements DocService {
 }

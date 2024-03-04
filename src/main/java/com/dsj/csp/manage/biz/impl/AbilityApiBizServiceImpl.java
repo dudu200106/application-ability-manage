@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-@Transactional(propagation = Propagation.REQUIRED)
 public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
     private final AbilityApiApplyService abilityApiApplyService;
@@ -39,6 +38,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
     @Override
     @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
+    @Transactional(rollbackFor = Exception.class)
     public void saveApi(AbilityApiVO apiVO, UserApproveRequest userApproveRequest) {
         long cnt = abilityApiService.count(Wrappers.lambdaQuery(AbilityApiEntity.class)
                 .or().and(i->i.eq(AbilityApiEntity::getAbilityId, apiVO.getAbilityId())
@@ -222,7 +222,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
 
     @Override
-    @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
+    @Transactional(rollbackFor = Exception.class)
     public boolean updateApi(AbilityApiVO apiVO) {
         AbilityApiEntity api = AbilityApiConvertor.INSTANCE.toEntity(apiVO);
         api.setUpdateTime(new Date());

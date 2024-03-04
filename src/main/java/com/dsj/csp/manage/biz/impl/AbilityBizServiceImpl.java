@@ -23,7 +23,6 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Service
-@Transactional(propagation = Propagation.REQUIRED)
 @Slf4j
 public class AbilityBizServiceImpl implements AbilityBizService {
 
@@ -32,6 +31,7 @@ public class AbilityBizServiceImpl implements AbilityBizService {
     private final AbilityApiBizService abilityApiBizService;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean removeAbilityBatch(List<AbilityEntity> abilityList) {
         List<Long> abilityIds = abilityList.stream().map(AbilityEntity::getAbilityId).toList();
         List<AbilityApiEntity> apiList = abilityApiService.lambdaQuery()
@@ -48,6 +48,7 @@ public class AbilityBizServiceImpl implements AbilityBizService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean removeAbility(AbilityEntity ability) {
         List<AbilityApiEntity> apiList = abilityApiService.lambdaQuery()
                 .eq(AbilityApiEntity::getAbilityId, ability.getAbilityId())

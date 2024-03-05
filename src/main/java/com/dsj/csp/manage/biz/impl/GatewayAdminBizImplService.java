@@ -1,7 +1,6 @@
 package com.dsj.csp.manage.biz.impl;
 
 import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.common.consts.GatewayCryptKeyConst;
@@ -51,7 +50,7 @@ public class GatewayAdminBizImplService implements GatewayAdminBizService {
         CryptJsonBody cryptJsonBody = CryptJsonBody.encryptObj(map, GatewayCryptKeyConst.SERVER_PUBLIC);
         Result<CryptJsonBody> result = apiFeignService.addApi(cryptJsonBody);
         if (result.getCode()!=2000){
-            throw new BusinessException("远程调用添加网关api接口出错！");
+            throw new BusinessException(result.getMsg());
         }
         // 响应解密
         CryptJsonBody data  = result.getData();
@@ -70,13 +69,14 @@ public class GatewayAdminBizImplService implements GatewayAdminBizService {
         CryptJsonBody cryptJsonBody = CryptJsonBody.encryptObj(map, GatewayCryptKeyConst.SERVER_PUBLIC);
         Result<CryptJsonBody> result = apiFeignService.cancelApi(cryptJsonBody);
         if (result.getCode() != 2000){
-            throw new BusinessException("远程调用禁用网关api接口失败！");
+            throw new BusinessException(result.getMsg());
         }
         // 响应解密
         CryptJsonBody data  = result.getData();
         ApiHandleVO apiHandleVO = CryptJsonBody.decryptToObj(data, GatewayCryptKeyConst.CLIENT_PRIVATE, ApiHandleVO.class);
         // 打印日志.
         log.info(JSONUtil.toJsonStr(apiHandleVO));
+
         return true;
     }
 

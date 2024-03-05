@@ -123,7 +123,10 @@ public class AbilityApiController {
     @LoginAuthentication
     @PostMapping("/audit-offline")
     public Result<?> auditOffline(@RequestBody AbilityApiEntity api){
-        abilityApiBizService.auditOffline(api.getApiId(), api.getNote());
+        boolean flag = abilityApiBizService.auditOffline(api.getApiId(), api.getNote());
+        if (flag){
+            gatewayAdminBizService.cancelGatewayApi(api);
+        }
         return Result.success("下线接口成功!");
     }
 

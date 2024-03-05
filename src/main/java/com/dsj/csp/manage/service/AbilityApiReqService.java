@@ -6,5 +6,5 @@ import com.dsj.csp.manage.entity.AbilityApiReq;
 import java.util.List;
 
 public interface AbilityApiReqService extends IService<AbilityApiReq> {
-    Boolean saveReqList(List<AbilityApiReq> reqParams, Long apiId);
+    boolean saveReqList(List<AbilityApiReq> reqParams, Long apiId);
 }

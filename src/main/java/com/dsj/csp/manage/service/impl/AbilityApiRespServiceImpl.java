@@ -21,7 +21,7 @@ public class AbilityApiRespServiceImpl extends ServiceImpl<AbilityApiRespMapper,
         implements AbilityApiRespService {
 
     @Override
-    public Boolean saveRespList(List<AbilityApiResp> respParams, Long apiId) {
+    public boolean saveRespList(List<AbilityApiResp> respParams, Long apiId) {
         if (respParams==null){
             return true;
         }

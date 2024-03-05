@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -39,7 +38,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     @Override
     @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     @Transactional(rollbackFor = Exception.class)
-    public void saveApi(AbilityApiVO apiVO, UserApproveRequest userApproveRequest) {
+    public boolean saveApi(AbilityApiVO apiVO, UserApproveRequest userApproveRequest) {
         long cnt = abilityApiService.count(Wrappers.lambdaQuery(AbilityApiEntity.class)
                 .or().and(i->i.eq(AbilityApiEntity::getAbilityId, apiVO.getAbilityId())
                         .eq(AbilityApiEntity::getApiName, apiVO.getApiName()))
@@ -51,15 +50,15 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         AbilityApiEntity api = AbilityApiConvertor.INSTANCE.toEntity(apiVO);
         api.setUserId(Long.parseLong(userApproveRequest.getUserId()));
         api.setApiDesc(apiVO.getApiDesc());
-        abilityApiService.save(api);
-        // 插入接口的出参入参列表
-        abilityApiReqService.saveReqList(apiVO.getReqList(), api.getApiId());
-        abilityApiRespService.saveRespList(apiVO.getRespList(), api.getApiId());
+        return abilityApiService.save(api) &&
+                // 插入接口的出参入参列表
+                abilityApiReqService.saveReqList(apiVO.getReqList(), api.getApiId()) &&
+                abilityApiRespService.saveRespList(apiVO.getRespList(), api.getApiId());
     }
 
     @Override
     @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
-    public String auditApi(AbilityAuditVO auditVO) {
+    public boolean auditApi(AbilityAuditVO auditVO) {
         Long apiId = auditVO.getApiId();
         String note = auditVO.getNote();
         // 审核
@@ -74,7 +73,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     @Override
-    public String auditWithdraw(Long apiId, String note) {
+    public boolean auditWithdraw(Long apiId, String note) {
         boolean isValid = isApiValid(apiId, ApiStatusEnum.WAIT_AUDIT) ;
         if (!isValid) {
             throw new BusinessException("只用待审核的接口才能撤回,请刷新页面后重试!");
@@ -84,13 +83,12 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         updateWrapper.set(AbilityApiEntity::getStatus, ApiStatusEnum.NOT_SUBMIT.getCode());
         updateWrapper.set(AbilityApiEntity::getNote, note);
         updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
-        abilityApiService.update(updateWrapper);
-        return "审核撤回完毕!";
+        return abilityApiService.update(updateWrapper);
     }
 
     @Override
     @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
-    public String auditSubmit(Long apiId, String note) {
+    public boolean auditSubmit(Long apiId, String note) {
         boolean isValid = isApiValid(apiId, ApiStatusEnum.NOT_SUBMIT) ;
         if (!isValid) {
             throw new BusinessException("只用待提交状态的接口才能够提交,请刷新页面后重试!");
@@ -100,13 +98,12 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         updateWrapper.set(AbilityApiEntity::getStatus, ApiStatusEnum.WAIT_AUDIT.getCode());
         updateWrapper.set(AbilityApiEntity::getNote, note);
         updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
-        abilityApiService.update(updateWrapper);
-        return "审核提交完毕! 请等待审核...";
+        return abilityApiService.update(updateWrapper);
     }
 
     @Override
     @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
-    public String auditNotPass(Long apiId, String note) {
+    public boolean auditNotPass(Long apiId, String note) {
         boolean isValid = isApiValid(apiId, ApiStatusEnum.WAIT_AUDIT) ;
         if (!isValid) {
             throw new BusinessException("只用待审核的接口才能审核不通过,请刷新页面后重试!");
@@ -117,14 +114,14 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         updateWrapper.set(AbilityApiEntity::getNote, note);
         updateWrapper.set(AbilityApiEntity::getApproveTime, new Date());
         updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
-        abilityApiService.update(updateWrapper);
-        return "审核不通过完毕!";
+
+        return abilityApiService.update(updateWrapper);
     }
 
     @Override
     @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
-    public String auditPass(Long apiId, String note) {
-        boolean isValid = isApiValid(apiId, ApiStatusEnum.WAIT_AUDIT) ;
+    public boolean auditPass(Long apiId, String note) {
+        boolean isValid = isApiValid(apiId, ApiStatusEnum.WAIT_AUDIT);
         if (!isValid) {
             throw new BusinessException("只用待审核的接口才能审核通过,请刷新页面后重试!");
         }
@@ -134,13 +131,12 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         updateWrapper.set(AbilityApiEntity::getNote, note);
         updateWrapper.set(AbilityApiEntity::getApproveTime, new Date());
         updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
-        abilityApiService.update(updateWrapper);
-        return "审核通过完毕! 等待发布...";
+        return abilityApiService.update(updateWrapper);
     }
 
     @Override
     @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
-    public String auditPublish(Long apiId, String note) {
+    public boolean auditPublish(Long apiId, String note) {
         boolean isValid = isApiValid(apiId, ApiStatusEnum.PASSED) || isApiValid(apiId, ApiStatusEnum.OFFLINE) ;
         if (!isValid) {
             throw new BusinessException("只用审核通过过的接口才能发布,请刷新页面后重试!");
@@ -151,13 +147,12 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         updateWrapper.set(AbilityApiEntity::getNote, note);
         updateWrapper.set(AbilityApiEntity::getApproveTime, new Date());
         updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
-        abilityApiService.update(updateWrapper);
-        return "接口发布完毕!";
+        return abilityApiService.update(updateWrapper);
     }
 
     @Override
     @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
-    public String auditOffline(Long apiId, String note) {
+    public boolean auditOffline(Long apiId, String note) {
         boolean isValid = isApiValid(apiId, ApiStatusEnum.PUBLISHED) ;
         if (!isValid) {
             throw new BusinessException("只用发布的接口才能下线,请刷新页面后重试!");
@@ -174,8 +169,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         updateWrapper.set(AbilityApiEntity::getNote, note);
         updateWrapper.set(AbilityApiEntity::getApproveTime, new Date());
         updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
-        abilityApiService.update(updateWrapper);
-        return "接口下线完毕!";
+
+        return abilityApiService.update(updateWrapper);
     }
 
     @Override
@@ -380,10 +375,10 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
             // 获取符合关键字模糊查询的能力ID集合
             List<Long> abiltiyIds = abilityService.getAbilityIds(keyword.trim());
             queryWrapper.and(i -> i.like(AbilityApiEntity::getApiId, keyword)
-                            .or().like(AbilityApiEntity::getApiName, keyword)
-                            .or().like(AbilityApiEntity::getApiDesc, keyword)
-                            .or().like(AbilityApiEntity::getApiUrl, keyword)
-                            .or().in(!abiltiyIds.isEmpty(), AbilityApiEntity::getAbilityId, abiltiyIds));
+                    .or().like(AbilityApiEntity::getApiName, keyword)
+                    .or().like(AbilityApiEntity::getApiDesc, keyword)
+                    .or().like(AbilityApiEntity::getApiUrl, keyword)
+                    .or().in(!abiltiyIds.isEmpty(), AbilityApiEntity::getAbilityId, abiltiyIds));
         }
         Page<AbilityApiEntity> prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
         List<AbilityApiEntity> preRecords = prePage.getRecords();

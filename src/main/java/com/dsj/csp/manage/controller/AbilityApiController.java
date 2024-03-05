@@ -5,12 +5,15 @@ import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.aop.annotation.LoginAuthentication;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
+import com.dsj.csp.manage.biz.GatewayAdminBizService;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
+import com.dsj.csp.manage.service.AbilityApiService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +25,9 @@ import java.util.List;
 @Tag(name = "能力接口管理", description = "用于管理能力api接口")
 public class AbilityApiController {
 
+    private final AbilityApiService abilityApiService;
     private final AbilityApiBizService abilityApiBizService;
+    private final GatewayAdminBizService gatewayAdminBizService;
 
 //    @AopLogger(describe = "查询接口简单目录", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查询接口简单目录", description = "查询接口简单目录")
@@ -102,9 +107,14 @@ public class AbilityApiController {
     @AopLogger(describe = "审核发布接口", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "审核发布接口")
     @LoginAuthentication
+    @Transactional(rollbackFor = Exception.class)
     @PostMapping("/audit-publish")
     public Result<?> auditPublish(@RequestBody AbilityApiEntity api){
-        abilityApiBizService.auditPublish(api.getApiId(), api.getNote());
+        boolean flag = abilityApiBizService.auditPublish(api.getApiId(), api.getNote());
+        if (flag){
+            AbilityApiEntity apiEntity = abilityApiService.getById(api.getApiId());
+            gatewayAdminBizService.addGatewayApi(apiEntity);
+        }
         return Result.success("发布接口成功!");
     }
 

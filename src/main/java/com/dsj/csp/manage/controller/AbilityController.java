@@ -1,27 +1,30 @@
 package com.dsj.csp.manage.controller;
 
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.aop.annotation.LoginAuthentication;
+import com.dsj.csp.common.consts.GatewayCryptKeyConst;
 import com.dsj.csp.common.enums.LogEnum;
-import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
-import com.dsj.csp.manage.biz.AbilityApiBizService;
-import com.dsj.csp.manage.biz.AbilityBizService;
+import com.dsj.csp.manage.biz.*;
 import com.dsj.csp.manage.dto.AbilityApiVO;
+import com.dsj.csp.manage.dto.gateway.ApiHandleVO;
+import com.dsj.csp.manage.dto.gateway.CryptJsonBody;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
 import com.dsj.csp.manage.entity.AbilityEntity;
 import com.dsj.csp.manage.service.AbilityApiApplyService;
 import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.AbilityService;
+import com.dsj.csp.manage.service.ApiFeignService;
 import com.dsj.csp.manage.util.IdentifyUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -30,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -41,10 +45,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/ability")
 @Tag(name = "能力管理", description = "用于管理能力的API")
+@Slf4j
 public class AbilityController {
     private final AbilityService abilityService;
-    private final AbilityApiService abilityApiService;
     private final AbilityBizService abilityBizService;
+    private final AbilityApiService abilityApiService;
     private final AbilityApiBizService abilityApiBizService;
     private final AbilityApiApplyService abilityApiApplyService;
     private final AbilityApiApplyBizService abilityApiApplyBizService;
@@ -136,16 +141,18 @@ public class AbilityController {
     }
 
 
+    private final ApiFeignService apiProxyBizService;
 
     @AopLogger(describe = "新增接口", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增接口")
     @PostMapping("add-api")
     @LoginAuthentication
+    @Transactional
     @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public Result<?> addApi(@RequestBody AbilityApiVO apiVO){
         UserApproveRequest userApproveRequest = IdentifyUser.getUserInfo();
-        abilityApiBizService.saveApi(apiVO, userApproveRequest);
-        return Result.success("添加接口成功!");
+        boolean flag = abilityApiBizService.saveApi(apiVO, userApproveRequest);
+        return Result.success(flag+"", "添加接口成功!");
     }
 
 //    @AopLogger(describe = "查询接口信息", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)

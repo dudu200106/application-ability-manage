@@ -18,7 +18,7 @@ public class AbilityApiReqServiceImpl extends ServiceImpl<AbilityApiReqMapper, A
         implements AbilityApiReqService {
 
     @Override
-    public Boolean saveReqList(List<AbilityApiReq> reqParams, Long apiId) {
+    public boolean saveReqList(List<AbilityApiReq> reqParams, Long apiId) {
         if (reqParams==null){
             return true;
         }

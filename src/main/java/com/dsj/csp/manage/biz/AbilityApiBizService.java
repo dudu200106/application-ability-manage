@@ -10,15 +10,15 @@ import java.util.Date;
 import java.util.List;
 
 public interface AbilityApiBizService {
-    void saveApi(AbilityApiVO apiVO, UserApproveRequest userApproveRequest);
+    boolean saveApi(AbilityApiVO apiVO, UserApproveRequest userApproveRequest);
 
-    String auditApi(AbilityAuditVO auditVO);
-    String auditWithdraw(Long apiId, String note);
-    String auditSubmit(Long apiId, String note);
-    String auditNotPass(Long apiId, String note);
-    String auditPass(Long apiId, String note);
-    String auditPublish(Long apiId, String note);
-    String auditOffline(Long apiId, String note);
+    boolean auditApi(AbilityAuditVO auditVO);
+    boolean auditWithdraw(Long apiId, String note);
+    boolean auditSubmit(Long apiId, String note);
+    boolean auditNotPass(Long apiId, String note);
+    boolean auditPass(Long apiId, String note);
+    boolean auditPublish(Long apiId, String note);
+    boolean auditOffline(Long apiId, String note);
     // 删除接口
     boolean deleteApi(AbilityApiEntity api);
     // 批量删除接口

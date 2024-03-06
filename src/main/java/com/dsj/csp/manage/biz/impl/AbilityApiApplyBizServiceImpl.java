@@ -136,6 +136,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(AbilityApiApplyEntity::getApiApplyId, applyId);
         updateWrapper.set(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.WAIT_AUDIT.getCode());
+        updateWrapper.set(AbilityApiApplyEntity::getSubmitTime, new Date());
         return abilityApiApplyService.update(updateWrapper);
     }
 
@@ -184,6 +185,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         updateWrapper.set(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.STOPPED.getCode());
         updateWrapper.set(AbilityApiApplyEntity::getNote, note);
         updateWrapper.set(AbilityApiApplyEntity::getApproveTime, new Date());
+        updateWrapper.set(AbilityApiApplyEntity::getSubmitTime, null);
         return abilityApiApplyService.update(updateWrapper);
     }
 
@@ -198,7 +200,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         if (apply==null){
             throw new BusinessException("审核通过失败!找不到该申请记录!");
         }
-        ManageApplicationEntity app = manageApplicationService.getById(apply.getApiApplyId());
+        ManageApplicationEntity app = manageApplicationService.getById(apply.getAppId());
         if (app==null){
             throw new BusinessException("审核通过失败!找不到申请所属的应用!");
         }
@@ -284,7 +286,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                 .ge(Objects.nonNull(startTime), AbilityApiApplyEntity::getUpdateTime, startTime)
                 .le(Objects.nonNull(endTime), AbilityApiApplyEntity::getUpdateTime, endTime)
                 // 排序
-                .orderByDesc(AbilityApiApplyEntity::getCreateTime)
+                .orderByDesc(AbilityApiApplyEntity::getSubmitTime)
                 .orderByAsc(AbilityApiApplyEntity::getStatus);
         // 关键字
         if (!ObjectUtil.isEmpty(keyword)){

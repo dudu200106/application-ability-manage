@@ -98,6 +98,7 @@ public class AbilityEntity implements Serializable {
      */
     @TableField(value = "CJSJ", fill = FieldFill.INSERT)
     @Schema(description = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date createTime;
 
     /**
@@ -105,5 +106,6 @@ public class AbilityEntity implements Serializable {
      */
     @TableField(value = "GXSJ", fill = FieldFill.INSERT_UPDATE)
     @Schema(description = "修改时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date updateTime;
 }

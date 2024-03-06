@@ -97,8 +97,8 @@ public class AbilityApiApplyController {
         boolean flag = abilityApiApplyBizService.auditPass(apiApply.getApiApplyId(), apiApply.getNote());
         // 远程调用网关接口新增应用和申请
         if (flag){
-            AbilityApiApplyEntity apply = abilityApiApplyService.getById(apiApply.getAbilityId());
-            ManageApplicationEntity app = manageApplicationService.getById(apiApply.getAppId());
+            AbilityApiApplyEntity apply = abilityApiApplyService.getById(apiApply.getApiApplyId());
+            ManageApplicationEntity app = manageApplicationService.getById(apply.getAppId());
             gatewayAdminBizService.addGatewayApp(app);
             gatewayAdminBizService.addGatewayApply(apply);
         }
@@ -122,7 +122,7 @@ public class AbilityApiApplyController {
         boolean flag = abilityApiApplyBizService.auditStop(apiApply.getApiApplyId(), apiApply.getNote());
         // 远程调用网关接口禁用应用和申请
         if (flag){
-            AbilityApiApplyEntity apply = abilityApiApplyService.getById(apiApply.getAbilityId());
+            AbilityApiApplyEntity apply = abilityApiApplyService.getById(apiApply.getApiApplyId());
             ManageApplicationEntity app = manageApplicationService.getById(apiApply.getAppId());
             gatewayAdminBizService.cancelGatewayApp(app);
             gatewayAdminBizService.unbindApply(apply);

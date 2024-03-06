@@ -94,9 +94,11 @@ public class AbilityApiVO implements Serializable {
     private String note;
 
     @Schema(description="创建时间" )
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Timestamp createTime;
 
     @Schema(description = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Timestamp updateTime;
 
     /**

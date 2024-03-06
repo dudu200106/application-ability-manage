@@ -26,6 +26,7 @@ public class AbilityApiApplyEntity implements Serializable {
     @Schema(description="接口申请ID")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long apiApplyId;
+
     /**
     * 接口ID
     */
@@ -33,6 +34,7 @@ public class AbilityApiApplyEntity implements Serializable {
     @TableField("NLJK_ID")
     @Schema(description="接口ID")
     private Long apiId;
+
     /**
     * 应用ID
     */
@@ -40,6 +42,7 @@ public class AbilityApiApplyEntity implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     @TableField("YY_ID")
     private Long appId;
+
     /**
     * 用户ID
     */
@@ -47,6 +50,7 @@ public class AbilityApiApplyEntity implements Serializable {
     @TableField("YH_ID")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long userId;
+
     /**
     * 能力ID
     */
@@ -54,6 +58,7 @@ public class AbilityApiApplyEntity implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     @TableField("NL_ID")
     private Long abilityId;
+
     /**
     * 能力名称
     */
@@ -61,6 +66,7 @@ public class AbilityApiApplyEntity implements Serializable {
     @Schema(description = "能力名称", requiredMode = Schema.RequiredMode.REQUIRED)
     @TableField("NL_MC")
     private String abilityName;
+
     /**
     * 应用名称
     */
@@ -68,6 +74,7 @@ public class AbilityApiApplyEntity implements Serializable {
     @Schema(description = "应用名称")
     @TableField("YY_MC")
     private String appName;
+
     /**
     * 接口名称
     */
@@ -75,30 +82,35 @@ public class AbilityApiApplyEntity implements Serializable {
     @Schema(description = "接口名称", requiredMode = Schema.RequiredMode.REQUIRED)
     @TableField("NLJK_MC")
     private String apiName;
+
     /**
     * 调用量限制
     */
     @TableField("DYLXZ")
     @Schema(description="调用量限制")
     private Integer recallLimit;
+
     /**
     * 并发数限制
     */
     @TableField("BFSXZ")
     @Schema(description="并发数限制")
     private Integer qps;
+
     /**
     * 状态 (默认:0未提交1待审核 2审核未通过 3未发布 4已发布 5已下线)
     */
     @Schema(description="状态 (默认:0未提交1待审核 2审核未通过 3未发布 4已发布 5已下线)")
     @TableField("ZT")
     private Integer status;
+
     /**
     * 申请说明
     */
     @TableField("NLSQ_SQSM")
     @Schema(description = "申请说明")
     private String illustrate;
+
     /**
     * 备注
     */
@@ -106,6 +118,7 @@ public class AbilityApiApplyEntity implements Serializable {
     @TableField("BZ")
     @Schema(description="备注")
     private String note;
+
     /**
      * 逻辑删除
      */
@@ -113,36 +126,49 @@ public class AbilityApiApplyEntity implements Serializable {
     @TableField(value = "IS_DELETE")
     @Schema(description="是否删除")
     private Integer isDelete;
+
     /**
     * 创建时间
     */
     @TableField(value = "NLSQ_CJSJ", fill = FieldFill.INSERT)
     @Schema(description="创建时间")
     private Date createTime;
+
     /**
     * 更新时间
     */
     @TableField(value = "NLSQ_GXSJ", fill = FieldFill.INSERT_UPDATE)
     @Schema(description="更新时间")
     private Date updateTime;
+
     /**
      * 审批时间
      */
     @TableField("NLSQ_SPSJ")
     @Schema(description="审批时间")
     private Date approveTime;
+
+    /**
+     * 审批时间
+     */
+    @TableField(value = "NLJK_TJSJ", fill = FieldFill.INSERT)
+    @Schema(description="提交时间")
+    private Date submitTime;
+
     /**
     * 是否同意协议
     */
     @TableField("NLSQ_SFTYXY")
     @Schema(description="是否同意所有协议")
     private Integer isAgreeProtocols;
+
     /**
     * 请求密文规则
     */
     @TableField(value = "WG_QQMWGZ")
     @Schema(description="请求密文规则")
     private String reqCryptRule;
+
     /**
     * 响应密文规则
     */

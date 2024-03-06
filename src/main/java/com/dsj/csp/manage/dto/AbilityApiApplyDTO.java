@@ -1,5 +1,6 @@
 package com.dsj.csp.manage.dto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
 import com.dsj.csp.manage.entity.AbilityApiReq;
 import com.dsj.csp.manage.entity.AbilityApiResp;
@@ -82,11 +83,16 @@ public class AbilityApiApplyDTO  implements Serializable {
     private Date approveTime;
 
     @Schema(description="更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date updateTime;
 
     @Schema(description="创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date createTime;
 
+    @Schema(description="提交时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    private Date submitTime;
 
     @Schema(description = "公司名称")
     @Length(max= 30,message="编码长度不能超过30")

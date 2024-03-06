@@ -86,6 +86,7 @@ public class DocEntity implements Serializable {
      * 创建时间
      */
     @TableField(value = "WD_CJSJ", fill = FieldFill.INSERT)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     @Schema(description = "创建时间")
     private Date createTime;
 
@@ -93,6 +94,7 @@ public class DocEntity implements Serializable {
      * 更新时间
      */
     @TableField(value = "WD_GXSJ" ,fill = FieldFill.INSERT_UPDATE)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     @Schema(description = "更新时间")
     private Date updateTime;
 
@@ -100,6 +102,7 @@ public class DocEntity implements Serializable {
      * 审批时间
      */
     @TableField(value = "WD_SPSJ")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     @Schema(description = "审批时间")
     private Date approveTime;
 
@@ -107,6 +110,7 @@ public class DocEntity implements Serializable {
      * 审批时间
      */
     @TableField(value = "WD_FBSJ")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     @Schema(description = "发布时间")
     private Date submitTime;
 

@@ -48,13 +48,15 @@ public interface GatewayAdminBizService {
      * @return 申请处理VO
      */
     boolean addGatewayApply(AbilityApiApplyEntity applyEntity);
-//
-//    /**
-//     * 保存申请，包括app和api的新增修改
-//     * @param applyEntity 申请DTO
-//     * @return 申请处理VO
-//     */
-//    boolean saveApplyComplete(AbilityApiApplyEntity applyEntity);
+
+    /**
+     * 保存申请，包括app和api的新增修改
+     * @param app
+     * @param api
+     * @param apply
+     * @return
+     */
+    boolean saveApplyComplete(ManageApplicationEntity app, AbilityApiEntity api, AbilityApiApplyEntity apply);
 
     /**
      * 解绑网关中应用接口申请

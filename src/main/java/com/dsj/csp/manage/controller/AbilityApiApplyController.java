@@ -9,8 +9,10 @@ import com.dsj.csp.manage.biz.GatewayAdminBizService;
 import com.dsj.csp.manage.dto.AbilityAuditVO;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
+import com.dsj.csp.manage.entity.AbilityApiEntity;
 import com.dsj.csp.manage.entity.ManageApplicationEntity;
 import com.dsj.csp.manage.service.AbilityApiApplyService;
+import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.ManageApplicationService;
 import com.dsj.csp.manage.util.IdentifyUser;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,6 +28,7 @@ import java.util.List;
 @Tag(name = "能力接口申请管理", description = "用于管理接口使用申请")
 public class AbilityApiApplyController {
 
+    private final AbilityApiService abilityApiService;
     private final AbilityApiApplyService abilityApiApplyService;
     private final AbilityApiApplyBizService abilityApiApplyBizService;
     private final GatewayAdminBizService gatewayAdminBizService;
@@ -99,8 +102,11 @@ public class AbilityApiApplyController {
         if (flag){
             AbilityApiApplyEntity apply = abilityApiApplyService.getById(apiApply.getApiApplyId());
             ManageApplicationEntity app = manageApplicationService.getById(apply.getAppId());
+            AbilityApiEntity api = abilityApiService.getById(apply.getApiId());
             gatewayAdminBizService.addGatewayApp(app);
+            gatewayAdminBizService.addGatewayApi(api);
             gatewayAdminBizService.addGatewayApply(apply);
+//            gatewayAdminBizService.saveApplyComplete(app, api, apply);
         }
         return Result.success("接口申请审核通过!");
     }

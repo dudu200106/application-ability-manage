@@ -142,7 +142,7 @@ public class GatewayAdminBizImplService implements GatewayAdminBizService {
 
     @Override
     public boolean addGatewayApply(AbilityApiApplyEntity applyEntity) {
-        log.info("------------远程调用网关接口: 新增申请");
+        log.info("------------远程调用网关接口: /allow/apply/bind  新增申请，使用已有的app和api创建申请关系");
         HashMap<String, String> applyMap = new HashMap<>();
         applyMap.put("applyExtId", applyEntity.getApiApplyId()+"");
         applyMap.put("appExtId", applyEntity.getAppId()+"");
@@ -164,6 +164,11 @@ public class GatewayAdminBizImplService implements GatewayAdminBizService {
         ApplyHandleVO applyHandleVO = CryptJsonBody.decryptToObj(data, GatewayCryptKeyConst.CLIENT_PRIVATE, ApplyHandleVO.class);
         log.info("data:    {}", JSONUtil.toJsonStr(applyHandleVO));
         return true;
+    }
+
+    @Override
+    public boolean saveApplyComplete(ManageApplicationEntity app, AbilityApiEntity api, AbilityApiApplyEntity apply) {
+        return false;
     }
 
     @Override

@@ -36,7 +36,7 @@ public class GatewayAdminBizImplService implements GatewayAdminBizService {
     private final ApiFeignService apiFeignService;
     @Override
     public boolean addGatewayApp(ManageApplicationEntity appEntity) {
-        log.info("------------远程调用网关接口: 新增app ------------");
+        log.info("------------ 远程调用网关接口: /allow/app/add  新增app ------------");
         // 要传递的JSON数据
         HashMap<String, String> appMap = new HashMap<>();
         appMap.put("appExtId", appEntity.getAppId());
@@ -69,7 +69,7 @@ public class GatewayAdminBizImplService implements GatewayAdminBizService {
 
     @Override
     public boolean cancelGatewayApp(ManageApplicationEntity appEntity) {
-        log.info("------------远程调用网关接口: 禁用app ------------");
+        log.info("------------ 远程调用网关接口: /allow/app/cancel  禁用app ------------");
         // 要传递的JSON数据
         HashMap<String, String> map = new HashMap<>();
         map.put("appExtId", appEntity.getAppId());
@@ -92,7 +92,7 @@ public class GatewayAdminBizImplService implements GatewayAdminBizService {
 
     @Override
     public boolean addGatewayApi(AbilityApiEntity apiEntity) {
-        log.info("------------远程调用网关接口: 新增api ------------");
+        log.info("------------ 远程调用网关接口: /allow/api/add  新增api ------------");
         // 要传递的JSON数据
         HashMap<String, String> map = new HashMap<>();
         map.put("apiExtId", apiEntity.getApiId()+"");
@@ -119,7 +119,7 @@ public class GatewayAdminBizImplService implements GatewayAdminBizService {
 
     @Override
     public boolean cancelGatewayApi(AbilityApiEntity apiEntity) {
-        log.info("------------远程调用网关接口: 禁用api ------------");
+        log.info("------------ 远程调用网关接口: /allow/api/cancel  禁用api ------------");
         // 要传递的JSON数据
         HashMap<String, String> map = new HashMap<>();
         map.put("apiExtId", apiEntity.getApiId()+"");
@@ -142,7 +142,7 @@ public class GatewayAdminBizImplService implements GatewayAdminBizService {
 
     @Override
     public boolean addGatewayApply(AbilityApiApplyEntity applyEntity) {
-        log.info("------------远程调用网关接口: /allow/apply/bind  新增申请，使用已有的app和api创建申请关系");
+        log.info("------------ 远程调用网关接口: /allow/apply/bind  新增申请 ------------");
         HashMap<String, String> applyMap = new HashMap<>();
         applyMap.put("applyExtId", applyEntity.getApiApplyId()+"");
         applyMap.put("appExtId", applyEntity.getAppId()+"");
@@ -173,7 +173,7 @@ public class GatewayAdminBizImplService implements GatewayAdminBizService {
 
     @Override
     public boolean unbindApply(AbilityApiApplyEntity applyEntity) {
-        log.info("------------远程调用网关接口: 禁用申请 ------------");
+        log.info("------------远程调用网关接口: /allow/apply/unbind  禁用申请 ------------");
         // 要传递的JSON数据
         HashMap<String, String> map = new HashMap<>();
         map.put("applyExtId", applyEntity.getApiApplyId()+"");

@@ -18,6 +18,7 @@ import com.dsj.csp.manage.util.IdentifyUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -96,6 +97,7 @@ public class AbilityApiApplyController {
     @Operation(summary = "接口申请审核通过")
     @PostMapping("/audit-pass")
     @LoginAuthentication
+    @Transactional(rollbackFor = Exception.class)
     public Result<?> auditPass(@RequestBody AbilityApiApplyEntity apiApply){
         boolean flag = abilityApiApplyBizService.auditPass(apiApply.getApiApplyId(), apiApply.getNote());
         // 远程调用网关接口新增应用和申请

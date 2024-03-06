@@ -47,6 +47,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
             throw new BusinessException("申请无效！所选应用已保存或者已经申请过该能力接口");
         }
         applyEntity.setUserId(Long.parseLong(userApproveRequest.getUserId()));
+        applyEntity.setSubmitTime(new Date());
         abilityApiApplyService.save(applyEntity);
     }
 

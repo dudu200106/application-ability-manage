@@ -149,9 +149,9 @@ public class AbilityApiApplyEntity implements Serializable {
     private Date approveTime;
 
     /**
-     * 审批时间
+     * 提交时间
      */
-    @TableField(value = "NLJK_TJSJ", fill = FieldFill.INSERT)
+    @TableField(value = "NLJK_TJSJ")
     @Schema(description="提交时间")
     private Date submitTime;
 

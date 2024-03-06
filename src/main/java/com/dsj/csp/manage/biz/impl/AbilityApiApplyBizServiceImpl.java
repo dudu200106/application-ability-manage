@@ -10,6 +10,7 @@ import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.common.enums.ApiStatusEnum;
 import com.dsj.csp.common.enums.ApplyStatusEnum;
 import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
+import com.dsj.csp.manage.biz.GatewayAdminBizService;
 import com.dsj.csp.manage.dto.*;
 import com.dsj.csp.manage.dto.convertor.AbilityApiApplyConvertor;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
@@ -17,7 +18,6 @@ import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -100,7 +100,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     }
 
     @Override
-    public String auditApply(AbilityAuditVO auditVO) {
+    public boolean auditApply(AbilityAuditVO auditVO) {
         // 审核
         Long applyId = auditVO.getApiApplyId();
         String note = auditVO.getNote();
@@ -114,80 +114,53 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     }
 
     @Override
-    public String auditWithdraw(Long applyId, String note) {
-        boolean isValid = isApplyValid(applyId, ApplyStatusEnum.WAIT_AUDIT);
-        if (!isValid) {
+    public boolean auditWithdraw(Long applyId, String note) {
+        AbilityApiApplyEntity validApply = checkApplyValid(applyId, ApplyStatusEnum.WAIT_AUDIT);
+        if (validApply==null) {
             throw new BusinessException("只有'待审核'的申请才能撤回!请刷新页面后重试");
         }
         // 创建更新条件构造器
         LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(AbilityApiApplyEntity::getApiApplyId, applyId);
         updateWrapper.set(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.NOT_SUBMIT.getCode());
-        abilityApiApplyService.update(updateWrapper);
-        return "提交完成!";
+        return abilityApiApplyService.update(updateWrapper);
     }
 
     @Override
-    public String auditSubmit(Long applyId, String note) {
-        boolean isValid = isApplyValid(applyId, ApplyStatusEnum.NOT_SUBMIT);
-        if (!isValid) {
+    public boolean auditSubmit(Long applyId, String note) {
+        AbilityApiApplyEntity validApply = checkApplyValid(applyId, ApplyStatusEnum.NOT_SUBMIT);
+        if (validApply==null) {
             throw new BusinessException("只有'未提交'的申请才能提交!请刷新页面后重试");
         }
         // 创建更新条件构造器
         LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(AbilityApiApplyEntity::getApiApplyId, applyId);
         updateWrapper.set(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.WAIT_AUDIT.getCode());
-        abilityApiApplyService.update(updateWrapper);
-        return "提交完成!";
+        return abilityApiApplyService.update(updateWrapper);
     }
 
     @Override
-    public String auditPass(Long applyId, String note) {
-        boolean isValid = isApplyValid(applyId, ApplyStatusEnum.WAIT_AUDIT) || isApplyValid(applyId, ApplyStatusEnum.STOPPED);
-        if (!isValid) {
-            throw new BusinessException("只有'待审核'或者'停用'的申请才能审核通过!请刷新页面后重试");
+    public boolean auditPass(Long applyId, String note) {
+        // 判断审核为申请审核通过还是启用操作
+        AbilityApiApplyEntity validApply = checkApplyValid(applyId, ApplyStatusEnum.WAIT_AUDIT);
+        if (validApply==null){
+            validApply = checkApplyValid(applyId, ApplyStatusEnum.STOPPED);
+            if (validApply==null){
+                throw new BusinessException("只有'待审核'或者'停用'的申请才能审核通过!请刷新页面后重试");
+            }
         }
-        // 创建更新条件构造器
-        LambdaUpdateWrapper<AbilityApiApplyEntity> updateWrapper = Wrappers.lambdaUpdate();
-        updateWrapper.eq(AbilityApiApplyEntity::getApiApplyId, applyId);
-        updateWrapper.set(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.PASSED.getCode());
-        updateWrapper.set(AbilityApiApplyEntity::getNote, note);
-        updateWrapper.set(AbilityApiApplyEntity::getApproveTime, new Date());
-        abilityApiApplyService.update(updateWrapper);
-
-//        // 判断是否要生成一对密钥
-//        Long appId = abilityApiApplyService.getById(applyId).getAppId();
-//        ManageApplicationEntity app = manageApplicationService.getById(appId);
-//        // 如果申请的appId不存在
-//        if (app == null){
-//            throw new BusinessException("审核失败! 申请能力的appId不存在!");
-//        }
-//        String appSecretKey =  app.getAppSecret();
-//        String appAppKey =  app.getAppSecret();
-//        // 如果审核通过, 判断是否为应用生成密钥
-//        if (ObjectUtil.isEmpty(appSecretKey) && ObjectUtil.isEmpty(appAppKey)){
-//            Map<String, String> sm2Map = Sm2.sm2Test();
-//            String appKey = sm2Map.get("publicEncode");
-//            String secretKey = sm2Map.get("privateEncode");
-//            Map<String, String> sm2Map2 = Sm2.sm2Test();
-//            String wgKey = sm2Map2.get("publicEncode");
-//            String wgSecre = sm2Map2.get("privateEncode");
-//            LambdaUpdateWrapper<ManageApplicationEntity> appUpdateWrapper
-//                    = Wrappers.lambdaUpdate(ManageApplicationEntity.class)
-//                    .eq(ManageApplicationEntity::getAppId, appId)
-//                    .set(ManageApplicationEntity::getAppKey, appKey)
-//                    .set(ManageApplicationEntity::getAppSecret, secretKey)
-//                    .set(ManageApplicationEntity::getAppWgKey, wgKey)
-//                    .set(ManageApplicationEntity::getAppWgSecret, wgSecre);
-//            manageApplicationService.update(appUpdateWrapper);
-//        }
-        return "审核通过完毕!";
+        return abilityApiApplyService.lambdaUpdate()
+                .eq(AbilityApiApplyEntity::getApiApplyId, applyId)
+                .set(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.PASSED.getCode())
+                .set(AbilityApiApplyEntity::getNote, note)
+                .set(AbilityApiApplyEntity::getApproveTime, new Date())
+                .update();
     }
 
     @Override
-    public String auditNotPass(Long applyId, String note) {
-        boolean isValid = isApplyValid(applyId, ApplyStatusEnum.WAIT_AUDIT);
-        if (!isValid) {
+    public boolean auditNotPass(Long applyId, String note) {
+        AbilityApiApplyEntity validApply = checkApplyValid(applyId, ApplyStatusEnum.WAIT_AUDIT);
+        if (validApply==null) {
             throw new BusinessException("只有'待审核'的申请才能审核不通过!请刷新页面后重试");
         }
         // 创建更新条件构造器
@@ -196,14 +169,13 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         updateWrapper.set(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.NOT_PASSED.getCode());
         updateWrapper.set(AbilityApiApplyEntity::getNote, note);
         updateWrapper.set(AbilityApiApplyEntity::getApproveTime, new Date());
-        abilityApiApplyService.update(updateWrapper);
-        return "审核不通过完毕!";
+        return abilityApiApplyService.update(updateWrapper);
     }
 
     @Override
-    public String auditStop(Long applyId, String note) {
-        boolean isValid = isApplyValid(applyId, ApplyStatusEnum.PASSED);
-        if (!isValid) {
+    public boolean auditStop(Long applyId, String note) {
+        AbilityApiApplyEntity validApply = checkApplyValid(applyId, ApplyStatusEnum.PASSED);
+        if (validApply==null) {
             throw new BusinessException("只有'审核通过'的申请才能停用!请刷新页面后重试");
         }
         // 创建更新条件构造器
@@ -212,20 +184,23 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         updateWrapper.set(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.STOPPED.getCode());
         updateWrapper.set(AbilityApiApplyEntity::getNote, note);
         updateWrapper.set(AbilityApiApplyEntity::getApproveTime, new Date());
-        abilityApiApplyService.update(updateWrapper);
-        return "停用完毕!";
+        return abilityApiApplyService.update(updateWrapper);
     }
 
     /**
-     * 审核申请操作前的判断,
+     * 审核申请操作前的判断, 判断审核操作的申请是否有效
      * @param applyId 申请id
-     * @param targetPrevStatus 期待的前任审核状态
-     * @return 审核操作是否有效
+     * @param targetPrevStatus 期待审核操作前的申请状态
+     * @return 审核操作的申请是否有效
      */
-    public boolean isApplyValid(Long applyId, ApplyStatusEnum targetPrevStatus){
+    public AbilityApiApplyEntity checkApplyValid(Long applyId, ApplyStatusEnum targetPrevStatus){
         AbilityApiApplyEntity apply = abilityApiApplyService.getById(applyId);
         if (apply==null){
             throw new BusinessException("审核通过失败!找不到该申请记录!");
+        }
+        ManageApplicationEntity app = manageApplicationService.getById(apply.getApiApplyId());
+        if (app==null){
+            throw new BusinessException("审核通过失败!找不到申请所属的应用!");
         }
         AbilityApiEntity api = abilityApiService.getById(apply.getApiId());
         ApiStatusEnum apiStatus = ApiStatusEnum.of(api.getStatus());
@@ -233,8 +208,8 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
             throw new BusinessException("申请的接口不存在,或者已下线！");
         }
         // 审核流程限制: 状态(0待提交 1待审核 2审核通过 3审核不通过 4已停用 )
-        // 审核操作是否有效
-        return apply.getStatus()==targetPrevStatus.getCode();
+        // 申请状态是否为期待状态
+        return apply.getStatus()==targetPrevStatus.getCode() ? apply : null;
     }
 
     @Override

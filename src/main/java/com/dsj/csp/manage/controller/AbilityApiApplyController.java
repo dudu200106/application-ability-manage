@@ -5,10 +5,13 @@ import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.aop.annotation.LoginAuthentication;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
+import com.dsj.csp.manage.biz.GatewayAdminBizService;
 import com.dsj.csp.manage.dto.AbilityAuditVO;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
+import com.dsj.csp.manage.entity.ManageApplicationEntity;
 import com.dsj.csp.manage.service.AbilityApiApplyService;
+import com.dsj.csp.manage.service.ManageApplicationService;
 import com.dsj.csp.manage.util.IdentifyUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,6 +28,9 @@ public class AbilityApiApplyController {
 
     private final AbilityApiApplyService abilityApiApplyService;
     private final AbilityApiApplyBizService abilityApiApplyBizService;
+    private final GatewayAdminBizService gatewayAdminBizService;
+    private final ManageApplicationService manageApplicationService;
+
 
     @AopLogger(describe = "批量申请使用接口", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "批量申请使用接口", description = "批量申请使用接口")
@@ -88,7 +94,14 @@ public class AbilityApiApplyController {
     @PostMapping("/audit-pass")
     @LoginAuthentication
     public Result<?> auditPass(@RequestBody AbilityApiApplyEntity apiApply){
-        abilityApiApplyBizService.auditPass(apiApply.getApiApplyId(), apiApply.getNote());
+        boolean flag = abilityApiApplyBizService.auditPass(apiApply.getApiApplyId(), apiApply.getNote());
+        // 远程调用网关接口新增应用和申请
+        if (flag){
+            AbilityApiApplyEntity apply = abilityApiApplyService.getById(apiApply.getAbilityId());
+            ManageApplicationEntity app = manageApplicationService.getById(apiApply.getAppId());
+            gatewayAdminBizService.addGatewayApp(app);
+            gatewayAdminBizService.addGatewayApply(apply);
+        }
         return Result.success("接口申请审核通过!");
     }
 
@@ -106,7 +119,14 @@ public class AbilityApiApplyController {
     @LoginAuthentication
     @PostMapping("/audit-disable")
     public Result<?> auditOffline(@RequestBody AbilityApiApplyEntity apiApply){
-        abilityApiApplyBizService.auditStop(apiApply.getApiApplyId(), apiApply.getNote());
+        boolean flag = abilityApiApplyBizService.auditStop(apiApply.getApiApplyId(), apiApply.getNote());
+        // 远程调用网关接口禁用应用和申请
+        if (flag){
+            AbilityApiApplyEntity apply = abilityApiApplyService.getById(apiApply.getAbilityId());
+            ManageApplicationEntity app = manageApplicationService.getById(apiApply.getAppId());
+            gatewayAdminBizService.cancelGatewayApp(app);
+            gatewayAdminBizService.unbindApply(apply);
+        }
         return Result.success("接口申请停用成功!");
     }
 

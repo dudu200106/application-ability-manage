@@ -21,13 +21,13 @@ public interface AbilityApiApplyBizService {
     Page<AbilityApiApplyDTO> pageApiApply(Boolean onlySubmitted, Long appId, Long userId, Long abilityId, String keyword, Integer status, Date startTime, Date endTime, int current, int size);
 
     // 审核接口申请
-    String auditApply(AbilityAuditVO auditVO);
+    boolean auditApply(AbilityAuditVO auditVO);
 
-    String auditWithdraw(Long applyId, String note);
-    String auditSubmit(Long applyId, String note);
-    String auditPass(Long applyId, String note);
-    String auditNotPass(Long applyId, String note);
-    String auditStop(Long applyId, String note);
+    boolean auditWithdraw(Long applyId, String note);
+    boolean auditSubmit(Long applyId, String note);
+    boolean auditPass(Long applyId, String note);
+    boolean auditNotPass(Long applyId, String note);
+    boolean auditStop(Long applyId, String note);
 
     Set<String> getUserIds(String keyword);
 

@@ -124,6 +124,7 @@ public class AbilityApiController {
     @PostMapping("/audit-offline")
     public Result<?> auditOffline(@RequestBody AbilityApiEntity api){
         boolean flag = abilityApiBizService.auditOffline(api.getApiId(), api.getNote());
+        // 调用网关禁用api接口
         if (flag){
             gatewayAdminBizService.cancelGatewayApi(api);
         }

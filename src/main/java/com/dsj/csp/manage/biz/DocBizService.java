@@ -18,15 +18,35 @@ public interface DocBizService {
      */
     void auditWithdraw(Long docId);
 
+    /**
+     * 审核文档通过
+     * @param docId
+     * @param note
+     */
     void auditPass(Long docId, String note);
 
+    /**
+     * 审核文档不通过
+     * @param docId
+     * @param note
+     */
     void auditNotPass(Long docId, String note);
 
+    /**
+     * 发布文档
+     * @param docId
+     * @param note
+     */
     void auditPublish(Long docId, String note);
 
 //    // 取消'已上线'状态
 //    void auditOnline(Long docId, String note);
 
+    /**
+     * 下线文档
+     * @param docId
+     * @param note
+     */
     void auditOffline(Long docId, String note);
 
 }

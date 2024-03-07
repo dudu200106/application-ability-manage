@@ -285,6 +285,9 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                 .eq(AbilityApiApplyEntity::getAppId, appId)
                 .remove();
         if (flag){
+            ManageApplicationEntity app = new ManageApplicationEntity();
+            app.setAppId(appId + "");
+            gatewayAdminBizService.cancelGatewayApp(app);
             gatewayAdminBizService.unbindBatchApply(applyIds);
         }
     }

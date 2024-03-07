@@ -11,9 +11,17 @@ import java.util.List;
  * 2024/1/17
  */
 public interface AbilityBizService {
-
+    /**
+     * 批量删除能力分类
+     * @param abilityList
+     * @return
+     */
     boolean removeAbilityBatch(List<AbilityEntity> abilityList);
 
-
+    /**
+     * 批量删除能力分类
+     * @param ability
+     * @return
+     */
     boolean removeAbility(AbilityEntity ability);
 }

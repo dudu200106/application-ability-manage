@@ -111,10 +111,6 @@ public class AbilityApiController {
     @PostMapping("/audit-publish")
     public Result<?> auditPublish(@RequestBody AbilityApiEntity api){
         boolean flag = abilityApiBizService.auditPublish(api.getApiId(), api.getNote());
-//        if (flag){
-//            AbilityApiEntity apiEntity = abilityApiService.getById(api.getApiId());
-//            gatewayAdminBizService.addGatewayApi(apiEntity);
-//        }
         return Result.success("发布接口成功!");
     }
 

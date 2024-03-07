@@ -12,28 +12,102 @@ import java.util.Set;
 
 public interface AbilityApiApplyBizService {
 
+    /**
+     * 新增接口使用申请
+     * @param applyVO
+     * @param userApproveRequest
+     */
     void saveApiApply(AbilityApiApplyEntity applyVO, UserApproveRequest userApproveRequest);
 
-    // 获取接口申请信息
+    /**
+     * 获取接口申请信息
+     * @param apiApplyId
+     * @return
+     */
     AbilityApiApplyDTO getApplyInfo(Long apiApplyId);
 
-    //分页获取接口申请列表
+    /**
+     * 分页获取接口申请列表
+     * @param onlySubmitted
+     * @param appId
+     * @param userId
+     * @param abilityId
+     * @param keyword
+     * @param status
+     * @param startTime
+     * @param endTime
+     * @param current
+     * @param size
+     * @return
+     */
     Page<AbilityApiApplyDTO> pageApiApply(Boolean onlySubmitted, Long appId, Long userId, Long abilityId, String keyword, Integer status, Date startTime, Date endTime, int current, int size);
 
-    // 审核接口申请
+    /**
+     * 审核接口申请
+     * @param auditVO
+     * @return
+     */
     boolean auditApply(AbilityAuditVO auditVO);
 
+    /**
+     * 撤回申请
+     * @param applyId
+     * @param note
+     * @return
+     */
     boolean auditWithdraw(Long applyId, String note);
+
+    /**
+     * 提交申请
+     * @param applyId
+     * @param note
+     * @return
+     */
     boolean auditSubmit(Long applyId, String note);
+
+    /**
+     * 申请审核通过
+     * @param applyId
+     * @param note
+     * @return
+     */
     boolean auditPass(Long applyId, String note);
+    /**
+     * 申请审核不通过
+     * @param applyId
+     * @param note
+     * @return
+     */
     boolean auditNotPass(Long applyId, String note);
+
+    /**
+     * 停用申请
+     * @param applyId
+     * @param note
+     * @return
+     */
     boolean auditStop(Long applyId, String note);
 
+    /**
+     * 获取用户ID, 通过用户名称模糊查询
+     * @param keyword
+     * @return
+     */
     Set<String> getUserIds(String keyword);
 
+    /**
+     * 获取应用ID, 通过应用ID和名称模糊查询
+     * @param userId
+     * @param keyword
+     * @return
+     */
     Set<String> getAppIds(Long userId, String keyword);
 
-    // 批量申请接口
+    /**
+     * 批量申请接口
+     * @param applyList
+     * @param userApproveRequest
+     */
     void saveApiApplyBatch(List<AbilityApiApplyEntity> applyList, UserApproveRequest userApproveRequest);
 
     /**

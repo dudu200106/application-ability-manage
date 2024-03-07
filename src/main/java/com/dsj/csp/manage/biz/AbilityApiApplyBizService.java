@@ -35,4 +35,11 @@ public interface AbilityApiApplyBizService {
 
     // 批量申请接口
     void saveApiApplyBatch(List<AbilityApiApplyEntity> applyList, UserApproveRequest userApproveRequest);
+
+    /**
+     * 根据应用ID, 删除应用关联所有接口申请
+     * @param appId 应用ID
+     * @return
+     */
+    void deleteApiApplyByAppId(Long appId);
 }

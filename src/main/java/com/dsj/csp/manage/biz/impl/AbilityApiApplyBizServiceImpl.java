@@ -15,6 +15,7 @@ import com.dsj.csp.manage.dto.*;
 import com.dsj.csp.manage.dto.convertor.AbilityApiApplyConvertor;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.*;
+import com.dsj.csp.manage.mapper.ManageApplicationMapper;
 import com.dsj.csp.manage.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,12 +29,13 @@ import java.util.stream.Collectors;
 public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService {
 
     private final AbilityApiApplyService abilityApiApplyService;
-    private final ManageApplicationService manageApplicationService;
+    private final ManageApplicationMapper manageApplicationMapper;
     private final UserApproveService userApproveService;
     private final AbilityService abilityService;
     private final AbilityApiService abilityApiService;
     private final AbilityApiReqService abilityApiReqService;
     private final AbilityApiRespService abilityApiRespService;
+    private final GatewayAdminBizService gatewayAdminBizService;
 
     @Override
     public void saveApiApply(AbilityApiApplyEntity applyEntity, UserApproveRequest userApproveRequest) {
@@ -80,7 +82,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         // 查询需要返回的申请的其他信息
         AbilityApiEntity api = abilityApiService.getById(apply.getApiId());
         AbilityEntity ability = abilityService.getById(apply.getAbilityId());
-        ManageApplicationEntity app = manageApplicationService.getById(apply.getAppId());
+        ManageApplicationEntity app = manageApplicationMapper.selectById(apply.getAppId());
         UserApproveEntity user = userApproveService.getById(apply.getUserId());
         if (api==null || ability==null || user==null){
             throw new BusinessException("接口申请异常! 请确认申请相关的用户、应用、能力、接口是否存在!");
@@ -201,7 +203,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         if (apply==null){
             throw new BusinessException("审核通过失败!找不到该申请记录!");
         }
-        ManageApplicationEntity app = manageApplicationService.getById(apply.getAppId());
+        ManageApplicationEntity app = manageApplicationMapper.selectById(apply.getAppId());
         if (app==null){
             throw new BusinessException("审核通过失败!找不到申请所属的应用!");
         }
@@ -231,7 +233,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
 
     @Override
     public Set<String> getAppIds(Long userId, String keyword) {
-        Set<String> ids = manageApplicationService.list(Wrappers.lambdaQuery(ManageApplicationEntity.class)
+        Set<String> ids = manageApplicationMapper.selectList(Wrappers.lambdaQuery(ManageApplicationEntity.class)
                         .select(ManageApplicationEntity::getAppId)
                         .eq(userId!= null, ManageApplicationEntity::getAppUserId, userId)
                         .like(!ObjectUtil.isEmpty(keyword), ManageApplicationEntity::getAppName, keyword))
@@ -269,6 +271,22 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
             apply.setUserId(Long.parseLong(userApproveRequest.getUserId()));
         }).toList();
         abilityApiApplyService.saveBatch(applyList);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteApiApplyByAppId(Long appId) {
+        List<Long> applyIds = abilityApiApplyService.lambdaQuery()
+                .eq(AbilityApiApplyEntity::getAppId, appId)
+                .list()
+                .stream().map(AbilityApiApplyEntity::getApiApplyId)
+                .toList();
+        boolean flag = abilityApiApplyService.lambdaUpdate()
+                .eq(AbilityApiApplyEntity::getAppId, appId)
+                .remove();
+        if (flag){
+            gatewayAdminBizService.unbindBatchApply(applyIds);
+        }
     }
 
     @Override

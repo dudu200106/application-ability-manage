@@ -4,6 +4,8 @@ import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
 import com.dsj.csp.manage.entity.ManageApplicationEntity;
 
+import java.util.List;
+
 /**
  * @author SeanDu
  * @version 1.0.0
@@ -64,4 +66,11 @@ public interface GatewayAdminBizService {
      * @return 申请处理VO
      */
     boolean unbindApply(AbilityApiApplyEntity applyEntity);
+
+    /**
+     * 批量解绑申请
+     * @param applyIdList 申请ID列表
+     * @return 申请处理VO
+     */
+    boolean unbindBatchApply(List<Long> applyIdList);
 }

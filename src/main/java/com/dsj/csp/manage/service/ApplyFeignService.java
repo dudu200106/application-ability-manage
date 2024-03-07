@@ -6,6 +6,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
+
 /**
  * @author SeanDu
  * @version 1.0.0
@@ -20,9 +22,21 @@ public interface ApplyFeignService {
     @PostMapping("/bind")
     Result<CryptJsonBody> bindApply(@RequestBody CryptJsonBody cryptJsonBody);
 
+    /**
+     * 新增申请，包括app和api的新增修改
+     */
     @PostMapping("/add")
     Result<CryptJsonBody> addApply(@RequestBody CryptJsonBody cryptJsonBody);
 
+    /**
+     * 解绑申请
+     */
     @PostMapping("/unbind")
     Result<CryptJsonBody> unbindApply(@RequestBody CryptJsonBody cryptJsonBody);
+
+    /**
+     * 批量解绑申请
+     */
+    @PostMapping("/unbind-batch")
+    public Result<Boolean> unbindBatchApply(@RequestBody CryptJsonBody cryptJsonBody);
 }

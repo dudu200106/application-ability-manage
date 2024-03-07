@@ -36,9 +36,9 @@ public enum CodeEnum {
     REMOTE_ERROR(660,"远程服务调用异常"),
     ILLEGAL_STATE_ERROR(661,"请求参数不正确"),
     METHOD_ARGUMENT_TYPE_MISMATCH_ERROR(662,"请求参数不正确"),
-    UNSUPPORTED_ENCODING_ERROR(653,"账号异常，存在非正常编码字符"),
-    RUNTIME_ERROR(654,"运行异常，请联系管理员处理"),
-    DM_ERROR(655,"数据字段过长"),
+    UNSUPPORTED_ENCODING_ERROR(663,"账号异常，存在非正常编码字符"),
+    RUNTIME_ERROR(664,"运行异常，请联系管理员处理"),
+    DM_ERROR(665,"数据字段过长"),
     //业务异常
     SYSTEM_ERROR(500,"系统异常")
     ;

@@ -7,6 +7,8 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author SeanDu
  * @version 1.0.0
@@ -43,12 +45,14 @@ public class CryptJsonBody {
         return new JSONObject(decryptStr).toBean(clazz);
     }
 
-    public static <T> T decryptToObj(String contentEncrypt, String privateKey, Class<T> clazz) {
+    /**
+     * 将 contentCrypt 解密，返回List
+     */
+    public static <T> List<T> decryptToList(CryptJsonBody cryptJsonBody, String lable, String privateKey, Class<T> clazz) {
         SM2 sm2 = SmUtil.sm2(privateKey, null);
-        String decryptStr = sm2.decryptStr(contentEncrypt, KeyType.PrivateKey);
-        return new JSONObject(decryptStr).toBean(clazz);
+        String decryptStr = sm2.decryptStr(cryptJsonBody.getContentEncrypt(), KeyType.PrivateKey);
+        return JSONUtil.toList(new JSONObject(decryptStr).getJSONArray(lable), clazz);
     }
-
 
 
     /**

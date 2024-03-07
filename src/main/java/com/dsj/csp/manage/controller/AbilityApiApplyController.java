@@ -100,15 +100,16 @@ public class AbilityApiApplyController {
     @Transactional(rollbackFor = Exception.class)
     public Result<?> auditPass(@RequestBody AbilityApiApplyEntity apiApply){
         boolean flag = abilityApiApplyBizService.auditPass(apiApply.getApiApplyId(), apiApply.getNote());
-        // 远程调用网关接口新增应用和申请
+        // 远程调用网关接口新增申请
         if (flag){
             AbilityApiApplyEntity apply = abilityApiApplyService.getById(apiApply.getApiApplyId());
             ManageApplicationEntity app = manageApplicationService.getById(apply.getAppId());
             AbilityApiEntity api = abilityApiService.getById(apply.getApiId());
-            gatewayAdminBizService.addGatewayApp(app);
-            gatewayAdminBizService.addGatewayApi(api);
-            gatewayAdminBizService.addGatewayApply(apply);
-//            gatewayAdminBizService.saveApplyComplete(app, api, apply);
+//            gatewayAdminBizService.addGatewayApp(app);
+//            gatewayAdminBizService.addGatewayApi(api);
+//            gatewayAdminBizService.addGatewayApply(apply);
+            // 新增申请, 包括根据是否已存在传入应用和api而新增/修改
+            gatewayAdminBizService.saveApplyComplete(app, api, apply);
         }
         return Result.success("接口申请审核通过!");
     }
@@ -128,12 +129,9 @@ public class AbilityApiApplyController {
     @PostMapping("/audit-disable")
     public Result<?> auditOffline(@RequestBody AbilityApiApplyEntity apiApply){
         boolean flag = abilityApiApplyBizService.auditStop(apiApply.getApiApplyId(), apiApply.getNote());
-        // 远程调用网关接口禁用应用和申请
+        // 远程调用网关接口禁用申请
         if (flag){
-            AbilityApiApplyEntity apply = abilityApiApplyService.getById(apiApply.getApiApplyId());
-            ManageApplicationEntity app = manageApplicationService.getById(apiApply.getAppId());
-            gatewayAdminBizService.cancelGatewayApp(app);
-            gatewayAdminBizService.unbindApply(apply);
+            gatewayAdminBizService.unbindApply(abilityApiApplyService.getById(apiApply.getApiApplyId()));
         }
         return Result.success("接口申请停用成功!");
     }
@@ -143,7 +141,11 @@ public class AbilityApiApplyController {
     @LoginAuthentication
     @PostMapping("/audit-enable")
     public Result<?> auditEnable(@RequestBody AbilityApiApplyEntity apiApply){
-        abilityApiApplyBizService.auditPass(apiApply.getApiApplyId(), apiApply.getNote());
+        boolean flag = abilityApiApplyBizService.auditPass(apiApply.getApiApplyId(), apiApply.getNote());
+        // 远程调用网关接口禁用申请
+        if (flag){
+            gatewayAdminBizService.addGatewayApply(abilityApiApplyService.getById(apiApply.getApiApplyId()));
+        }
         return Result.success("接口申请启用成功!");
     }
 

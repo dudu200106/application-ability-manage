@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dsj.csp.common.enums.CodeEnum;
 import com.dsj.csp.common.exception.FlowException;
+import com.dsj.csp.manage.biz.AbilityApiApplyBizService;
 import com.dsj.csp.manage.dto.ManageApplictionVo;
 import com.dsj.csp.manage.entity.ManageApplicationEntity;
 import com.dsj.csp.manage.entity.UserApproveEntity;
@@ -19,6 +20,7 @@ import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -38,7 +40,7 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
     @Autowired
     private ManageApplicationMapper manageApplicationMapper;
     @Autowired
-    AbilityApiApplyService abilityApiApplyService;
+    AbilityApiApplyBizService abilityApiApplyBizService;
 
 
     @Override
@@ -86,13 +88,14 @@ public class ManageApplicationServiceImpl extends ServiceImpl<ManageApplicationM
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int deleteApp(ManageApplicationEntity manageApplicationEntity) {
         LambdaUpdateWrapper<ManageApplicationEntity> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppId, manageApplicationEntity.getAppId());
         lambdaUpdateWrapper.eq(ManageApplicationEntity::getAppUserId, manageApplicationEntity.getAppUserId());
         lambdaUpdateWrapper.set(ManageApplicationEntity::getAppUpdatetime, new Date());
         lambdaUpdateWrapper.set(ManageApplicationEntity::getAppUpdatename, manageApplicationEntity.getAppUserId());
-        abilityApiApplyService.deleteApiApplyByAppId(Long.valueOf(manageApplicationEntity.getAppId()));
+        abilityApiApplyBizService.deleteApiApplyByAppId(Long.valueOf(manageApplicationEntity.getAppId()));
         return baseMapper.delete(lambdaUpdateWrapper);
     }
 

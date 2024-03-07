@@ -38,12 +38,7 @@ public class AbilityApiApplyServiceImpl extends ServiceImpl<AbilityApiApplyMappe
         return apiIdsList;
     }
 
-    @Override
-    public int deleteApiApplyByAppId(Long appId) {
-        LambdaUpdateWrapper deleteUW = Wrappers.lambdaUpdate(AbilityApiApplyEntity.class)
-                .eq(AbilityApiApplyEntity::getAppId, appId);
-        return this.getBaseMapper().delete(deleteUW);
-    }
+
 
     @Override
     public long countUserAbility(String userId) {

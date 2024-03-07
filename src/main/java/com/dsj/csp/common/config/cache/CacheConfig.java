@@ -24,11 +24,11 @@ public class CacheConfig {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 // 设置过期时间，写入后五分钟过期
-                .expireAfterWrite(5, TimeUnit.MINUTES)
+                .expireAfterWrite(3, TimeUnit.MINUTES)
                 // 初始化缓存空间大小
-                .initialCapacity(100)
+                .initialCapacity(10000)
                 // 最大的缓存条数
-                .maximumSize(200)
+                .maximumSize(15000)
         );
         return cacheManager;
     }

@@ -25,9 +25,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,10 +53,6 @@ public class DocController {
     @Operation(summary = "新增文档")
     @PostMapping("/add")
     @LoginAuthentication
-    @Caching(evict = {
-            @CacheEvict(allEntries = true, cacheNames = "Doc", cacheManager = "caffeineCacheManager"),
-            @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager")
-    })
     public Result<?> add(@RequestBody DocEntity doc){
         // 是否该目录下已存在同名文档
         long cntSameDoc = docService.count(Wrappers.lambdaQuery(DocEntity.class)
@@ -242,10 +236,6 @@ public class DocController {
     @Operation(summary = "编辑文档")
     @PostMapping("/edit")
     @LoginAuthentication
-    @Caching(evict = {
-            @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager"),
-            @CacheEvict(key = "'docId_' + #doc.getDocId()", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
-    })
     public Result<?> edit(@RequestBody DocEntity doc){
         doc.setUpdateTime(new Date());
         boolean editFlag = docService.updateById(doc);
@@ -256,10 +246,6 @@ public class DocController {
     @Operation(summary = "删除文档")
     @PostMapping("/delete")
     @LoginAuthentication
-    @Caching(evict = {
-            @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager"),
-            @CacheEvict(key = "'docId_' + #docEntity.getDocId()", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
-    })
     public Result<?> delete(@RequestBody DocEntity docEntity){
         boolean deleteFlag = docService.removeById(docEntity);
         return Result.success(deleteFlag+"", "文档删除完成!");

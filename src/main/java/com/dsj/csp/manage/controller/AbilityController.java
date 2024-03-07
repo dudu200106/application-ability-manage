@@ -25,15 +25,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -58,7 +55,6 @@ public class AbilityController {
     @Operation(summary = "新增能力", description = "新增一个新的能力")
     @PostMapping("/add-login")
     @LoginAuthentication
-    @CacheEvict(allEntries = true, cacheNames = "Ability", cacheManager = "caffeineCacheManager")
     public Result<?> addAbility(@RequestBody AbilityEntity ability) {
         long cnt = abilityService.count(Wrappers.lambdaQuery(AbilityEntity.class)
                 .eq(AbilityEntity::getAbilityName, ability.getAbilityName()));
@@ -80,7 +76,6 @@ public class AbilityController {
 //    @AopLogger(describe = "分页查询能力目录列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询能力目录列表", description = "分页查询能力目录列表")
     @GetMapping ("/page-ability-catalog")
-    @Cacheable(keyGenerator = "selfKeyGenerate", cacheNames = "Ability", cacheManager = "caffeineCacheManager")
     public Result<?> queryAbilityCatalog(@Parameter(description = "用户ID") Long userId,
                                          @Parameter(description = "分页条数", required = true) int size,
                                          @Parameter(description = "当前页数", required = true) int current,
@@ -96,7 +91,6 @@ public class AbilityController {
     @Operation(summary = "编辑能力")
     @PostMapping("edit-login")
     @LoginAuthentication
-    @CacheEvict(allEntries = true, cacheNames = "Ability", cacheManager = "caffeineCacheManager")
     public Result<?> updateAbility(@RequestBody AbilityEntity ability){
         ability.setUpdateTime(new Date());
         Boolean editFlag = abilityService.updateById(ability);
@@ -108,10 +102,6 @@ public class AbilityController {
     @Operation(summary = "批量删除能力")
     @PostMapping("/delete-Batch")
     @LoginAuthentication
-    @Caching(evict = {
-            @CacheEvict(allEntries = true, cacheNames = "Ability", cacheManager = "caffeineCacheManager"),
-            @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
-    })
     public Result<?> removeAbility(@Parameter(description = "能力id列表") @RequestBody List<AbilityEntity> abilityList){
         boolean delFlag = abilityBizService.removeAbilityBatch(abilityList);
         return Result.success("批量删除能力及其接口完成! ", delFlag);
@@ -121,10 +111,6 @@ public class AbilityController {
     @Operation(summary = "删除能力")
     @PostMapping("/delete")
     @LoginAuthentication
-    @Caching(evict = {
-            @CacheEvict(allEntries = true, cacheNames = "Ability", cacheManager = "caffeineCacheManager"),
-            @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
-    })
     public Result<?> removeAbility(@RequestBody AbilityEntity ability){
         boolean delFlag = abilityBizService.removeAbility(ability);
         return Result.success("删除能力及其接口完成! ", delFlag);
@@ -133,7 +119,6 @@ public class AbilityController {
     //    @AopLogger(describe = "获取能力简单信息目录", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "获取能力简单信息目录")
     @GetMapping("/get-ability-catalog")
-    @Cacheable(key = "'abilityCatalog'", cacheNames = "Ability", cacheManager = "caffeineCacheManager")
     public Result<?> getAbilityCatalog(){
         List<AbilityEntity> abilityIds = abilityService.list(Wrappers.lambdaQuery(AbilityEntity.class)
                 .select(AbilityEntity::getAbilityId ,AbilityEntity::getAbilityName));
@@ -148,7 +133,6 @@ public class AbilityController {
     @PostMapping("add-api")
     @LoginAuthentication
     @Transactional
-    @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public Result<?> addApi(@RequestBody AbilityApiVO apiVO){
         UserApproveRequest userApproveRequest = IdentifyUser.getUserInfo();
         boolean flag = abilityApiBizService.saveApi(apiVO, userApproveRequest);
@@ -166,7 +150,6 @@ public class AbilityController {
     @Operation(summary = "更新接口")
     @PostMapping("edit-api")
     @LoginAuthentication
-    @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public Result<?> editApi(@RequestBody AbilityApiVO apiVO){
         Boolean editApiFlag = abilityApiBizService.updateApi(apiVO);
         return Result.success("已修改接口完毕! ", editApiFlag);
@@ -175,6 +158,7 @@ public class AbilityController {
     //    @AopLogger(describe = "分页查询api目录列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询api目录列表")
     @GetMapping("page-api-catalog")
+    @Cacheable(keyGenerator = "selfKeyGenerate", cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public Result<?> pageApiList(@Parameter(description = "是否过滤未发布的接口") boolean onlyPublished,
                                  @Parameter(description = "请求方式") String reqMethod,
                                  @Parameter(description = "状态") Integer status,

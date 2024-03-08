@@ -305,8 +305,8 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                 // 过滤未提交状态 ( 状态0: 未提交 )
                 .notIn(onlySubmitted, AbilityApiApplyEntity::getStatus, 0)
                 // 过滤用户中心的能力审核
-                .ge(Objects.nonNull(startTime), AbilityApiApplyEntity::getUpdateTime, startTime)
-                .le(Objects.nonNull(endTime), AbilityApiApplyEntity::getUpdateTime, endTime)
+                .ge(Objects.nonNull(startTime), AbilityApiApplyEntity::getSubmitTime, startTime)
+                .le(Objects.nonNull(endTime), AbilityApiApplyEntity::getSubmitTime, endTime)
                 // 排序
                 .orderByDesc(AbilityApiApplyEntity::getSubmitTime)
                 .orderByAsc(AbilityApiApplyEntity::getStatus);

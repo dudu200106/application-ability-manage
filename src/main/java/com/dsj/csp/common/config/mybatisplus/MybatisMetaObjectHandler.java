@@ -20,6 +20,7 @@ public class MybatisMetaObjectHandler implements MetaObjectHandler {
         //创建时间
         this.setFieldValByName("createTime", new Date(), metaObject);
         this.setFieldValByName("updateTime", new Date(), metaObject);
+        this.setFieldValByName("submitTime", new Date(), metaObject);
     }
 
     @Override

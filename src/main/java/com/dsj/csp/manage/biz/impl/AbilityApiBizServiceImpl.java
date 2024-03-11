@@ -10,6 +10,7 @@ import com.dsj.common.dto.BusinessException;
 import com.dsj.csp.common.enums.ApiStatusEnum;
 import com.dsj.csp.common.enums.ApplyStatusEnum;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
+import com.dsj.csp.manage.biz.GatewayAdminBizService;
 import com.dsj.csp.manage.dto.AbilityApiVO;
 import com.dsj.csp.manage.dto.AbilityAuditVO;
 import com.dsj.csp.manage.dto.convertor.AbilityApiConvertor;
@@ -34,6 +35,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     private final AbilityApiReqService abilityApiReqService;
     private final AbilityApiRespService abilityApiRespService;
     private final AbilityService abilityService;
+    private final GatewayAdminBizService gatewayAdminBizService;
 
     @Override
     @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
@@ -174,6 +176,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean deleteApi(AbilityApiEntity api) {
         long countApply = abilityApiApplyService.lambdaQuery()
                 .eq(AbilityApiApplyEntity::getApiId, api.getApiId())
@@ -182,7 +185,9 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         if (countApply>0){
             throw new BusinessException("删除接口失败:该接口还有应用在使用!");
         }
-        return abilityApiService.removeById(api);
+        // 远程调用网关接口禁用接口
+        boolean flag = gatewayAdminBizService.cancelGatewayApi(api);
+        return flag ? abilityApiService.removeById(api) : false;
     }
 
     @Override

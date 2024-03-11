@@ -9,8 +9,6 @@ import com.dsj.csp.manage.biz.GatewayAdminBizService;
 import com.dsj.csp.manage.dto.AbilityAuditVO;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
-import com.dsj.csp.manage.entity.AbilityApiEntity;
-import com.dsj.csp.manage.entity.ManageApplicationEntity;
 import com.dsj.csp.manage.service.AbilityApiApplyService;
 import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.ManageApplicationService;
@@ -46,23 +44,14 @@ public class AbilityApiApplyController {
         return Result.success("能力申请完毕！请等待审核...");
     }
 
-    @AopLogger(describe = "批量审核使用接口", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "批量审核使用接口", description = "批量审核使用接口")
-    @PostMapping("/audit-batch")
-    @LoginAuthentication
-    public Result<?> auditApplyBatch(@RequestBody List<AbilityApiApplyEntity> applyList) {
-        applyList.stream().peek( apply -> {
-            abilityApiApplyBizService.auditApply(new AbilityAuditVO(apply.getApiApplyId(), null, null, null, apply.getStatus(), apply.getNote()));
-        }).toList();
-        return Result.success("批量审核完毕！");
-    }
-
     @AopLogger(describe = "批量删除接口申请", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "批量删除接口申请")
     @PostMapping("/delete-batch")
     @LoginAuthentication
     public Result<?> removeApiApplyBatch(@RequestBody List<AbilityApiApplyEntity> applyEntities){
-        Boolean delFlag = abilityApiApplyService.removeBatchByIds(applyEntities);
+        List<Long> applyIds = applyEntities.stream().map(AbilityApiApplyEntity::getApiApplyId).toList();
+        gatewayAdminBizService.unbindBatchApply(applyIds);
+        boolean delFlag = abilityApiApplyService.removeBatchByIds(applyEntities);
         return Result.success("批量删除能力申请完成! ", delFlag);
     }
 
@@ -71,8 +60,19 @@ public class AbilityApiApplyController {
     @PostMapping("/delete")
     @LoginAuthentication
     public Result<?> removeApiApply(@RequestBody AbilityApiApplyEntity apiApplyEntity){
-        Boolean delFlag = abilityApiApplyService.removeById(apiApplyEntity.getApiApplyId());
+        // 先远程调用网关接口禁用申请
+        gatewayAdminBizService.unbindApply(abilityApiApplyService.getById(apiApplyEntity.getApiApplyId()));
+        boolean delFlag = abilityApiApplyService.removeById(apiApplyEntity.getApiApplyId());
         return Result.success("删除接口申请完成! ", delFlag);
+    }
+
+    @AopLogger(describe = "批量审核使用接口", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
+    @Operation(summary = "批量审核使用接口", description = "批量审核使用接口")
+    @PostMapping("/audit-batch")
+    @LoginAuthentication
+    public Result<?> auditApplyBatch(@RequestBody List<AbilityApiApplyEntity> applyList, @RequestParam Integer auditStatus, @RequestParam String note) {
+        abilityApiApplyBizService.auditApplyBatch(applyList, auditStatus, note);
+        return Result.success("批量审核完毕！");
     }
 
     @AopLogger(describe = "提交接口申请", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
@@ -80,8 +80,8 @@ public class AbilityApiApplyController {
     @PostMapping("/audit-submit")
     @LoginAuthentication
     public Result<?> auditSubmit(@RequestBody AbilityApiApplyEntity apiApply){
-        abilityApiApplyBizService.auditSubmit(apiApply.getApiApplyId(), apiApply.getNote());
-        return Result.success("接口申请提交完成!");
+        boolean flag = abilityApiApplyBizService.auditSubmit(apiApply.getApiApplyId(), apiApply.getNote());
+        return Result.success("接口申请提交完成!", flag);
     }
 
     @AopLogger(describe = "撤回接口申请", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
@@ -89,8 +89,8 @@ public class AbilityApiApplyController {
     @PostMapping("/audit-withdraw")
     @LoginAuthentication
     public Result<?> auditWithdraw(@RequestBody AbilityApiApplyEntity apiApply){
-        abilityApiApplyBizService.auditWithdraw(apiApply.getApiApplyId(), apiApply.getNote());
-        return Result.success("撤回接口申请完成!");
+        boolean flag = abilityApiApplyBizService.auditWithdraw(apiApply.getApiApplyId(), apiApply.getNote());
+        return Result.success("撤回接口申请完成!", flag);
     }
 
     @AopLogger(describe = "接口申请审核通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
@@ -100,18 +100,7 @@ public class AbilityApiApplyController {
     @Transactional(rollbackFor = Exception.class)
     public Result<?> auditPass(@RequestBody AbilityApiApplyEntity apiApply){
         boolean flag = abilityApiApplyBizService.auditPass(apiApply.getApiApplyId(), apiApply.getNote());
-        // 远程调用网关接口新增申请
-        if (flag){
-            AbilityApiApplyEntity apply = abilityApiApplyService.getById(apiApply.getApiApplyId());
-            ManageApplicationEntity app = manageApplicationService.getById(apply.getAppId());
-            AbilityApiEntity api = abilityApiService.getById(apply.getApiId());
-//            gatewayAdminBizService.addGatewayApp(app);
-//            gatewayAdminBizService.addGatewayApi(api);
-//            gatewayAdminBizService.addGatewayApply(apply);
-            // 新增申请, 包括根据是否已存在传入应用和api而新增/修改
-            gatewayAdminBizService.saveApplyComplete(app, api, apply);
-        }
-        return Result.success("接口申请审核通过!");
+        return Result.success("接口申请审核通过!", flag);
     }
 
     @AopLogger(describe = "接口申请审核不通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)

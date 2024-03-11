@@ -47,23 +47,16 @@ public class GatewayAdminBizImplService implements GatewayAdminBizService {
         appMap.put("appPrivateKey", appEntity.getAppSecret());
         appMap.put("gatewayPublicKey", appEntity.getAppWgKey());
         appMap.put("gatewayPrivateKey", appEntity.getAppWgSecret());
-        appMap.put("sourceCode", "common-support");
-        appMap.put("sourceName", "共性应用支撑");
+
         // 加密，调用网关接口
         CryptJsonBody cryptJsonBody = CryptJsonBody.encryptObj(appMap, GatewayCryptKeyConst.SERVER_PUBLIC);
         Result<CryptJsonBody> result = appFeignService.addApp(cryptJsonBody);
 
+        // 检查、处理、打印响应结果
         log.info("请求网关新增app 返回响应: ");
-        log.info("code:    {}", result.getCode());
-        log.info("success: {}", result.getSuccess());
-        log.info("msg:     {}", result.getMsg());
-        if (result.getCode()!=2000){
-            throw new BusinessException(result.getMsg());
-        }
+        CryptJsonBody data  = checkResultCode(result);
         // 响应解密
-        CryptJsonBody data  = result.getData();
         AppHandleVO appHandleVO = CryptJsonBody.decryptToObj(data, GatewayCryptKeyConst.CLIENT_PRIVATE, AppHandleVO.class);
-        // 打印远程调用网关的返回日志.
         log.info("data:    {}", JSONUtil.toJsonStr(appHandleVO));
         return true;
     }
@@ -74,18 +67,14 @@ public class GatewayAdminBizImplService implements GatewayAdminBizService {
         // 要传递的JSON数据
         HashMap<String, String> map = new HashMap<>();
         map.put("appExtId", appEntity.getAppId());
+
         // 加密，调用网关接口
         CryptJsonBody cryptJsonBody = CryptJsonBody.encryptObj(map, GatewayCryptKeyConst.SERVER_PUBLIC);
         Result<CryptJsonBody> result = appFeignService.cancelApp(cryptJsonBody);
+        // 检查、处理、打印响应结果
         log.info("请求网关禁用app 返回响应: ");
-        log.info("code:    {}", result.getCode());
-        log.info("success: {}", result.getSuccess());
-        log.info("msg:     {}", result.getMsg());
-        if (result.getCode()!=2000){
-            throw new BusinessException(result.getMsg());
-        }
-        // 响应解密，打印响应data
-        CryptJsonBody data  = result.getData();
+        CryptJsonBody data = checkResultCode(result);
+        // 响应解密
         AppHandleVO appHandleVO = CryptJsonBody.decryptToObj(data, GatewayCryptKeyConst.CLIENT_PRIVATE, AppHandleVO.class);
         log.info("data:    {}", JSONUtil.toJsonStr(appHandleVO));
         return true;
@@ -99,21 +88,13 @@ public class GatewayAdminBizImplService implements GatewayAdminBizService {
         map.put("apiExtId", apiEntity.getApiId()+"");
         map.put("apiName", apiEntity.getApiName());
         map.put("apiPath", apiEntity.getApiUrl());
-        map.put("sourceCode", "common-support");
-        map.put("sourceName", "共性应用支撑");
         // 加密，调用网关接口
         CryptJsonBody cryptJsonBody = CryptJsonBody.encryptObj(map, GatewayCryptKeyConst.SERVER_PUBLIC);
         Result<CryptJsonBody> result = apiFeignService.addApi(cryptJsonBody);
-
+        // 检查、处理、打印响应结果
         log.info("网关新增api接口返回响应: ");
-        log.info("code:    {}", result.getCode());
-        log.info("success: {}", result.getSuccess());
-        log.info("msg:     {}", result.getMsg());
-        if (result.getCode()!=2000){
-            throw new BusinessException(result.getMsg());
-        }
+        CryptJsonBody data  = checkResultCode(result);
         // 响应解密
-        CryptJsonBody data  = result.getData();
         ApiHandleVO apiHandleVO = CryptJsonBody.decryptToObj(data, GatewayCryptKeyConst.CLIENT_PRIVATE, ApiHandleVO.class);
         log.info("data:    {}", JSONUtil.toJsonStr(apiHandleVO));
         return true;
@@ -128,15 +109,10 @@ public class GatewayAdminBizImplService implements GatewayAdminBizService {
         // 加密，调用网关接口
         CryptJsonBody cryptJsonBody = CryptJsonBody.encryptObj(map, GatewayCryptKeyConst.SERVER_PUBLIC);
         Result<CryptJsonBody> result = apiFeignService.cancelApi(cryptJsonBody);
-        log.info("请求网关禁用api返回响应: ");
-        log.info("code:    {}", result.getCode());
-        log.info("success: {}", result.getSuccess());
-        log.info("msg:     {}", result.getMsg());
-        if (result.getCode()!=2000){
-            throw new BusinessException(result.getMsg());
-        }
-        // 响应解密，打印响应data
-        CryptJsonBody data  = result.getData();
+        // 检查、处理、打印响应结果
+        log.info("请求网关禁用api 返回响应: ");
+        CryptJsonBody data  = checkResultCode(result);
+        // 响应解密
         ApiHandleVO apiHandleVO = CryptJsonBody.decryptToObj(data, GatewayCryptKeyConst.CLIENT_PRIVATE, ApiHandleVO.class);
         log.info("data:    {}", JSONUtil.toJsonStr(apiHandleVO));
         return true;
@@ -149,20 +125,14 @@ public class GatewayAdminBizImplService implements GatewayAdminBizService {
         applyMap.put("applyExtId", applyEntity.getApiApplyId()+"");
         applyMap.put("appExtId", applyEntity.getAppId()+"");
         applyMap.put("apiExtId", applyEntity.getApiId()+"");
-        applyMap.put("sourceCode", "common-support");
-        applyMap.put("sourceName", "共性应用支撑");
+
         // 加密，调用网关接口
         CryptJsonBody cryptJsonBody = CryptJsonBody.encryptObj(applyMap, GatewayCryptKeyConst.SERVER_PUBLIC);
         Result<CryptJsonBody> result = applyFeignService.bindApply(cryptJsonBody);
-        log.info("网关新增申请接口返回响应: ");
-        log.info("code:    {}", result.getCode());
-        log.info("success: {}", result.getSuccess());
-        log.info("msg:     {}", result.getMsg());
-        if (result.getCode()!=2000){
-            throw new BusinessException(result.getMsg());
-        }
-        // 响应解密，打印响应data
-        CryptJsonBody data  = result.getData();
+        // 检查、处理、打印响应结果
+        log.info("网关新增申请接口 返回响应: ");
+        CryptJsonBody data  = checkResultCode(result);
+        // 响应解密
         ApplyHandleVO applyHandleVO = CryptJsonBody.decryptToObj(data, GatewayCryptKeyConst.CLIENT_PRIVATE, ApplyHandleVO.class);
         log.info("data:    {}", JSONUtil.toJsonStr(applyHandleVO));
         return true;
@@ -170,6 +140,8 @@ public class GatewayAdminBizImplService implements GatewayAdminBizService {
 
     @Override
     public boolean saveApplyComplete(ManageApplicationEntity app, AbilityApiEntity api, AbilityApiApplyEntity apply) {
+        log.info("------------ 远程调用网关接口: /allow/apply/add  新增申请 ------------");
+
         HashMap<String, String> appMap = new HashMap<>();
         HashMap<String, String> apiMap = new HashMap<>();
         HashMap<String, String> applyMap = new HashMap<>();
@@ -180,36 +152,31 @@ public class GatewayAdminBizImplService implements GatewayAdminBizService {
         appMap.put("appPrivateKey", app.getAppSecret());
         appMap.put("gatewayPublicKey", app.getAppWgKey());
         appMap.put("gatewayPrivateKey", app.getAppWgSecret());
-        appMap.put("sourceCode", "common-support");
-        appMap.put("sourceName", "共性应用支撑");
+
         apiMap.put("apiExtId", api.getApiId()+"");
         apiMap.put("apiName", api.getApiName());
         apiMap.put("apiPath", api.getApiUrl());
-        apiMap.put("sourceCode", "common-support");
-        apiMap.put("sourceName", "共性应用支撑");
+
         applyMap.put("applyExtId", apply.getApiApplyId()+"");
         applyMap.put("appExtId", apply.getAppId()+"");
         applyMap.put("apiExtId", apply.getApiId()+"");
-        applyMap.put("sourceCode", "common-support");
-        applyMap.put("sourceName", "共性应用支撑");
+//        applyMap.put("sourceCode", "common-support");
+//        applyMap.put("sourceName", "共性应用支撑");
+        applyMap.put("requestCryptRule", apply.getReqCryptRule());
+        applyMap.put("responseCryptRule", apply.getRespCryptRule());
 
         HashMap<String, HashMap<String, String>> reqMap = new HashMap<>();
         reqMap.put("app", appMap);
         reqMap.put("api", apiMap);
         reqMap.put("apply", applyMap);
-        log.info("------------ 远程调用网关接口: /allow/apply/add  新增申请 ------------");
+
         // 加密，调用网关接口
         CryptJsonBody cryptJsonBody = CryptJsonBody.encryptObj(reqMap, GatewayCryptKeyConst.SERVER_PUBLIC);
         Result<CryptJsonBody> result = applyFeignService.addApply(cryptJsonBody);
-        log.info("网关新增申请接口返回响应: ");
-        log.info("code:    {}", result.getCode());
-        log.info("success: {}", result.getSuccess());
-        log.info("msg:     {}", result.getMsg());
-        if (result.getCode()!=2000){
-            throw new BusinessException(result.getMsg());
-        }
-        // 响应解密，打印响应data
-        CryptJsonBody data  = result.getData();
+        // 检查、处理、打印响应结果
+        log.info("网关新增申请接口 返回响应: ");
+        CryptJsonBody data  = checkResultCode(result);
+        // 响应解密
         ApplyHandleVO applyHandleVO = CryptJsonBody.decryptToObj(data, GatewayCryptKeyConst.CLIENT_PRIVATE, ApplyHandleVO.class);
         log.info("data:    {}", JSONUtil.toJsonStr(applyHandleVO));
         return true;
@@ -217,33 +184,47 @@ public class GatewayAdminBizImplService implements GatewayAdminBizService {
 
     @Override
     public boolean unbindApply(AbilityApiApplyEntity applyEntity) {
+        log.info("------------远程调用网关接口: /allow/apply/unbind  解绑申请 ------------");
+
         // 要传递的JSON数据
         HashMap<String, String> map = new HashMap<>();
         map.put("applyExtId", applyEntity.getApiApplyId()+"");
         // 加密，调用网关接口
         CryptJsonBody cryptJsonBody = CryptJsonBody.encryptObj(map, GatewayCryptKeyConst.SERVER_PUBLIC);
         Result<CryptJsonBody> result = applyFeignService.unbindApply(cryptJsonBody);
+
+        // 检查、处理、打印响应结果
         log.info("请求网关禁用申请 返回响应: ");
+        CryptJsonBody data  = checkResultCode(result);
+        // 响应解密
+        ApplyHandleVO applyHandleVO = CryptJsonBody.decryptToObj(data, GatewayCryptKeyConst.CLIENT_PRIVATE, ApplyHandleVO.class);
+        log.info("data:    {}", JSONUtil.toJsonStr(applyHandleVO));
+        return true;
+    }
+
+
+    /**
+     * 检查网关的响应码, 返回返回data
+     * @param result
+     * @return
+     */
+    public CryptJsonBody checkResultCode(Result<CryptJsonBody> result){
         log.info("code:    {}", result.getCode());
         log.info("success: {}", result.getSuccess());
         log.info("msg:     {}", result.getMsg());
         if (result.getCode()!=2000){
             throw new BusinessException(result.getMsg());
         }
-        // 响应解密，打印响应data
-        CryptJsonBody data  = result.getData();
-        ApplyHandleVO applyHandleVO = CryptJsonBody.decryptToObj(data, GatewayCryptKeyConst.CLIENT_PRIVATE, ApplyHandleVO.class);
-        log.info("data:    {}", JSONUtil.toJsonStr(applyHandleVO));
-        return true;
+        return result.getData();
     }
 
     @Override
     public boolean unbindBatchApply(List<Long> applyIdList) {
+        log.info("------------远程调用网关接口: /allow/apply/unbind-batch  批量解绑申请 ------------");
         // 要传递的JSON数据
         HashMap<String, List<Long>> map = new HashMap<>();
         map.put("applyExtIdList", applyIdList);
         CryptJsonBody cryptJsonBody = CryptJsonBody.encryptObj(map, GatewayCryptKeyConst.SERVER_PUBLIC);
-        log.info("------------远程调用网关接口: /allow/apply/unbind-batch  批量解绑申请 ------------");
         Result<Boolean> result = applyFeignService.unbindBatchApply(cryptJsonBody);
         log.info("请求网关解绑申请 返回响应: ");
         log.info("code:    {}", result.getCode());
@@ -252,7 +233,7 @@ public class GatewayAdminBizImplService implements GatewayAdminBizService {
         if (result.getCode()!=2000){
             throw new BusinessException(result.getMsg());
         }
-        // 响应解密，打印响应data
+        // 打印响应data
         log.info("data:    {}", JSONUtil.toJsonStr(result.getData()));
         return true;
     }

@@ -2,7 +2,6 @@ package com.dsj.csp.manage.biz;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dsj.csp.manage.dto.AbilityApiApplyDTO;
-import com.dsj.csp.manage.dto.AbilityAuditVO;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
 
@@ -43,11 +42,13 @@ public interface AbilityApiApplyBizService {
     Page<AbilityApiApplyDTO> pageApiApply(Boolean onlySubmitted, Long appId, Long userId, Long abilityId, String keyword, Integer status, Date startTime, Date endTime, int current, int size);
 
     /**
-     * 审核接口申请
-     * @param auditVO
+     * 批量审核接口
+     * @param applyEntities 要审核的申请列表
+     * @param auditStatus 审核状态
+     * @param note
      * @return
      */
-    boolean auditApply(AbilityAuditVO auditVO);
+    boolean auditApplyBatch(List<AbilityApiApplyEntity> applyEntities, Integer auditStatus, String note);
 
     /**
      * 撤回申请

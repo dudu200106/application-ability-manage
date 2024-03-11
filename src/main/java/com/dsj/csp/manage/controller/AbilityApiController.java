@@ -57,7 +57,7 @@ public class AbilityApiController {
     @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public Result<?> removeApi(@RequestBody AbilityApiEntity abilityApi){
         boolean delFlag = abilityApiBizService.deleteApi(abilityApi);
-        return Result.success(delFlag+"", "删除接口完成!");
+        return Result.success("删除接口完成!", delFlag);
     }
 
 //    @AopLogger(describe = "批量审核接口注册", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)

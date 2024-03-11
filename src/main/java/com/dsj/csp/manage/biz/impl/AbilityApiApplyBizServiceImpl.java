@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
@@ -103,17 +104,20 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     }
 
     @Override
-    public boolean auditApply(AbilityAuditVO auditVO) {
+    public boolean auditApplyBatch(List<AbilityApiApplyEntity> applyEntities, Integer auditStatus, String note) {
+        AtomicBoolean auditFlag = new AtomicBoolean(false);
         // 审核
-        Long applyId = auditVO.getApiApplyId();
-        String note = auditVO.getNote();
-        return switch (auditVO.getFlag()) {
-            case 0 -> auditWithdraw(applyId, note);
-            case 1 -> auditSubmit(applyId, note);
-            case 2 -> auditPass(applyId, note);
-            case 3 -> auditNotPass(applyId, note);
-            default -> auditStop(applyId, note);
-        };
+        applyEntities.forEach(apply->{
+            Long applyId = apply.getApiApplyId();
+            auditFlag.set(switch (auditStatus) {
+                case 0 -> auditWithdraw(applyId, note);
+                case 1 -> auditSubmit(applyId, note);
+                case 2 -> auditPass(applyId, note);
+                case 3 -> auditNotPass(applyId, note);
+                default -> auditStop(applyId, note);
+            });
+        });
+        return auditFlag.get();
     }
 
     @Override
@@ -144,6 +148,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean auditPass(Long applyId, String note) {
         // 判断审核为申请审核通过还是启用操作
         AbilityApiApplyEntity validApply = checkApplyValid(applyId, ApplyStatusEnum.WAIT_AUDIT);
@@ -153,12 +158,25 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                 throw new BusinessException("只有'待审核'或者'停用'的申请才能审核通过!请刷新页面后重试");
             }
         }
-        return abilityApiApplyService.lambdaUpdate()
+        boolean flag = abilityApiApplyService.lambdaUpdate()
                 .eq(AbilityApiApplyEntity::getApiApplyId, applyId)
                 .set(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.PASSED.getCode())
                 .set(AbilityApiApplyEntity::getNote, note)
                 .set(AbilityApiApplyEntity::getApproveTime, new Date())
                 .update();
+        // 远程调用网关接口新增申请
+        if (!flag) {
+            return false;
+        }
+        AbilityApiApplyEntity apply = abilityApiApplyService.getById(applyId);
+        ManageApplicationEntity app = manageApplicationMapper.selectById(apply.getAppId());
+        AbilityApiEntity api = abilityApiService.getById(apply.getApiId());
+//        gatewayAdminBizService.addGatewayApp(app);
+//        gatewayAdminBizService.addGatewayApi(api);
+//        gatewayAdminBizService.addGatewayApply(apply);
+        // 新增申请, 包括根据是否已存在传入应用和api而新增/修改
+        return gatewayAdminBizService.saveApplyComplete(app, api, apply);
+
     }
 
     @Override
@@ -284,6 +302,7 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
         boolean flag = abilityApiApplyService.lambdaUpdate()
                 .eq(AbilityApiApplyEntity::getAppId, appId)
                 .remove();
+        // 同步网关数据, 禁用网关内的app并解绑申请
         if (flag){
             ManageApplicationEntity app = new ManageApplicationEntity();
             app.setAppId(appId + "");

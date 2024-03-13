@@ -1,17 +1,13 @@
 package com.dsj.csp.manage.controller;
 
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dsj.common.dto.BusinessException;
 import com.dsj.common.dto.Result;
 import com.dsj.csp.common.aop.annotation.AopLogger;
 import com.dsj.csp.common.aop.annotation.LoginAuthentication;
-import com.dsj.csp.common.consts.GatewayCryptKeyConst;
 import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.*;
 import com.dsj.csp.manage.dto.AbilityApiVO;
-import com.dsj.csp.manage.dto.gateway.ApiHandleVO;
-import com.dsj.csp.manage.dto.gateway.CryptJsonBody;
 import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.AbilityApiApplyEntity;
 import com.dsj.csp.manage.entity.AbilityEntity;
@@ -159,7 +155,6 @@ public class AbilityController {
     //    @AopLogger(describe = "分页查询api目录列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "分页查询api目录列表")
     @GetMapping("page-api-catalog")
-    @Cacheable(keyGenerator = "selfKeyGenerate", cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public Result<?> pageApiList(@Parameter(description = "是否过滤未发布的接口") boolean onlyPublished,
                                  @Parameter(description = "请求方式") String reqMethod,
                                  @Parameter(description = "状态") Integer status,

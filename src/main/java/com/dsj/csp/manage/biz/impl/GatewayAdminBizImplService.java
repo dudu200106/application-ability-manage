@@ -213,7 +213,7 @@ public class GatewayAdminBizImplService implements GatewayAdminBizService {
         log.info("success: {}", result.getSuccess());
         log.info("msg:     {}", result.getMsg());
         if (result.getCode()!=2000){
-            throw new BusinessException(result.getMsg());
+            throw new BusinessException("远程调用网关错误：" + result.getMsg());
         }
         return result.getData();
     }

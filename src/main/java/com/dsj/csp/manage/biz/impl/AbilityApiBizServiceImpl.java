@@ -18,8 +18,6 @@ import com.dsj.csp.manage.dto.request.UserApproveRequest;
 import com.dsj.csp.manage.entity.*;
 import com.dsj.csp.manage.service.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +36,6 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     private final GatewayAdminBizService gatewayAdminBizService;
 
     @Override
-    @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     @Transactional(rollbackFor = Exception.class)
     public boolean saveApi(AbilityApiVO apiVO, UserApproveRequest userApproveRequest) {
         long cnt = abilityApiService.count(Wrappers.lambdaQuery(AbilityApiEntity.class)
@@ -59,7 +56,6 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     @Override
-    @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public boolean auditApi(AbilityAuditVO auditVO) {
         Long apiId = auditVO.getApiId();
         String note = auditVO.getNote();
@@ -89,7 +85,6 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     @Override
-    @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public boolean auditSubmit(Long apiId, String note) {
         boolean isValid = isApiValid(apiId, ApiStatusEnum.NOT_SUBMIT) ;
         if (!isValid) {
@@ -104,7 +99,6 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     @Override
-    @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public boolean auditNotPass(Long apiId, String note) {
         boolean isValid = isApiValid(apiId, ApiStatusEnum.WAIT_AUDIT) ;
         if (!isValid) {
@@ -121,7 +115,6 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     @Override
-    @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public boolean auditPass(Long apiId, String note) {
         boolean isValid = isApiValid(apiId, ApiStatusEnum.WAIT_AUDIT);
         if (!isValid) {
@@ -137,7 +130,6 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     @Override
-    @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public boolean auditPublish(Long apiId, String note) {
         boolean isValid = isApiValid(apiId, ApiStatusEnum.PASSED) || isApiValid(apiId, ApiStatusEnum.OFFLINE) ;
         if (!isValid) {
@@ -153,7 +145,6 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     @Override
-    @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
     public boolean auditOffline(Long apiId, String note) {
         boolean isValid = isApiValid(apiId, ApiStatusEnum.PUBLISHED) ;
         if (!isValid) {
@@ -175,20 +166,17 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         return abilityApiService.update(updateWrapper);
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public boolean deleteApi(AbilityApiEntity api) {
-        long countApply = abilityApiApplyService.lambdaQuery()
-                .eq(AbilityApiApplyEntity::getApiId, api.getApiId())
-                .eq(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.PASSED.getCode())
-                .count();
-        if (countApply>0){
-            throw new BusinessException("删除接口失败:该接口还有应用在使用!");
-        }
-        // 远程调用网关接口禁用接口
-        boolean flag = gatewayAdminBizService.cancelGatewayApi(api);
-        return flag ? abilityApiService.removeById(api) : false;
-    }
+//    @Override
+//    public boolean deleteApi(AbilityApiEntity api) {
+//        long countApply = abilityApiApplyService.lambdaQuery()
+//                .eq(AbilityApiApplyEntity::getApiId, api.getApiId())
+//                .eq(AbilityApiApplyEntity::getStatus, ApplyStatusEnum.PASSED.getCode())
+//                .count();
+//        if (countApply>0){
+//            throw new BusinessException("删除接口失败:该接口还有应用在使用!");
+//        }
+//        return abilityApiService.removeById(api);
+//    }
 
     @Override
     public boolean deleteApiBatch(List<AbilityApiEntity> apiList) {
@@ -272,22 +260,7 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         if (apiIds.isEmpty()){
             return null;
         }
-        // 构造查询条件
-        LambdaQueryWrapper queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)
-                .in(AbilityApiEntity::getApiId, apiIds)
-                // 排序
-                .orderByDesc(AbilityApiEntity::getUpdateTime)
-                .orderByAsc(AbilityApiEntity::getStatus);
-        // 主表查询
-        List<AbilityApiEntity> apiList = abilityApiService.list(queryWrapper);
-        // 构造返回结果
-        Set<Long> abilityIds = apiList.stream().map(AbilityApiEntity::getAbilityId).collect(Collectors.toSet());
-        Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
-        return apiList.stream().map(api->{
-            AbilityApiVO apiVO = AbilityApiConvertor.INSTANCE.toVO(api);
-            apiVO.setAbilityName(abilityMap.getOrDefault(api.getAbilityId(), new AbilityEntity()).getAbilityName());
-            return apiVO;
-        }).toList();
+        return getApiVOList(apiIds);
     }
 
     @Override
@@ -297,6 +270,10 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         if (apiIds.isEmpty()){
             return null;
         }
+        return getApiVOList(apiIds);
+    }
+
+    public List<AbilityApiVO> getApiVOList(Collection<Long> apiIds){
         // 构造查询条件
         LambdaQueryWrapper queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)
                 .in(AbilityApiEntity::getApiId, apiIds)
@@ -307,12 +284,13 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         List<AbilityApiEntity> apiList = abilityApiService.list(queryWrapper);
         // 构造返回结果
         Set<Long> abilityIds = apiList.stream().map(AbilityApiEntity::getAbilityId).collect(Collectors.toSet());
-        Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
+        Map<Long, AbilityEntity> abilityMap = abilityService.getAbilitysMap(abilityIds);
         return apiList.stream().map(api->{
             AbilityApiVO apiVO = AbilityApiConvertor.INSTANCE.toVO(api);
             apiVO.setAbilityName(abilityMap.getOrDefault(api.getAbilityId(), new AbilityEntity()).getAbilityName());
             return apiVO;
         }).toList();
+
     }
 
     @Override
@@ -323,14 +301,89 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
             return new Page(current,size,0);
         }
         // 构造分页条件
+        LambdaQueryWrapper<AbilityApiEntity> queryWrapper = getQueryWrapper(true, null, null, null, null, keyword, startTime, endTime);
+        queryWrapper.in(AbilityApiEntity::getApiId, apiIds);
+        // 主表分页查询
+        Page<AbilityApiEntity> prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
+        if (prePage.getTotal()==0){
+            return new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
+        }
+        // 单表查询获取必要的信息, 返回最终分页结果集
+        List<AbilityApiEntity> preRecords = prePage.getRecords();
+        List<AbilityApiVO> resRecords = getApiVO(preRecords);
+        // 构造返回分页
+        Page<AbilityApiVO> resPage = new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
+        resPage.setRecords(resRecords);
+        return resPage;
+    }
+
+    @Override
+    public Page<AbilityApiVO> pageApiCatalog(Boolean onlyPublished, String reqMethod, Integer status, Long userId, Long abilityId,
+                                             String keyword, int current, int size, Date startTime, Date endTime) {
+        // 构造分页条件构造器
+        LambdaQueryWrapper<AbilityApiEntity> queryWrapper
+                = getQueryWrapper(onlyPublished, reqMethod, status, userId, abilityId, keyword, startTime, endTime);
+        Page<AbilityApiEntity> prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
+        if (prePage.getTotal()==0){
+            return new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
+        }
+        // 单表查询 获取必要的返回信息
+        List<AbilityApiEntity> preRecords = prePage.getRecords();
+        List<AbilityApiVO> resRecords = getApiVO(preRecords);
+        // 构造返回分页
+        Page<AbilityApiVO> resPage = new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
+        resPage.setRecords(resRecords);
+        return resPage;
+    }
+
+    /**
+     * 单表查询获取必要的信息, 返回最终分页结果集
+     * @param apiEntities
+     * @return
+     */
+    public List<AbilityApiVO> getApiVO(List<AbilityApiEntity> apiEntities){
+        Set<Long> abilityIds = apiEntities.stream().map(AbilityApiEntity::getAbilityId).collect(Collectors.toSet());
+        List<Long> apiIds = apiEntities.stream().map(AbilityApiEntity::getApiId).toList();
+        // 能力分类
+        Map<Long, AbilityEntity> abilityMap = abilityService.getAbilitysMap(abilityIds);
+        // 文档 查出申请的接口对应的文档id
+        Map<Long, Long> docMap = SimpleQuery.map(
+                Wrappers.lambdaQuery(DocEntity.class)
+                        .in(DocEntity::getApiId, apiIds)
+                        .eq(DocEntity::getStatus, 3),
+                DocEntity::getApiId, DocEntity::getDocId);
+        return apiEntities.stream().map(api -> {
+            AbilityApiVO apiVO = AbilityApiConvertor.INSTANCE.toVO(api);
+            apiVO.setAbilityName(abilityMap.getOrDefault(api.getAbilityId(), new AbilityEntity()).getAbilityName());
+            apiVO.setDocId(docMap.get(api.getApiId()));
+            return apiVO;
+        }).toList();
+    }
+
+    /**
+     * 构造分页条件构造器
+     * @param onlyPublished
+     * @param reqMethod
+     * @param status
+     * @param userId
+     * @param abilityId
+     * @param keyword
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    public LambdaQueryWrapper<AbilityApiEntity> getQueryWrapper(Boolean onlyPublished, String reqMethod, Integer status, Long userId, Long abilityId,
+                                                                String keyword, Date startTime, Date endTime){
         LambdaQueryWrapper<AbilityApiEntity> queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)
+                .eq(userId!=null, AbilityApiEntity::getUserId, userId)
+                .eq(abilityId!=null, AbilityApiEntity::getAbilityId, abilityId)
+                .eq(reqMethod!=null, AbilityApiEntity::getReqMethod, reqMethod)
+                .eq(status!=null, AbilityApiEntity::getStatus, status)
                 .ge(Objects.nonNull(startTime), AbilityApiEntity::getCreateTime, startTime)
                 .le(Objects.nonNull(endTime), AbilityApiEntity::getCreateTime, endTime)
-                .in( AbilityApiEntity::getApiId, apiIds)
-                .eq(AbilityApiEntity::getStatus, 4)
+                .in(onlyPublished && status==null, AbilityApiEntity::getStatus, 4)
                 // 排序
-                .orderByDesc(AbilityApiEntity::getCreateTime)
-                .orderByAsc(AbilityApiEntity::getStatus);
+                .orderByDesc(AbilityApiEntity::getCreateTime);
         // 关键字不为空
         if (!ObjectUtil.isEmpty(keyword)){
             // 获取符合关键字模糊查询的能力ID集合
@@ -339,79 +392,9 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
                     .or().like(AbilityApiEntity::getApiName, keyword)
                     .or().like(AbilityApiEntity::getApiDesc, keyword)
                     .or().like(AbilityApiEntity::getApiUrl, keyword)
-                    .or().in(abilityIds.size()>0, AbilityApiEntity::getAbilityId, abilityIds)
-            );
+                    .or().in(!abilityIds.isEmpty(), AbilityApiEntity::getAbilityId, abilityIds));
         }
-        // 主表分页查询
-        Page<AbilityApiEntity> prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
-        List<AbilityApiEntity> preRecords = prePage.getRecords();
-        if (preRecords.isEmpty()){
-            return new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
-        }
-        // 构造返回分页
-        Set<Long> abilityIds = preRecords.stream().map(AbilityApiEntity::getAbilityId).collect(Collectors.toSet());
-        Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
-        Page<AbilityApiVO> resPage = new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
-        List<AbilityApiVO> resRecords = preRecords.stream().map(api -> {
-            AbilityApiVO apiVO = AbilityApiConvertor.INSTANCE.toVO(api);
-            apiVO.setAbilityName(abilityMap.getOrDefault(api.getAbilityId(), new AbilityEntity()).getAbilityName());
-            return apiVO;
-        }).toList();
-        resPage.setRecords(resRecords);
-        return resPage;
-    }
-
-    @Override
-    public Page<AbilityApiVO> pageApiCatalog(Boolean onlyPublished, String reqMethod, Integer status, Long userId, Long abilityId, String keyword, int current, int size, Date startTime, Date endTime) {
-        // 构造分页条件构造器
-        LambdaQueryWrapper<AbilityApiEntity> queryWrapper = Wrappers.lambdaQuery(AbilityApiEntity.class)
-                .eq(userId!=null, AbilityApiEntity::getUserId, userId)
-                .eq(abilityId!=null, AbilityApiEntity::getAbilityId, abilityId)
-                .eq(reqMethod!=null, AbilityApiEntity::getReqMethod, reqMethod)
-                .eq(status!=null, AbilityApiEntity::getStatus, status)
-                .ge(Objects.nonNull(startTime), AbilityApiEntity::getCreateTime, startTime)
-                .le(Objects.nonNull(endTime), AbilityApiEntity::getCreateTime, endTime)
-                .in(onlyPublished, AbilityApiEntity::getStatus, 4)
-                // 排序
-                .orderByDesc(AbilityApiEntity::getCreateTime);
-        // 关键字不为空
-        if (!ObjectUtil.isEmpty(keyword)){
-            // 获取符合关键字模糊查询的能力ID集合
-            List<Long> abiltiyIds = abilityService.getAbilityIds(keyword.trim());
-            queryWrapper.and(i -> i.like(AbilityApiEntity::getApiId, keyword)
-                    .or().like(AbilityApiEntity::getApiName, keyword)
-                    .or().like(AbilityApiEntity::getApiDesc, keyword)
-                    .or().like(AbilityApiEntity::getApiUrl, keyword)
-                    .or().in(!abiltiyIds.isEmpty(), AbilityApiEntity::getAbilityId, abiltiyIds));
-        }
-        Page<AbilityApiEntity> prePage = abilityApiService.page(new Page<>(current, size), queryWrapper);
-        List<AbilityApiEntity> preRecords = prePage.getRecords();
-        if (preRecords.isEmpty()){
-            return new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
-        }
-
-        Set<Long> abilityIds = preRecords.stream().map(AbilityApiEntity::getAbilityId).collect(Collectors.toSet());
-        List<Long> apiIds = preRecords.stream().map(AbilityApiEntity::getApiId).toList();
-        // 能力分类
-        Map<Long, AbilityEntity> abilityMap = abilityService.getAbilityMap(abilityIds);
-        // 文档 查出申请的接口对应的文档id
-        Map<Long, Long> docMap = SimpleQuery.map(
-                Wrappers.lambdaQuery(DocEntity.class)
-                        .in(DocEntity::getApiId, apiIds)
-                        .eq(DocEntity::getStatus, 3),
-                DocEntity::getApiId, DocEntity::getDocId
-        );
-        // 构造返回分页
-        Page<AbilityApiVO> resPage = new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
-        List<AbilityApiVO> resRecords = preRecords.stream().map(api -> {
-            AbilityApiVO apiVO = AbilityApiConvertor.INSTANCE.toVO(api);
-            apiVO.setAbilityName(abilityMap.getOrDefault(api.getAbilityId(), new AbilityEntity())
-                    .getAbilityName());
-            apiVO.setDocId(docMap.get(api.getApiId()));
-            return apiVO;
-        }).toList();
-        resPage.setRecords(resRecords);
-        return resPage;
+        return queryWrapper;
     }
 
     @Override

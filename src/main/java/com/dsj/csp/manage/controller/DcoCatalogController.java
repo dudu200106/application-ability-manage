@@ -17,9 +17,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,7 +41,6 @@ public class DcoCatalogController {
     @AopLogger(describe = "新增文档目录", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增文档目录")
     @PostMapping("/add")
-    @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager")
     public Result<?> add(@RequestBody DocCatalogEntity catalogEntity){
         long cntCatalog = docCatalogService.count(Wrappers.lambdaQuery(DocCatalogEntity.class)
                 .eq(DocCatalogEntity::getCatalogName, catalogEntity.getCatalogName()));
@@ -72,7 +68,6 @@ public class DcoCatalogController {
     @AopLogger(describe = "编辑文档目录", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "编辑文档目录")
     @PostMapping("/edit")
-    @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager")
     public Result<?> edit(@RequestBody DocCatalogEntity catalogEntity){
         boolean editFlag = docCatalogService.updateById(catalogEntity);
         return Result.success(editFlag + "", "编辑文档目录完毕!");
@@ -82,10 +77,6 @@ public class DcoCatalogController {
     @Operation(summary = "删除文档目录")
     @PostMapping("/delete")
     @Transactional(rollbackFor = Exception.class)
-    @Caching(evict = {
-            @CacheEvict(allEntries = true, cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager"),
-            @CacheEvict(allEntries = true, cacheNames = "Doc", cacheManager = "caffeineCacheManager")
-    })
     public Result<?> delete(@RequestBody DocCatalogEntity catalogEntity){
         // 删除目录下的所有文档
         docService.remove(Wrappers.lambdaQuery(DocEntity.class).eq(DocEntity::getCatalogId, catalogEntity.getCatalogId()));
@@ -97,7 +88,6 @@ public class DcoCatalogController {
 //    @AopLogger(describe = "查询所有目录及其文档列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查询所有文档目录及其文档列表")
     @GetMapping("/doc-list")
-    @Cacheable(key = "'docList'", cacheNames = "DocCatalog", cacheManager = "caffeineCacheManager")
     public Result<?> queryAllCatalogAndDoc(){
         // 查出所有目录列表
         List<DocCatalogEntity> catalogs = docCatalogService.list();

@@ -24,7 +24,7 @@ public interface AbilityService extends IService<AbilityEntity> {
     List<Long> getAbilityIds(String keyword);
 
     // 根据abilityIds查询出主键(Long)-能力映射集合
-    Map<Long, AbilityEntity> getAbilityMap(Collection<Long> collection);
+    Map<Long, AbilityEntity> getAbilitysMap(Collection<Long> collection);
 
     // 查出符合条件的abilityId集合
 }

@@ -8,7 +8,7 @@ import java.util.Set;
 public interface AbilityApiApplyService extends IService<AbilityApiApplyEntity> {
 
     /**
-     * 根据条件获取， 接口申请审核通过的apiID集合
+     * 根据条件查询申请通过的apiID集合
      * @param userId
      * @param appId
      * @param abilityId

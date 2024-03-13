@@ -7,15 +7,14 @@ import com.dsj.csp.common.enums.LogEnum;
 import com.dsj.csp.manage.biz.AbilityApiBizService;
 import com.dsj.csp.manage.biz.GatewayAdminBizService;
 import com.dsj.csp.manage.entity.AbilityApiEntity;
-import com.dsj.csp.manage.service.AbilityApiService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -25,7 +24,6 @@ import java.util.List;
 @Tag(name = "能力接口管理", description = "用于管理能力api接口")
 public class AbilityApiController {
 
-    private final AbilityApiService abilityApiService;
     private final AbilityApiBizService abilityApiBizService;
     private final GatewayAdminBizService gatewayAdminBizService;
 
@@ -40,24 +38,13 @@ public class AbilityApiController {
         return Result.success(abilityApiBizService.getApiCatalog(onlyPublished, reqMethod, status, userId, abilityId));
     }
 
-    @AopLogger(describe = "批量删除接口", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
-    @Operation(summary = "批量删除接口")
-    @PostMapping("/delete-batch")
-    @LoginAuthentication
-    @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
-    public Result<?> removeApiBatch(@RequestBody List<AbilityApiEntity> apiEntityList){
-        boolean delFlag = abilityApiBizService.deleteApiBatch(apiEntityList);
-        return Result.success(delFlag+"", "批量删除接口完成!");
-    }
-
     @AopLogger(describe = "删除接口", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "删除接口")
-    @PostMapping("/delete")
+    @PostMapping("/delete-batch")
     @LoginAuthentication
-    @CacheEvict(allEntries = true, cacheNames = "Api", cacheManager = "caffeineCacheManager")
-    public Result<?> removeApi(@RequestBody AbilityApiEntity abilityApi){
-        boolean delFlag = abilityApiBizService.deleteApi(abilityApi);
-        return Result.success("删除接口完成!", delFlag);
+    public Result<?> removeApiBatch(@RequestBody List<AbilityApiEntity> apiEntityList){
+        boolean delFlag = abilityApiBizService.deleteApiBatch(apiEntityList);
+        return Result.success(delFlag+"", "删除接口完成!");
     }
 
 //    @AopLogger(describe = "批量审核接口注册", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
@@ -73,8 +60,8 @@ public class AbilityApiController {
     @PostMapping("/audit-submit")
     @LoginAuthentication
     public Result<?> auditSubmit(@RequestBody AbilityApiEntity api){
-        abilityApiBizService.auditSubmit(api.getApiId(), api.getNote());
-        return Result.success("接口注册提交完成!");
+        boolean flag =  abilityApiBizService.auditSubmit(api.getApiId(), api.getNote());
+        return Result.success("接口注册提交完成!", flag);
     }
 
     @AopLogger(describe = "撤回接口注册", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
@@ -82,8 +69,8 @@ public class AbilityApiController {
     @PostMapping("/audit-withdraw")
     @LoginAuthentication
     public Result<?> auditWithdraw(@RequestBody AbilityApiEntity api){
-        abilityApiBizService.auditWithdraw(api.getApiId(), api.getNote());
-        return Result.success("撤回接口注册完成!");
+        boolean flag = abilityApiBizService.auditWithdraw(api.getApiId(), api.getNote());
+        return Result.success("撤回接口注册完成!", flag);
     }
 
     @AopLogger(describe = "审核接口注册通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
@@ -91,8 +78,9 @@ public class AbilityApiController {
     @PostMapping("/audit-pass")
     @LoginAuthentication
     public Result<?> auditPass(@RequestBody AbilityApiEntity api){
-        abilityApiBizService.auditPass(api.getApiId(), api.getNote());
-        return Result.success("接口注册审核通过!");
+        boolean flag = abilityApiBizService.auditPass(api.getApiId(), api.getNote()) &&
+                gatewayAdminBizService.addGatewayApi(api);
+        return Result.success("接口注册审核通过!", flag);
     }
 
     @AopLogger(describe = "审核接口注册不通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
@@ -100,8 +88,8 @@ public class AbilityApiController {
     @PostMapping("/audit-not-pass")
     @LoginAuthentication
     public Result<?> auditNotPass(@RequestBody AbilityApiEntity api){
-        abilityApiBizService.auditNotPass(api.getApiId(), api.getNote());
-        return Result.success("接口注册审核不通过!");
+        boolean flag = abilityApiBizService.auditNotPass(api.getApiId(), api.getNote());
+        return Result.success("接口注册审核不通过!", flag);
     }
 
     @AopLogger(describe = "审核发布接口", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
@@ -110,21 +98,20 @@ public class AbilityApiController {
     @Transactional(rollbackFor = Exception.class)
     @PostMapping("/audit-publish")
     public Result<?> auditPublish(@RequestBody AbilityApiEntity api){
-        boolean flag = abilityApiBizService.auditPublish(api.getApiId(), api.getNote());
-        return Result.success("发布接口成功!");
+        boolean flag = abilityApiBizService.auditPublish(api.getApiId(), api.getNote()) &&
+                gatewayAdminBizService.addGatewayApi(api);
+        return Result.success("发布接口成功!", flag);
     }
 
     @AopLogger(describe = "审核下线接口", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "审核下线接口")
     @LoginAuthentication
+    @Transactional(rollbackFor = Exception.class)
     @PostMapping("/audit-offline")
     public Result<?> auditOffline(@RequestBody AbilityApiEntity api){
-        boolean flag = abilityApiBizService.auditOffline(api.getApiId(), api.getNote());
-        // 调用网关禁用api接口
-        if (flag){
-            gatewayAdminBizService.cancelGatewayApi(api);
-        }
-        return Result.success("下线接口成功!");
+        boolean flag = abilityApiBizService.auditOffline(api.getApiId(), api.getNote()) &&
+                gatewayAdminBizService.cancelGatewayApi(api);
+        return Result.success("下线接口成功!", flag);
     }
 
 }

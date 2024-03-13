@@ -211,10 +211,10 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     }
 
     /**
-     * 审核申请操作前的判断, 判断审核操作的申请是否有效
+     * 根据申请id和期待申请状态, 返回有效的申请对象
      * @param applyId 申请id
      * @param targetPrevStatus 期待审核操作前的申请状态
-     * @return 审核操作的申请是否有效
+     * @return
      */
     public AbilityApiApplyEntity checkApplyValid(Long applyId, ApplyStatusEnum targetPrevStatus){
         AbilityApiApplyEntity apply = abilityApiApplyService.getById(applyId);
@@ -315,7 +315,37 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
     public Page<AbilityApiApplyDTO> pageApiApply(Boolean onlySubmitted, Long appId, Long userId, Long abilityId,
                                                  String keyword, Integer status, Date startTime, Date endTime,
                                                  int current, int size) {
-        // 1.构造分页条件, 查询主表分页
+        // 构造分页条件,
+        LambdaQueryWrapper<AbilityApiApplyEntity> queryWrapper
+                = getPageQueryWrapper(onlySubmitted, appId, userId, abilityId, keyword, status, startTime, endTime);
+        // 查询主表分页
+        Page<AbilityApiApplyEntity> prePage = abilityApiApplyService.page(new Page<>(current, size), queryWrapper);
+        if (prePage.getTotal()==0){
+            return new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
+        }
+        List<AbilityApiApplyEntity> records = prePage.getRecords();
+        // 单表查询 查出必要的分页返回信息(避免过多的联表查询)
+        List<AbilityApiApplyDTO> applyRecords = getApplyDTOList(records);
+        // 初始化返回的分页, 并为必要的返回属性赋值
+        Page<AbilityApiApplyDTO> newPage = new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
+        newPage.setRecords(applyRecords);
+        return newPage;
+    }
+
+    /**
+     * 构造分页的条件构造器
+     * @param onlySubmitted
+     * @param appId
+     * @param userId
+     * @param abilityId
+     * @param keyword
+     * @param status
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    public LambdaQueryWrapper<AbilityApiApplyEntity> getPageQueryWrapper(boolean onlySubmitted, Long appId, Long userId, Long abilityId,
+                                                                         String keyword, Integer status, Date startTime, Date endTime){
         LambdaQueryWrapper<AbilityApiApplyEntity> qw = Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
                 .eq(appId != null, AbilityApiApplyEntity::getAppId, appId)
                 .eq(userId != null, AbilityApiApplyEntity::getUserId, userId)
@@ -343,32 +373,33 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
                     .or().in(userIds.size()>0, AbilityApiApplyEntity::getUserId, userIds)
             );
         }
-        // 主表分页, 并单表查询从表信息, 构造分页返回结果
-        Page<AbilityApiApplyEntity> prePage = abilityApiApplyService.page(new Page<>(current, size), qw);
-        if (prePage.getTotal()==0){
-            return new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
-        }
-        // 2.单表查询 查出必要的分页返回信息(避免过多的分页)
-        List<AbilityApiApplyEntity> records = prePage.getRecords();
+        return qw;
+    }
+
+    /**
+     * 单表查询获取必要的信息, 返回最终分页结果集
+     * @param applyEntities
+     * @return
+     */
+    public List<AbilityApiApplyDTO> getApplyDTOList(List<AbilityApiApplyEntity> applyEntities){
         // 接口表
-        Set<Long> apiIds = records.stream().map(AbilityApiApplyEntity::getApiId).collect(Collectors.toSet());
+        Set<Long> apiIds = applyEntities.stream().map(AbilityApiApplyEntity::getApiId).collect(Collectors.toSet());
         Map<Long, AbilityApiEntity> apiMap = SimpleQuery.keyMap(Wrappers.lambdaQuery(AbilityApiEntity.class)
                 .in(AbilityApiEntity::getApiId, apiIds), AbilityApiEntity::getApiId);
         // 能力 查出能力名称
-        Set<Long> abilityIds = records.stream().map(AbilityApiApplyEntity::getAbilityId).collect(Collectors.toSet());
+        Set<Long> abilityIds = applyEntities.stream().map(AbilityApiApplyEntity::getAbilityId).collect(Collectors.toSet());
         Map<Long, AbilityEntity> abilityMap = SimpleQuery.keyMap(Wrappers.lambdaQuery(AbilityEntity.class)
                 .in(AbilityEntity::getAbilityId, abilityIds), AbilityEntity::getAbilityId);
         // 应用 查出应用名称
-        Set<Long> appIds = records.stream().map(AbilityApiApplyEntity::getAppId).collect(Collectors.toSet());
+        Set<Long> appIds = applyEntities.stream().map(AbilityApiApplyEntity::getAppId).collect(Collectors.toSet());
         Map<String, ManageApplicationEntity> appMap = SimpleQuery.keyMap(Wrappers.lambdaQuery(ManageApplicationEntity.class)
                 .in(ManageApplicationEntity::getAppId, appIds), ManageApplicationEntity::getAppId);
         // 用户 查出企业/政府名称
-        Set<Long> userIds = records.stream().map(AbilityApiApplyEntity::getUserId).collect(Collectors.toSet());
+        Set<Long> userIds = applyEntities.stream().map(AbilityApiApplyEntity::getUserId).collect(Collectors.toSet());
         Map<String, UserApproveEntity> userMap = SimpleQuery.keyMap(Wrappers.lambdaQuery(UserApproveEntity.class)
                 .in(UserApproveEntity::getUserId, userIds), UserApproveEntity::getUserId);
-        // 3.初始化返回的分页, 并为必要的返回属性赋值
-        Page<AbilityApiApplyDTO> newPage = new Page<>(prePage.getCurrent(), prePage.getSize(), prePage.getTotal());
-        List<AbilityApiApplyDTO> resRecords = records.stream().map(apply ->{
+
+        return applyEntities.stream().map(apply ->{
             AbilityApiApplyDTO applyDTO = AbilityApiApplyConvertor.INSTANCE.toDTO(apply);
             applyDTO.setApiName(apiMap.getOrDefault(apply.getApiId(), new AbilityApiEntity()).getApiName());
             applyDTO.setApiDesc(apiMap.getOrDefault(apply.getApiId(), new AbilityApiEntity()).getApiDesc());
@@ -378,7 +409,5 @@ public class AbilityApiApplyBizServiceImpl implements AbilityApiApplyBizService 
             applyDTO.setGovName(userMap.getOrDefault(apply.getUserId() + "", new UserApproveEntity()).getGovName());
             return applyDTO;
         }).toList();
-        newPage.setRecords(resRecords);
-        return newPage;
     }
 }

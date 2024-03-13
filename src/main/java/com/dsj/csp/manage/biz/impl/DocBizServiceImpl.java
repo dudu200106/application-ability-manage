@@ -12,11 +12,7 @@ import com.dsj.csp.manage.entity.DocEntity;
 import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.DocService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -114,21 +110,6 @@ public class DocBizServiceImpl implements DocBizService {
         updateWrapper.set(DocEntity::getSubmitTime, new Date());
         docService.update(updateWrapper);
     }
-
-//    @Override
-//    public void auditOnline(Long docId, String note) {
-//        boolean isValid = isValidJudge(docId, 3);
-//        if (!isValid){
-//            throw new BusinessException("只有'已发布'的文档才能上线,请刷新后重试!");
-//        }
-//        LambdaUpdateWrapper<DocEntity> updateWrapper = Wrappers.lambdaUpdate();
-//        updateWrapper.eq(DocEntity::getDocId, docId);
-//        updateWrapper.set(DocEntity::getStatus, 4);
-//        updateWrapper.set(!ObjectUtil.isEmpty(note), DocEntity::getNote, note);
-//        updateWrapper.set(DocEntity::getOperator, operatorName);
-//        updateWrapper.set(DocEntity::getApproveTime, new Date());
-//        docService.update(updateWrapper);
-//    }
 
     @Override
     public void auditOffline(Long docId, String note) {

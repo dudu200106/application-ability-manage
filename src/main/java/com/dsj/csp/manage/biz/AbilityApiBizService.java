@@ -72,14 +72,6 @@ public interface AbilityApiBizService {
      * @return
      */
     boolean auditOffline(Long apiId, String note);
-
-    /**
-     * 删除接口
-     * @param api
-     * @return
-     */
-    boolean deleteApi(AbilityApiEntity api);
-
     /**
      * 批量删除接口
      * @param apiList

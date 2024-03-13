@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.toolkit.SimpleQuery;
 import com.dsj.csp.manage.entity.AbilityEntity;
 import com.dsj.csp.manage.mapper.AbilityMapper;
 import com.dsj.csp.manage.service.AbilityService;
@@ -67,15 +68,13 @@ public class AbilityServiceImpl extends ServiceImpl<AbilityMapper, AbilityEntity
     }
 
     @Override
-    public Map<Long, AbilityEntity> getAbilityMap(Collection<Long> ids) {
+    public Map<Long, AbilityEntity> getAbilitysMap(Collection<Long> ids) {
         if (ids.size()==0){
             return new HashMap<>();
         }
-        List<AbilityEntity> abiltiys = this.list(Wrappers.lambdaQuery(AbilityEntity.class)
+        return SimpleQuery.keyMap(Wrappers.lambdaQuery(AbilityEntity.class)
                 .select(AbilityEntity::getAbilityId, AbilityEntity::getAbilityName, AbilityEntity::getAbilityDesc)
-                .in(AbilityEntity::getAbilityId, ids));
-        Map<Long, AbilityEntity> map = abiltiys.stream().collect(Collectors.toMap(ability->ability.getAbilityId(), ability->ability));
-        return map;
+                .in(AbilityEntity::getAbilityId, ids), AbilityEntity::getAbilityId);
     }
 
 

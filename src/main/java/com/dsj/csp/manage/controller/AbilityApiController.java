@@ -59,8 +59,8 @@ public class AbilityApiController {
     @PostMapping("/audit-submit")
     @LoginAuthentication
     public Result<?> auditSubmit(@RequestBody AbilityApiEntity api){
-        boolean flag =  abilityApiBizService.auditSubmit(api.getApiId(), api.getNote());
-        return Result.success("接口注册提交完成!", flag);
+        boolean flag = abilityApiBizService.auditSubmit(api.getApiId(), api.getNote());
+        return Result.success(flag+"", "接口注册提交完成!");
     }
 
     @AopLogger(describe = "撤回接口注册", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
@@ -69,7 +69,7 @@ public class AbilityApiController {
     @LoginAuthentication
     public Result<?> auditWithdraw(@RequestBody AbilityApiEntity api){
         boolean flag = abilityApiBizService.auditWithdraw(api.getApiId(), api.getNote());
-        return Result.success("撤回接口注册完成!", flag);
+        return Result.success(flag+"", "撤回接口注册完成!");
     }
 
     @AopLogger(describe = "审核接口注册通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
@@ -78,7 +78,7 @@ public class AbilityApiController {
     @LoginAuthentication
     public Result<?> auditPass(@RequestBody AbilityApiEntity api){
         boolean flag = abilityApiBizService.auditPass(api.getApiId(), api.getNote());
-        return Result.success("接口注册审核通过!", flag);
+        return Result.success(flag+"", "接口注册审核通过!");
     }
 
     @AopLogger(describe = "审核接口注册不通过", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
@@ -87,7 +87,7 @@ public class AbilityApiController {
     @LoginAuthentication
     public Result<?> auditNotPass(@RequestBody AbilityApiEntity api){
         boolean flag = abilityApiBizService.auditNotPass(api.getApiId(), api.getNote());
-        return Result.success("接口注册审核不通过!", flag);
+        return Result.success(flag+"", "接口注册审核不通过!");
     }
 
     @AopLogger(describe = "审核发布接口", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
@@ -97,7 +97,7 @@ public class AbilityApiController {
     @PostMapping("/audit-publish")
     public Result<?> auditPublish(@RequestBody AbilityApiEntity api){
         boolean flag = abilityApiBizService.auditPublish(api.getApiId(), api.getNote());
-        return Result.success("发布接口成功!", flag);
+        return Result.success(flag+"", "发布接口成功!");
     }
 
     @AopLogger(describe = "审核下线接口", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
@@ -107,7 +107,7 @@ public class AbilityApiController {
     @PostMapping("/audit-offline")
     public Result<?> auditOffline(@RequestBody AbilityApiEntity api){
         boolean flag = abilityApiBizService.auditOffline(api.getApiId(), api.getNote());
-        return Result.success("下线接口成功!", flag);
+        return Result.success(flag+"", "下线接口成功!");
     }
 
 }

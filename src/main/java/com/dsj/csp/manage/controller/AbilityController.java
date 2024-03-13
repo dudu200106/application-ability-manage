@@ -14,14 +14,12 @@ import com.dsj.csp.manage.entity.AbilityEntity;
 import com.dsj.csp.manage.service.AbilityApiApplyService;
 import com.dsj.csp.manage.service.AbilityApiService;
 import com.dsj.csp.manage.service.AbilityService;
-import com.dsj.csp.manage.service.ApiFeignService;
 import com.dsj.csp.manage.util.IdentifyUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -57,8 +55,8 @@ public class AbilityController {
         if (cnt>0){
             throw new BusinessException("新增能力名称已存在! ");
         }
-        Boolean saveAbility = abilityService.save(ability);
-        return Result.success("能力新增成功!", saveAbility);
+        Boolean flag = abilityService.save(ability);
+        return Result.success(flag+"", "能力新增成功!");
     }
 
 //    @AopLogger(describe = "获取能力详情", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
@@ -89,18 +87,17 @@ public class AbilityController {
     @LoginAuthentication
     public Result<?> updateAbility(@RequestBody AbilityEntity ability){
         ability.setUpdateTime(new Date());
-        Boolean editFlag = abilityService.updateById(ability);
-        return Result.success("编辑注册能力成功!", editFlag);
+        Boolean flag = abilityService.updateById(ability);
+        return Result.success(flag+"", "编辑注册能力成功!");
     }
-
 
     @AopLogger(describe = "批量删除能力", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "批量删除能力")
     @PostMapping("/delete-Batch")
     @LoginAuthentication
     public Result<?> removeAbility(@Parameter(description = "能力id列表") @RequestBody List<AbilityEntity> abilityList){
-        boolean delFlag = abilityBizService.removeAbilityBatch(abilityList);
-        return Result.success("批量删除能力及其接口完成! ", delFlag);
+        boolean flag = abilityBizService.removeAbilityBatch(abilityList);
+        return Result.success(flag+"", "批量删除能力及其接口完成! ");
     }
 
     @AopLogger(describe = "删除能力", operateType = LogEnum.DELECT, logType = LogEnum.OPERATETYPE)
@@ -108,8 +105,8 @@ public class AbilityController {
     @PostMapping("/delete")
     @LoginAuthentication
     public Result<?> removeAbility(@RequestBody AbilityEntity ability){
-        boolean delFlag = abilityBizService.removeAbility(ability);
-        return Result.success("删除能力及其接口完成! ", delFlag);
+        boolean flag = abilityBizService.removeAbility(ability);
+        return Result.success(flag+"", "删除能力及其接口完成! ");
     }
 
     //    @AopLogger(describe = "获取能力简单信息目录", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
@@ -121,8 +118,6 @@ public class AbilityController {
         return Result.success(abilityIds);
     }
 
-
-    private final ApiFeignService apiProxyBizService;
 
     @AopLogger(describe = "新增接口", operateType = LogEnum.INSERT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "新增接口")
@@ -147,9 +142,8 @@ public class AbilityController {
     @PostMapping("edit-api")
     @LoginAuthentication
     public Result<?> editApi(@RequestBody AbilityApiVO apiVO){
-        Boolean editApiFlag = abilityApiBizService.updateApi(apiVO);
-
-        return Result.success("已修改接口完毕! ", editApiFlag);
+        boolean flag = abilityApiBizService.updateApi(apiVO);
+        return Result.success(flag+"", "已修改接口完毕! ");
     }
 
     //    @AopLogger(describe = "分页查询api目录列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
@@ -216,9 +210,6 @@ public class AbilityController {
         return Result.success(abilityApiApplyService.countUserApi(userId));
     }
 
-
-
-
 //    @AopLogger(describe = "查询能力的接口列表", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查询能力的接口列表", description = "查询能力的接口列表")
     @GetMapping("/query-api-list")
@@ -277,8 +268,6 @@ public class AbilityController {
         return Result.success(abilityApiApplyBizService.pageApiApply(onlySubmitted, appId, userId, abilityId, keyword, status, startTime, endTime, current, size));
     }
 
-
-
     @AopLogger(describe = "编辑接口使用申请", operateType = LogEnum.UPDATE, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "编辑接口使用申请", description = "编辑接口使用申请")
     @PostMapping("/edit-api-apply")
@@ -288,6 +277,5 @@ public class AbilityController {
         boolean editFlag = abilityApiApplyService.updateById(apiApplyEntity);
         return Result.success(editFlag+"", "编辑接口使用申请完毕!");
     }
-
 
 }

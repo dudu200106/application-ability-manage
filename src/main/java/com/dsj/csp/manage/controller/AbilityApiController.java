@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -78,8 +77,7 @@ public class AbilityApiController {
     @PostMapping("/audit-pass")
     @LoginAuthentication
     public Result<?> auditPass(@RequestBody AbilityApiEntity api){
-        boolean flag = abilityApiBizService.auditPass(api.getApiId(), api.getNote()) &&
-                gatewayAdminBizService.addGatewayApi(api);
+        boolean flag = abilityApiBizService.auditPass(api.getApiId(), api.getNote());
         return Result.success("接口注册审核通过!", flag);
     }
 
@@ -98,8 +96,7 @@ public class AbilityApiController {
     @Transactional(rollbackFor = Exception.class)
     @PostMapping("/audit-publish")
     public Result<?> auditPublish(@RequestBody AbilityApiEntity api){
-        boolean flag = abilityApiBizService.auditPublish(api.getApiId(), api.getNote()) &&
-                gatewayAdminBizService.addGatewayApi(api);
+        boolean flag = abilityApiBizService.auditPublish(api.getApiId(), api.getNote());
         return Result.success("发布接口成功!", flag);
     }
 
@@ -109,8 +106,7 @@ public class AbilityApiController {
     @Transactional(rollbackFor = Exception.class)
     @PostMapping("/audit-offline")
     public Result<?> auditOffline(@RequestBody AbilityApiEntity api){
-        boolean flag = abilityApiBizService.auditOffline(api.getApiId(), api.getNote()) &&
-                gatewayAdminBizService.cancelGatewayApi(api);
+        boolean flag = abilityApiBizService.auditOffline(api.getApiId(), api.getNote());
         return Result.success("下线接口成功!", flag);
     }
 

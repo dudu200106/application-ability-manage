@@ -72,8 +72,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
     @Override
     public boolean auditWithdraw(Long apiId, String note) {
-        boolean isValid = isApiValid(apiId, ApiStatusEnum.WAIT_AUDIT) ;
-        if (!isValid) {
+        AbilityApiEntity validApi = getValidApi(apiId, ApiStatusEnum.WAIT_AUDIT) ;
+        if (validApi==null) {
             throw new BusinessException("只用待审核的接口才能撤回,请刷新页面后重试!");
         }
         LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
@@ -86,8 +86,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
     @Override
     public boolean auditSubmit(Long apiId, String note) {
-        boolean isValid = isApiValid(apiId, ApiStatusEnum.NOT_SUBMIT) ;
-        if (!isValid) {
+        AbilityApiEntity validApi = getValidApi(apiId, ApiStatusEnum.NOT_SUBMIT) ;
+        if (validApi==null) {
             throw new BusinessException("只用待提交状态的接口才能够提交,请刷新页面后重试!");
         }
         LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
@@ -100,8 +100,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
     @Override
     public boolean auditNotPass(Long apiId, String note) {
-        boolean isValid = isApiValid(apiId, ApiStatusEnum.WAIT_AUDIT) ;
-        if (!isValid) {
+        AbilityApiEntity validApi = getValidApi(apiId, ApiStatusEnum.WAIT_AUDIT) ;
+        if (validApi==null) {
             throw new BusinessException("只用待审核的接口才能审核不通过,请刷新页面后重试!");
         }
         LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
@@ -116,8 +116,8 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
 
     @Override
     public boolean auditPass(Long apiId, String note) {
-        boolean isValid = isApiValid(apiId, ApiStatusEnum.WAIT_AUDIT);
-        if (!isValid) {
+        AbilityApiEntity validApi = getValidApi(apiId, ApiStatusEnum.WAIT_AUDIT);
+        if (validApi==null) {
             throw new BusinessException("只用待审核的接口才能审核通过,请刷新页面后重试!");
         }
         LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
@@ -130,10 +130,14 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean auditPublish(Long apiId, String note) {
-        boolean isValid = isApiValid(apiId, ApiStatusEnum.PASSED) || isApiValid(apiId, ApiStatusEnum.OFFLINE) ;
-        if (!isValid) {
-            throw new BusinessException("只用审核通过过的接口才能发布,请刷新页面后重试!");
+        AbilityApiEntity validApi = getValidApi(apiId, ApiStatusEnum.PASSED);
+        if (validApi==null) {
+            validApi = getValidApi(apiId, ApiStatusEnum.OFFLINE);
+            if (validApi==null){
+                throw new BusinessException("只用审核通过过的接口才能发布,请刷新页面后重试!");
+            }
         }
         LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
         updateWrapper.eq(AbilityApiEntity::getApiId, apiId);
@@ -141,13 +145,15 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         updateWrapper.set(AbilityApiEntity::getNote, note);
         updateWrapper.set(AbilityApiEntity::getApproveTime, new Date());
         updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
-        return abilityApiService.update(updateWrapper);
+        return abilityApiService.update(updateWrapper) &&
+                gatewayAdminBizService.addGatewayApi(validApi);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean auditOffline(Long apiId, String note) {
-        boolean isValid = isApiValid(apiId, ApiStatusEnum.PUBLISHED) ;
-        if (!isValid) {
+        AbilityApiEntity validApi = getValidApi(apiId, ApiStatusEnum.PUBLISHED) ;
+        if (validApi==null) {
             throw new BusinessException("只用发布的接口才能下线,请刷新页面后重试!");
         }
         long cntUsing = abilityApiApplyService.count(Wrappers.lambdaQuery(AbilityApiApplyEntity.class)
@@ -156,14 +162,14 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
         if (cntUsing>0){
             throw new BusinessException("该接口还有应用正在使用!");
         }
-        LambdaUpdateWrapper<AbilityApiEntity> updateWrapper = Wrappers.lambdaUpdate();
-        updateWrapper.eq(AbilityApiEntity::getApiId, apiId);
-        updateWrapper.set(AbilityApiEntity::getStatus, ApiStatusEnum.OFFLINE.getCode());
-        updateWrapper.set(AbilityApiEntity::getNote, note);
-        updateWrapper.set(AbilityApiEntity::getApproveTime, new Date());
-        updateWrapper.set(AbilityApiEntity::getUpdateTime, new Date());
-
-        return abilityApiService.update(updateWrapper);
+        return abilityApiService.lambdaUpdate()
+                .eq(AbilityApiEntity::getApiId, apiId)
+                .set(AbilityApiEntity::getStatus, ApiStatusEnum.OFFLINE.getCode())
+                .set(AbilityApiEntity::getNote, note)
+                .set(AbilityApiEntity::getApproveTime, new Date())
+                .set(AbilityApiEntity::getUpdateTime, new Date())
+                .update()
+                && gatewayAdminBizService.cancelGatewayApi(validApi);
     }
 
 //    @Override
@@ -192,20 +198,19 @@ public class AbilityApiBizServiceImpl implements AbilityApiBizService {
     }
 
     /**
-     * 审核操作前的判断,
+     * 根据接口id和期待接口状态,返回有效的接口对象
      * @param apiId 接口ID
-     * @param targetPrevStatus 期待的前任审核状态
-     * @return 审核操作是否有效
+     * @param expectStatus 期待的接口状态
+     * @return
      */
-    public boolean isApiValid(Long apiId, ApiStatusEnum targetPrevStatus){
+    public AbilityApiEntity getValidApi(Long apiId, ApiStatusEnum expectStatus){
         // 审核的接口是否还存在
         AbilityApiEntity api = abilityApiService.getById(apiId);
         if (api==null){
             throw new BusinessException("接口不存在!");
         }
-        // 审核操作是否有效
-        // 审核流程限制: 状态(0未提交 1待审核 2审核未通过 3未发布 4已发布 5已下线)
-        return api.getStatus()==targetPrevStatus.getCode();
+        // 接口状态是否为期待状态
+        return api.getStatus()==expectStatus.getCode()? api : null;
     }
 
 

@@ -25,7 +25,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
@@ -81,7 +80,6 @@ public class DocController {
 //    @AopLogger(describe = "查看文档", operateType = LogEnum.SELECT, logType = LogEnum.OPERATETYPE)
     @Operation(summary = "查看文档")
     @GetMapping("/info")
-    @Cacheable(key = "'docId_' + #docId", cacheNames = "Doc", cacheManager = "caffeineCacheManager")
     public Result<?> info(Long docId){
         DocEntity doc = docService.getById(docId);
         if (doc == null){
